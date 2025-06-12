@@ -18,6 +18,7 @@ import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.PluginData
 import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.ProfileData
 import ru.rzn.gmyasoedov.gmaven.project.externalSystem.view.*
 import ru.rzn.gmyasoedov.gmaven.project.task.Phase
+import ru.rzn.gmyasoedov.gmaven.project.task.Phase4
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 
 class MavenExternalViewContributor : ExternalSystemViewContributor() {
@@ -69,7 +70,11 @@ class MavenExternalViewContributor : ExternalSystemViewContributor() {
             val lifecyclesDataNode = Registry.stringValue("gmaven.lifecycles").split(",").asSequence()
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
-                .map { LifecycleData(SYSTEM_ID, it, baseLifecycleData.linkedExternalProjectPath) }
+                .map {
+                    LifecycleData(
+                        SYSTEM_ID, it, baseLifecycleData.linkedExternalProjectPath, baseLifecycleData.isMaven4
+                    )
+                }
                 .map { DataNode(LifecycleData.KEY, it, tasksNodes.first()!!.parent) }
                 .toList()
             if (lifecyclesDataNode.isNotEmpty()) {
@@ -79,11 +84,22 @@ class MavenExternalViewContributor : ExternalSystemViewContributor() {
         }
 
         val arrayList = ArrayList<DataNode<TaskData>>()
-        for (p in Phase.values()) {
-            val description = p.lifecycle.lifecycleName + ":" + p.phaseName
-            val phaseData = TaskData(SYSTEM_ID, p.phaseName, baseLifecycleData.linkedExternalProjectPath, description)
-            phaseData.group = p.lifecycle.lifecycleName
-            arrayList += DataNode(ProjectKeys.TASK, phaseData, tasksNodes.first()!!.parent)
+        if (baseLifecycleData.isMaven4) {
+            for (p in Phase4.entries) {
+                val description = p.lifecycle.lifecycleName + ":" + p.phaseName
+                val phaseData =
+                    TaskData(SYSTEM_ID, p.phaseName, baseLifecycleData.linkedExternalProjectPath, description)
+                phaseData.group = p.lifecycle.lifecycleName
+                arrayList += DataNode(ProjectKeys.TASK, phaseData, tasksNodes.first()!!.parent)
+            }
+        } else {
+            for (p in Phase.entries) {
+                val description = p.lifecycle.lifecycleName + ":" + p.phaseName
+                val phaseData =
+                    TaskData(SYSTEM_ID, p.phaseName, baseLifecycleData.linkedExternalProjectPath, description)
+                phaseData.group = p.lifecycle.lifecycleName
+                arrayList += DataNode(ProjectKeys.TASK, phaseData, tasksNodes.first()!!.parent)
+            }
         }
         result.add(MavenTasksNode(view, arrayList))
     }

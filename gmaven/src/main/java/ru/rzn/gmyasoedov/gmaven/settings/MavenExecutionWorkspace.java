@@ -26,6 +26,7 @@ public class MavenExecutionWorkspace implements Serializable {
     private String multiModuleProjectDirectory;
     @Nullable
     private String incrementalProjectName;
+    private boolean maven4;
 
     public void addProfile(@Nullable ProfileExecution data) {
         if (data != null) {
@@ -90,5 +91,13 @@ public class MavenExecutionWorkspace implements Serializable {
 
     public void setIncrementalProjectName(@Nullable String incrementalProjectName) {
         this.incrementalProjectName = incrementalProjectName;
+    }
+
+    public boolean isMaven4() {
+        return maven4;
+    }
+
+    public void setMaven4(boolean maven4) {
+        this.maven4 = maven4;
     }
 }

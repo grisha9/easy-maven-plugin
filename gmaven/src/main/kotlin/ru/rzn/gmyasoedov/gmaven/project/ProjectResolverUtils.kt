@@ -11,6 +11,7 @@ import com.intellij.openapi.externalSystem.model.project.ProjectData
 import com.intellij.openapi.module.ModuleTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.util.text.StringUtil.compareVersionNumbers
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
 import ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.*
@@ -59,7 +60,7 @@ private fun getDistributionUrl(externalProjectPath: String, project: Project?): 
     if (project == null) return MvnDotProperties.getDistributionUrl(externalProjectPath)
     return try {
         MvnDotProperties.getDistributionUrl(project, externalProjectPath)
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         MvnDotProperties.getDistributionUrl(externalProjectPath)
     }
 }
@@ -148,7 +149,8 @@ fun populateTasks(
     context: MavenProjectResolver.ProjectResolverContext
 ) {
     //add seed for tasks. all logic there: MavenExternalViewContributor.
-    moduleDataNode.createChild(LifecycleData.KEY, LifecycleData(SYSTEM_ID, "base", mavenProject.basedir))
+    val lifecycleData = LifecycleData(SYSTEM_ID, "base", mavenProject.basedir, context.isMaven4)
+    moduleDataNode.createChild(LifecycleData.KEY, lifecycleData)
 
     if (!context.settings.isShowPluginNodes) {
         MavenArtifactUtil.clearPluginDescriptorCache()
@@ -240,6 +242,26 @@ private fun isPriorityCompiler(
     val priority = (context.pluginExtensionMap[MavenUtils.toGAString(plugin)]
             as? MavenCompilerFullImportPlugin)?.priority() ?: 0
     return priority > currentPriority
+}
+
+fun isMaven4(settings: MavenExecutionSettings): Boolean {
+    if (settings.distributionSettings.type == DistributionType.WRAPPER
+        && settings.distributionSettings.url != null
+    ) {
+        return settings.distributionSettings.url.contains("maven-4.")
+                || settings.distributionSettings.url.contains("/4.")
+    }
+    if (settings.distributionSettings.path != null) {
+        try {
+            val mavenVersion = MavenUtils.getMavenVersion(settings.distributionSettings.path.toFile())
+            if (mavenVersion != null) {
+                return compareVersionNumbers("4.0", mavenVersion) <= 0
+            }
+        } catch (_: Exception) {
+            return false
+        }
+    }
+    return false
 }
 
 class PluginsData(

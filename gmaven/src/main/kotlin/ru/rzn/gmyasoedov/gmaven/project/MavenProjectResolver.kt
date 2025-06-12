@@ -17,6 +17,7 @@ import com.intellij.openapi.externalSystem.service.project.ExternalSystemProject
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.pom.java.LanguageLevel
 import org.jdom.Element
+import org.jetbrains.kotlin.idea.base.externalSystem.find
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.CompilerData
 import ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.MavenFullImportPlugin
@@ -132,15 +133,13 @@ class MavenProjectResolver : ExternalSystemProjectResolver<MavenExecutionSetting
         }
         val javaProjectData = JavaProjectData(
             GMavenConstants.SYSTEM_ID, project.outputDirectory, languageLevel,
-            languageLevel!!.toFeatureString()
+            languageLevel!!.toFeatureString(), emptyList()
         )
         projectDataNode.createChild(JavaProjectData.KEY, javaProjectData)
 
         var ideProjectPath = settings.ideProjectPath
         ideProjectPath = ideProjectPath ?: projectPath
-        val context = ProjectResolverContext(
-            projectDataNode, settings, absolutePath, ideProjectPath, mavenResult, languageLevel
-        )
+        val context = getContext(projectDataNode, settings, absolutePath, ideProjectPath, mavenResult)
 
         val moduleNode = createModuleData(container, projectDataNode, context)
         addDependencies(container, projectDataNode, context)
@@ -148,6 +147,19 @@ class MavenProjectResolver : ExternalSystemProjectResolver<MavenExecutionSetting
         moduleNode.data.setProperty(GMavenConstants.MODULE_PROP_LOCAL_REPO, mavenResult.settings.localRepository)
 
         return projectDataNode
+    }
+
+    private fun getContext(
+        projectDataNode: DataNode<ProjectData>,
+        settings: MavenExecutionSettings,
+        absolutePath: String,
+        ideProjectPath: String,
+        mavenResult: MavenMapResult
+    ): ProjectResolverContext {
+        val languageLevel = projectDataNode.find(JavaProjectData.KEY)?.data?.languageLevel ?: LanguageLevel.HIGHEST
+        return ProjectResolverContext(
+            projectDataNode, settings, absolutePath, ideProjectPath, mavenResult, languageLevel, isMaven4(settings)
+        )
     }
 
     private fun getProjectDirectory(projectPath: String): Path {
@@ -165,6 +177,7 @@ class MavenProjectResolver : ExternalSystemProjectResolver<MavenExecutionSetting
         val ideaProjectPath: String,
         val mavenResult: MavenMapResult,
         val projectLanguageLevel: LanguageLevel,
+        val isMaven4: Boolean,
         var aspectJCompilerData: MutableList<CompilerDataHolder> = ArrayList(0),
         val contextElementMap: MutableMap<String, Element> = HashMap(),
         val moduleDataByArtifactId: MutableMap<String, ModuleContextHolder> = TreeMap(),
