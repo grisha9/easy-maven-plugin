@@ -15,6 +15,7 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.toNioPathOrNull
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.MODULE_PROP_BUILD_FILE
+import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.LifecycleData
 import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.ProfileData
 import ru.rzn.gmyasoedov.gmaven.project.profile.ProjectProfilesStateService
 import ru.rzn.gmyasoedov.gmaven.settings.MavenExecutionWorkspace
@@ -50,7 +51,6 @@ fun fillExecutionWorkSpace(
         }
         return
     }
-
     val allModules = ExternalSystemApiUtil.findAll(projectDataNode, ProjectKeys.MODULE)
 
     val mainModuleNode = allModules
@@ -68,6 +68,7 @@ fun fillExecutionWorkSpace(
     addedIgnoredModule(workspace, allModules, targetModuleNode)
     addedProfiles(projectDataNode, ProjectProfilesStateService.getInstance(project), workspace)
     setIncrementalPath(project, workspace, projectSettings, allModules)
+    setMaven4(workspace, projectDataNode)
     setMultiModuleProjectDirectory(projectSettings.externalProjectPath, workspace)
 }
 
@@ -203,7 +204,16 @@ private fun getMultiModuleProjectDirectory(projectPath: Path, mainProjectPath: P
         if (projectPathTmp.resolve(".mvn").exists()) {
             return projectPathTmp
         }
-    } catch (ignored: Exception) {
+    } catch (_: Exception) {
     }
     return workingDirectory
+}
+
+
+private fun setMaven4(
+    workspace: MavenExecutionWorkspace,
+    projectDataNode: DataNode<ProjectData>
+) {
+    workspace.isMaven4 = (ExternalSystemApiUtil.findFirstRecursively(projectDataNode) { it.key == LifecycleData.KEY }
+        ?.data as? LifecycleData)?.isMaven4 ?: false
 }

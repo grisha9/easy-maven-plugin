@@ -27,7 +27,7 @@ class MavenTaskManager : ExternalSystemTaskManager<MavenExecutionSettings> {
         settings: MavenExecutionSettings,
         listener: ExternalSystemTaskNotificationListener
     ) {
-        val tasks = getTasks(settings.tasks)
+        val tasks = getTasks(settings)
         val workspace = settings.executionWorkspace
         val projectBuildFile = workspace.projectBuildFile
             ?: throw ExternalSystemException("project build file is empty")
@@ -44,13 +44,15 @@ class MavenTaskManager : ExternalSystemTaskManager<MavenExecutionSettings> {
         }
     }
 
-    private fun getTasks(taskNames: List<String>): List<String> {
+    private fun getTasks(settings: MavenExecutionSettings): List<String> {
+        val taskNames = settings.tasks
         val tasks = if (Registry.stringValue("gmaven.lifecycles").contains(" ")) {
             taskNames.flatMap { it.split(" ") }
         } else {
             taskNames
         }
-        return prepareTaskOrder(tasks)
+        if (taskNames.size < 2) return taskNames
+        return if (settings.executionWorkspace.isMaven4) prepareTaskOrderMvn4(tasks) else prepareTaskOrder(tasks)
     }
 
     override fun cancelTask(id: ExternalSystemTaskId, listener: ExternalSystemTaskNotificationListener): Boolean {
@@ -60,11 +62,21 @@ class MavenTaskManager : ExternalSystemTaskManager<MavenExecutionSettings> {
 
     @VisibleForTesting
     fun prepareTaskOrder(taskNames: List<String>): List<String> {
-        if (taskNames.size < 2) return taskNames
         val phaseTasks = TreeMap<Int, String>()
         val otherTasks = mutableListOf<String>()
         for (taskName in taskNames) {
             val phase = Phase.find(taskName)
+            if (phase != null) phaseTasks[phase.ordinal] = phase.phaseName else otherTasks.add(taskName)
+        }
+        return phaseTasks.values + otherTasks
+    }
+
+    @VisibleForTesting
+    fun prepareTaskOrderMvn4(taskNames: List<String>): List<String> {
+        val phaseTasks = TreeMap<Int, String>()
+        val otherTasks = mutableListOf<String>()
+        for (taskName in taskNames) {
+            val phase = Phase4.find(taskName)
             if (phase != null) phaseTasks[phase.ordinal] = phase.phaseName else otherTasks.add(taskName)
         }
         return phaseTasks.values + otherTasks
