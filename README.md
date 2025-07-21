@@ -16,19 +16,17 @@ This provides greater simplicity and original build tool behavior in obtaining p
 - [habr1.com](https://habr.com/ru/articles/753828/) (Russian);
 - [habr2.com](https://habr.com/ru/articles/882778/) (Russian);
 
-
 ### Maven Plugin for IntelliJ IDEA
 
 The plugin adds support for the Maven for Java language projects:
 
- - Original Maven behavior for getting project model
+- Original Maven behavior for importing project model into IDEA
 - Maven 4 support
 - Dependency analyzer
- - Execution Maven tasks 
- - Support separate modules for production and test roots
- - Groovy support
- - Kotlin JVM support
-
+- Execution Maven tasks
+- Support separate modules for production and test roots
+- Groovy support
+- Kotlin JVM support
 
 ### Prerequisites
 
@@ -36,7 +34,6 @@ The plugin adds support for the Maven for Java language projects:
 2. Maven 3.3.1+
 3. Access to [Maven Central](https://mvnrepository.com/artifact/io.github.grisha9/maven-model-reader-plugin)
    for [model-reader-plugin](https://github.com/grisha9/maven-model-reader)
-
 
 ### Issues
 
