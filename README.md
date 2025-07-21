@@ -1,12 +1,12 @@
-Easy Maven
+Easy Maven (Old name: GMaven)
 ==================
-
-#### (Old name: Gmaven)
 
 The lightweight Maven plugin that gets the project model through maven task execution.
 This provides greater simplicity and original build tool behavior in obtaining project data.
 
 ### IntelliJ Plugin [page](https://plugins.jetbrains.com/plugin/22370-easy-maven)
+
+![Screenshot](.github/readme-logo1.png)
 
 ### Plugin [wiki](https://github.com/grisha9/gmaven-plugin/wiki)
 
@@ -20,9 +20,10 @@ This provides greater simplicity and original build tool behavior in obtaining p
 ### Maven Plugin for IntelliJ IDEA
 
 The plugin adds support for the Maven for Java language projects:
- - Import project structure to IDE
+
  - Original Maven behavior for getting project model
-- Maven 4
+- Maven 4 support
+- Dependency analyzer
  - Execution Maven tasks 
  - Support separate modules for production and test roots
  - Groovy support
