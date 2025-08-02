@@ -36,15 +36,15 @@ import kotlin.io.path.exists
 fun getMavenHome(executionSettings: MavenExecutionSettings): Path {
     val distributionSettings = executionSettings.distributionSettings
     if (distributionSettings.type == DistributionType.WRAPPER) {
-        val mvnwScript = getMvnwScript(executionSettings)
-        if (mvnwScript != null) return mvnwScript
-
         val externalProjectPath = executionSettings.executionWorkspace.externalProjectPath
         val distributionUrl = getDistributionUrl(externalProjectPath, executionSettings.project)
         if (distributionUrl != distributionSettings.url) {
             distributionSettings.path = null
         }
         distributionSettings.url = distributionUrl
+
+        val mvnwScript = getMvnwScript(executionSettings)
+        if (mvnwScript != null) return mvnwScript
     }
     if (distributionSettings.path != null && distributionSettings.path.exists()) return distributionSettings.path
     if (distributionSettings.url != null) {
@@ -148,9 +148,14 @@ fun populateTasks(
     moduleDataNode: DataNode<ModuleData>, mavenProject: MavenProject,
     context: MavenProjectResolver.ProjectResolverContext
 ) {
+    //todo maven4 from MVND
     //add seed for tasks. all logic there: MavenExternalViewContributor.
-    val lifecycleData = LifecycleData(SYSTEM_ID, "base", mavenProject.basedir, context.isMaven4)
-    moduleDataNode.createChild(LifecycleData.KEY, lifecycleData)
+    if (context.isMaven4) {
+        val key = LifecycleMaven4Data.KEY
+        moduleDataNode.createChild(key, LifecycleMaven4Data(SYSTEM_ID, "base", mavenProject.basedir))
+    } else {
+        moduleDataNode.createChild(LifecycleData.KEY, LifecycleData(SYSTEM_ID, "base", mavenProject.basedir))
+    }
 
     if (!context.settings.isShowPluginNodes) {
         MavenArtifactUtil.clearPluginDescriptorCache()

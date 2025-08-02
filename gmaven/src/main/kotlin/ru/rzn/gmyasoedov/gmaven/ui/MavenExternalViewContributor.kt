@@ -10,22 +10,18 @@ import com.intellij.openapi.externalSystem.view.ExternalSystemViewContributor
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.util.SmartList
 import com.intellij.util.containers.MultiMap
-import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID
-import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.DependencyAnalyzerData
-import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.LifecycleData
-import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.PluginData
-import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.ProfileData
+import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.*
 import ru.rzn.gmyasoedov.gmaven.project.externalSystem.view.*
 import ru.rzn.gmyasoedov.gmaven.project.task.Phase
 import ru.rzn.gmyasoedov.gmaven.project.task.Phase4
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 
 class MavenExternalViewContributor : ExternalSystemViewContributor() {
-    override fun getSystemId() = GMavenConstants.SYSTEM_ID
+    override fun getSystemId() = SYSTEM_ID
 
     override fun getKeys(): List<Key<*>> = listOf(
-        LifecycleData.KEY, PluginData.KEY, ProfileData.KEY, DependencyAnalyzerData.KEY
+        LifecycleData.KEY, LifecycleMaven4Data.KEY, PluginData.KEY, ProfileData.KEY, DependencyAnalyzerData.KEY
     )
 
     override fun createNodes(
@@ -35,7 +31,7 @@ class MavenExternalViewContributor : ExternalSystemViewContributor() {
         val result: MutableList<ExternalSystemNode<*>> = SmartList()
 
         // add base lifecycle tasks
-        val tasksNodes = dataNodes[LifecycleData.KEY]
+        val tasksNodes = dataNodes[LifecycleData.KEY].takeIf { it.isNotEmpty() } ?: dataNodes[LifecycleMaven4Data.KEY]
         if (tasksNodes.isNotEmpty()) {
             createTasks(tasksNodes, result, externalProjectsView)
         }
@@ -63,19 +59,17 @@ class MavenExternalViewContributor : ExternalSystemViewContributor() {
     private fun createTasks(
         tasksNodes: Collection<DataNode<*>?>, result: MutableList<ExternalSystemNode<*>>, view: ExternalProjectsView
     ) {
-        val baseLifecycleData = tasksNodes.first()!!.data as LifecycleData
+        val lifeCycleNode = tasksNodes.firstOrNull() ?: return
+        val baseLifecycleData = lifeCycleNode.data as LifecycleData
+        val isMaven4Task = lifeCycleNode.data is LifecycleMaven4Data
 
         val showAllPhases = MavenSettings.getInstance(view.project).isShowAllPhases
         if (!showAllPhases) {
             val lifecyclesDataNode = Registry.stringValue("gmaven.lifecycles").split(",").asSequence()
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
-                .map {
-                    LifecycleData(
-                        SYSTEM_ID, it, baseLifecycleData.linkedExternalProjectPath, baseLifecycleData.isMaven4
-                    )
-                }
-                .map { DataNode(LifecycleData.KEY, it, tasksNodes.first()!!.parent) }
+                .map { LifecycleData(SYSTEM_ID, it, baseLifecycleData.linkedExternalProjectPath) }
+                .map { DataNode(LifecycleData.KEY, it, lifeCycleNode.parent) }
                 .toList()
             if (lifecyclesDataNode.isNotEmpty()) {
                 result.add(LifecycleNodes(view, lifecyclesDataNode))
@@ -84,7 +78,7 @@ class MavenExternalViewContributor : ExternalSystemViewContributor() {
         }
 
         val arrayList = ArrayList<DataNode<TaskData>>()
-        if (baseLifecycleData.isMaven4) {
+        if (isMaven4Task) {
             for (p in Phase4.entries) {
                 val description = p.lifecycle.lifecycleName + ":" + p.phaseName
                 val phaseData =
@@ -113,7 +107,7 @@ class MavenExternalViewContributor : ExternalSystemViewContributor() {
 
     private fun toTaskNode(dataNode: DataNode<PluginData>): DataNode<TaskData> {
         val data = dataNode.getData()
-        val taskData = TaskData(GMavenConstants.SYSTEM_ID, data.name, data.linkedExternalProjectPath, data.description)
+        val taskData = TaskData(SYSTEM_ID, data.name, data.linkedExternalProjectPath, data.description)
         taskData.group = data.group
         return DataNode(ProjectKeys.TASK, taskData, dataNode.parent)
     }
