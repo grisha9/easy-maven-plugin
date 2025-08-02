@@ -13,9 +13,10 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.toNioPathOrNull
+import org.jetbrains.kotlin.idea.base.externalSystem.find
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.MODULE_PROP_BUILD_FILE
-import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.LifecycleData
+import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.LifecycleMaven4Data
 import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.ProfileData
 import ru.rzn.gmyasoedov.gmaven.project.profile.ProjectProfilesStateService
 import ru.rzn.gmyasoedov.gmaven.settings.MavenExecutionWorkspace
@@ -214,6 +215,7 @@ private fun setMaven4(
     workspace: MavenExecutionWorkspace,
     projectDataNode: DataNode<ProjectData>
 ) {
-    workspace.isMaven4 = (ExternalSystemApiUtil.findFirstRecursively(projectDataNode) { it.key == LifecycleData.KEY }
-        ?.data as? LifecycleData)?.isMaven4 ?: false
+    val module = ExternalSystemApiUtil.findFirstRecursively(projectDataNode) { it.key == ProjectKeys.MODULE }
+    val maven4Node = module?.find(LifecycleMaven4Data.KEY)
+    workspace.isMaven4 = maven4Node != null
 }

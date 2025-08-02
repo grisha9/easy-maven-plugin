@@ -16,17 +16,14 @@ public class LifecycleData extends AbstractExternalEntityData implements Externa
     private final String name;
     @NotNull
     private final String linkedExternalProjectPath;
-    private final boolean maven4;
 
-    @PropertyMapping({"owner", "name", "linkedExternalProjectPath", "maven4"})
+    @PropertyMapping({"owner", "name", "linkedExternalProjectPath"})
     public LifecycleData(@NotNull ProjectSystemId owner,
                          @NotNull String name,
-                         @NotNull String linkedExternalProjectPath,
-                         boolean maven4) {
+                         @NotNull String linkedExternalProjectPath) {
         super(owner);
         this.name = name;
         this.linkedExternalProjectPath = linkedExternalProjectPath;
-        this.maven4 = maven4;
     }
 
     @NotNull
@@ -40,17 +37,13 @@ public class LifecycleData extends AbstractExternalEntityData implements Externa
         return linkedExternalProjectPath;
     }
 
-    public boolean isMaven4() {
-        return maven4;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
         LifecycleData that = (LifecycleData) o;
-        return maven4 == that.maven4 && name.equals(that.name) && linkedExternalProjectPath.equals(that.linkedExternalProjectPath);
+        return name.equals(that.name) && linkedExternalProjectPath.equals(that.linkedExternalProjectPath);
     }
 
     @Override
@@ -58,7 +51,6 @@ public class LifecycleData extends AbstractExternalEntityData implements Externa
         int result = super.hashCode();
         result = 31 * result + name.hashCode();
         result = 31 * result + linkedExternalProjectPath.hashCode();
-        result = 31 * result + Boolean.hashCode(maven4);
         return result;
     }
 
