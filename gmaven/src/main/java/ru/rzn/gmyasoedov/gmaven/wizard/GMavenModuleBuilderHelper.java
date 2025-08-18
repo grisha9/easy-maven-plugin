@@ -178,7 +178,7 @@ public class GMavenModuleBuilderHelper {
         unblockAndSaveDocuments(project, pomFiles.toArray(VirtualFile.EMPTY_ARRAY));
     }
 
-    private static void unblockAndSaveDocuments(@NotNull Project project, VirtualFile @NotNull ... files) {
+    private static void unblockAndSaveDocuments(@NotNull Project project, VirtualFile... files) {
         FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
         PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
         for (VirtualFile file : files) {

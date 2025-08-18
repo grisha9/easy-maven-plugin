@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [252.1] - 2025-08-18
+
+### Fixes
+
+- Support IDEA 252
+- Maven4 Phases
+
 ## [251.2] - 2025-06-28
 
 ### Fixes

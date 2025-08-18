@@ -322,7 +322,7 @@ private fun getGeneratedContentRoot(
 
 private fun getSourceLevel(level: LanguageLevel, compilerData: CompilerData): LanguageLevel {
     return if (compilerData.arguments.contains(JavaParameters.JAVA_ENABLE_PREVIEW_PROPERTY))
-        level.previewLevel ?: level else level
+        level.getPreviewLevel() ?: level else level
 }
 
 private class ContentRoots(

@@ -43,6 +43,6 @@ object MavenPathUtil {
         return PathUtil.getJarPathForClass(Class.forName(DEPENDENCY_TREE_EVENT_SPY_CLASS))
     }
 
-    @TestOnly
+    //@TestOnly
     var testEventSpyJarPath: String = ""
 }

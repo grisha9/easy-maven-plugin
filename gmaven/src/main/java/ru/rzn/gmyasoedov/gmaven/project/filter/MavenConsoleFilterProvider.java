@@ -20,7 +20,7 @@ public class MavenConsoleFilterProvider implements ConsoleFilterProvider {
 
 
     @Override
-    public Filter @NotNull [] getDefaultFilters(@NotNull Project project) {
+    public Filter[] getDefaultFilters(@NotNull Project project) {
         return new Filter[]{
                 new RegexpFilterMaven(project, CONSOLE_FILTER_REGEXP),
                 new RegexpFilterMaven(project, CONSOLE_FILTER_REGEXP_KT)

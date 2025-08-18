@@ -49,7 +49,7 @@ class SourceSetDataService : AbstractModuleDataService<SourceSetData>() {
         return super.createModule(sourceSetModuleNode, modelsProvider)
     }
 
-    override fun setModuleOptions(module: Module, moduleDataNode: DataNode<SourceSetData?>?) {
+    override fun setModuleOptions(module: Module, moduleDataNode: DataNode<SourceSetData>) {
         super.setModuleOptions(module, moduleDataNode)
         ExternalSystemModulePropertyManager.getInstance(module).setExternalModuleType(SOURCE_SET_MODULE_TYPE_KEY)
     }

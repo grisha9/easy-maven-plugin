@@ -200,7 +200,7 @@
         </action>
         <action id="GMaven.ExternalSystem.AndroidRefreshAll" icon="AllIcons.Actions.Refresh"
                 class="ru.rzn.gmyasoedov.gmaven.project.action.AndroidRefreshAllExternalProjectsAction">
-            <add-to-group group-id="ExternalSystemView.ActionsToolbar.LeftPanel" anchor="first"/>
+            <add-to-group group-id="ExternalSystemView.ActionsToolbar.SyncPanel" anchor="first"/>
         </action>
 
         <group id="ExternalSystemView.GMaven.ProfileMenu">
@@ -217,7 +217,7 @@
             <reference ref="GMaven.Toolbar.Snapshot"/>
             <reference ref="GMaven.Toolbar.ReadonlyAction"/>
             <separator/>
-            <add-to-group group-id="ExternalSystemView.ActionsToolbar.CenterPanel" anchor="last"/>
+            <add-to-group group-id="ExternalSystemView.ActionsToolbar.OtherActionsPanel" anchor="last"/>
         </group>
 
         <action id="Gmaven.ImportExternalProject"
