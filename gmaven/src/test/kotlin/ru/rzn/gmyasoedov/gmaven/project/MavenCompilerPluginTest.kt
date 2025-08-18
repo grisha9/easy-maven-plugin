@@ -9,7 +9,7 @@ import ru.rzn.gmyasoedov.gmaven.MavenImportingTestCase
 class MavenCompilerPluginTest : MavenImportingTestCase() {
 
     fun testCompilerArgsAsString() {
-        val languageLevel = LanguageLevel.HIGHEST.previewLevel ?: return
+        val languageLevel = LanguageLevel.HIGHEST.getPreviewLevel() ?: return
         val languageString = languageLevel.toJavaVersion().toFeatureString()
         import(
             """
@@ -47,7 +47,7 @@ class MavenCompilerPluginTest : MavenImportingTestCase() {
     }
 
     fun testCompilerArgs() {
-        val languageLevel = LanguageLevel.HIGHEST.previewLevel ?: return
+        val languageLevel = LanguageLevel.HIGHEST.getPreviewLevel() ?: return
         val languageString = languageLevel.toJavaVersion().toFeatureString()
         import(
             """

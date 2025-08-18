@@ -15,7 +15,7 @@ import kotlin.io.path.exists
 class AspectJMavenPluginTest : MavenImportingTestCase() {
 
     fun testBaseArgs() {
-        val languageLevel = LanguageLevel.HIGHEST.previewLevel ?: return
+        val languageLevel = LanguageLevel.HIGHEST.getPreviewLevel() ?: return
         val languageString = languageLevel.toJavaVersion().toFeatureString()
         val aspectJVersion = "1.14"
         import(

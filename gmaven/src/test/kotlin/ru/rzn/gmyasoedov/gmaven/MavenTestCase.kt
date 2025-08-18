@@ -27,7 +27,6 @@ import com.intellij.util.containers.CollectionFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.intellij.lang.annotations.Language
-import org.jetbrains.annotations.NonNls
 import ru.rzn.gmyasoedov.gmaven.utils.MavenLog
 import java.awt.HeadlessException
 import java.io.File
@@ -550,8 +549,8 @@ abstract class MavenTestCase : UsefulTestCase() {
                 value = "XML",
                 prefix = "<project>",
                 suffix = "</project>"
-            ) xml: @NonNls String?
-        ): @NonNls String {
+            ) xml: String?
+        ): String {
             return """
              <?xml version="1.0"?>
              <project xmlns="http://maven.apache.org/POM/4.0.0"

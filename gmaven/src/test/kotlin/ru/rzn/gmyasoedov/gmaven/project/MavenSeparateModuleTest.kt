@@ -61,7 +61,7 @@ class MavenSeparateModuleTest : MavenImportingTestCase() {
     }
 
     fun testNoSeparateModulesTestEqualsRelease() {
-        val languageLevel = LanguageLevel.HIGHEST.previewLevel ?: return
+        val languageLevel = LanguageLevel.HIGHEST.getPreviewLevel() ?: return
         val languageString = languageLevel.toJavaVersion().toFeatureString()
         import(
             """
