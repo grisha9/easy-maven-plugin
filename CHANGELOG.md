@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [252.2] - 2025-09-19
+
+### Fixes
+
+- Prepare for IDEA 253
+
 ## [252.1] - 2025-08-18
 
 ### Fixes
