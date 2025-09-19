@@ -10,7 +10,6 @@ import com.intellij.openapi.externalSystem.service.project.wizard.MavenizedNewPr
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import com.intellij.openapi.externalSystem.util.ui.DataView
-import com.intellij.openapi.module.StdModuleTypes
 import com.intellij.openapi.projectRoots.JavaSdkType
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.projectRoots.SdkTypeId
@@ -40,9 +39,10 @@ abstract class GMavenNewProjectWizardStep<ParentStep>(parent: ParentStep) :
     final override var sdk by sdkProperty
 
     protected fun setupJavaSdkUI(builder: Panel) {
+        //val sdkPropertyId = StdModuleTypes.JAVA.id
         builder.row(JavaUiBundle.message("label.project.wizard.new.project.jdk")) {
             val sdkTypeFilter = { it: SdkTypeId -> it is JavaSdkType && it !is DependentSdkType }
-            sdkComboBox(context, sdkProperty, StdModuleTypes.JAVA.id, sdkTypeFilter)
+            sdkComboBox(context, sdkProperty, "JAVA_MODULE", sdkTypeFilter)
                 .columns(COLUMNS_MEDIUM)
         }.bottomGap(BottomGap.SMALL)
     }

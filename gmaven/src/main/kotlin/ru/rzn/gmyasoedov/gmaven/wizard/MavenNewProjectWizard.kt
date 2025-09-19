@@ -128,7 +128,7 @@ class MavenNewProjectWizard : BuildSystemJavaNewProjectWizard {
                 addAssets(StandardAssetsProvider().getMavenIgnoreAssets())
             }
             if (parent.addSampleCode) {
-                withJavaSampleCodeAsset(project, "src/main/java", parent.groupId)
+                //withJavaSampleCodeAsset(project, "src/main/java", parent.groupId) todo
             }
         }
     }

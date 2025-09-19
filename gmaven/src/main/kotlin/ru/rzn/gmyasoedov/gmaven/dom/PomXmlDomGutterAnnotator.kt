@@ -102,7 +102,6 @@ class PomXmlDomGutterAnnotator : Annotator {
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
             .range(artifactIdTag)
             .gutterIconRenderer(renderer)
-            .needsUpdateOnTyping(false)
             .create()
     }
 
