@@ -1,6 +1,7 @@
 package ru.rzn.gmyasoedov.gmaven.wizard
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
 import com.intellij.openapi.externalSystem.importing.AbstractOpenProjectProvider
 import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
 import com.intellij.openapi.externalSystem.model.DataNode
@@ -16,12 +17,15 @@ import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.VirtualFile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.VisibleForTesting
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID
 import ru.rzn.gmyasoedov.gmaven.project.policy.ReadProjectResolverPolicy
 import ru.rzn.gmyasoedov.gmaven.settings.MavenProjectSettings
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils
+import java.util.*
 
 
 class GOpenProjectProvider : AbstractOpenProjectProvider() {
@@ -112,6 +116,16 @@ class GOpenProjectProvider : AbstractOpenProjectProvider() {
             ExternalProjectsManagerImpl.getInstance(project).runWhenInitialized {
                 runnable.run()
             }
+        }
+    }
+
+    override suspend fun unlinkProject(project: Project, externalProjectPath: String) {
+        val projectData = ExternalSystemApiUtil.findProjectNode(project, systemId, externalProjectPath)?.data ?: return
+        withContext(Dispatchers.EDT) {
+            val method =
+                Class.forName("com.intellij.openapi.externalSystem.action.DetachExternalProjectAction")
+                    .declaredMethods.first { it.name == "detachProject" }
+            method.invoke(null, project, projectData.owner, projectData, null)
         }
     }
 }
