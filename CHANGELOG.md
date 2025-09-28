@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [252.3] - 2025-09-28
+
+### Fixes
+
+- Prepare for IDEA 253
+- Test jar support
+
 ## [252.2] - 2025-09-19
 
 ### Fixes
