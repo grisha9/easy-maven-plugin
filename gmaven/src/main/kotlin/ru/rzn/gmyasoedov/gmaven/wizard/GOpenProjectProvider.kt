@@ -53,8 +53,7 @@ class GOpenProjectProvider : AbstractOpenProjectProvider() {
             runWhenInitialized(project) {
                 ExternalSystemUtil.refreshProject(
                     externalProjectPath,
-                    ImportSpecBuilder(project, SYSTEM_ID)
-                        .callback(createFinalImportCallback(project, externalProjectPath))
+                    ImportSpecBuilder(project, SYSTEM_ID).withCallback(createFinalImportCallback(project))
                 )
             }
             return
@@ -73,18 +72,15 @@ class GOpenProjectProvider : AbstractOpenProjectProvider() {
         return if (ApplicationManager.getApplication().isHeadlessEnvironment
             || ApplicationManager.getApplication().isUnitTestMode
         ) {
-            ImportSpecBuilder(project, SYSTEM_ID).callback(createFinalImportCallback(project, externalProjectPath))
+            ImportSpecBuilder(project, SYSTEM_ID).withCallback(createFinalImportCallback(project))
         } else {
             ImportSpecBuilder(project, SYSTEM_ID)
                 .projectResolverPolicy(ReadProjectResolverPolicy())
-                .callback(createFinalImportCallbackWithResolve(project, externalProjectPath))
+                .withCallback(createFinalImportCallbackWithResolve(project, externalProjectPath))
         }
     }
 
-    private fun createFinalImportCallback(
-        project: Project,
-        externalProjectPath: String
-    ): ExternalProjectRefreshCallback {
+    private fun createFinalImportCallback(project: Project): ExternalProjectRefreshCallback {
         return object : ExternalProjectRefreshCallback {
             override fun onSuccess(externalProject: DataNode<ProjectData>?) {
                 if (externalProject == null) return
