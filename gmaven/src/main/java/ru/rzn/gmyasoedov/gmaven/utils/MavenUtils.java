@@ -39,16 +39,12 @@ import ru.rzn.gmyasoedov.gmaven.GMavenConstants;
 import ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.CompilerData;
 import ru.rzn.gmyasoedov.gmaven.settings.MavenExecutionSettings;
 import ru.rzn.gmyasoedov.gmaven.settings.MavenProjectSettings;
-import ru.rzn.gmyasoedov.maven.plugin.reader.model.MavenId;
-import ru.rzn.gmyasoedov.maven.plugin.reader.model.MavenProject;
+import ru.rzn.gmyasoedov.maven.plugin.reader.model.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -361,8 +357,23 @@ public class MavenUtils {
             @NotNull CompilerData compilerData) {
         if (!settings.isResolveModulePerSourceSet()) return false;
         if (isPomProject(project)) return false;
-        return !Objects.equals(compilerData.getSourceLevel(), compilerData.getTestSourceLevel())
+        boolean isPerSourceSet = !Objects.equals(compilerData.getSourceLevel(), compilerData.getTestSourceLevel())
                 || !Objects.equals(compilerData.getTargetLevel(), compilerData.getTestTargetLevel());
+        if (isPerSourceSet) return true;
+        return project.getPlugins().stream()
+                .anyMatch(it -> "maven-jar-plugin".equals(it.getArtifactId()));
+        //.anyMatch(MavenUtils::isTestJarGoal);
+    }
+
+    private static boolean isTestJarGoal(MavenPlugin it) {
+        PluginBody body = it.getBody();
+        if (body == null) return false;
+        String configuration = body.getConfiguration();
+        List<PluginExecution> executions = body.getExecutions();
+        return configuration != null && configuration.contains("<goal>test-jar</goal>") ||
+                (executions != null && executions.stream()
+                        .anyMatch(execution -> execution.getConfiguration() != null
+                                && execution.getConfiguration().contains("<goal>test-jar</goal>")));
     }
 
     public static boolean isPomProject(@NotNull MavenProject project) {

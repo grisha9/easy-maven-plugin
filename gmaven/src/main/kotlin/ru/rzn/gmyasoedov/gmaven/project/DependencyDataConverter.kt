@@ -48,7 +48,17 @@ private fun addDependencies(
         val moduleContextHolder = context.moduleDataByArtifactId[GServerUtils.getMavenId(artifact)]
         val moduleDataNodeByMavenArtifact = moduleContextHolder?.perSourceSetModules?.mainNode
             ?: moduleContextHolder?.moduleNode
-        if (moduleDataNodeByMavenArtifact == null || isClassifierJar(artifact)) {
+        if (artifact.classifier == "tests") {
+            val ownerModule = moduleByMavenProject.data
+            val testModule = moduleContextHolder?.perSourceSetModules?.testNode ?: moduleContextHolder?.moduleNode
+            println("!!! " + artifact + " --- " + testModule)
+            if (testModule != null) {
+                val data = ModuleDependencyData(ownerModule, testModule.data)
+                data.isProductionOnTestDependency = true
+                data.order = 1
+                moduleByMavenProject.createChild(ProjectKeys.MODULE_DEPENDENCY, data)
+            }
+        } else if (moduleDataNodeByMavenArtifact == null || isClassifierJar(artifact)) {
             addLibrary(moduleByMavenProject, artifact, moduleDataNodeByMavenArtifact, context)
             if (!hasLibrary) hasLibrary = true
         } else {
@@ -171,7 +181,7 @@ private fun createLibrary(
         //todo
         //in ext.system - com.intellij.openapi.externalSystem.model.project.ModuleDependencyData.productionOnTestDependency
         //in maven - org.jetbrains.idea.maven.importing.tree.dependency.ModuleDependency (in org.jetbrains.idea.maven.importing.tree.MavenProjectImportContextProvider#getDependency)
-        library.artifactId = artifact.artifactId + "-tests"
+        //library.artifactId = artifact.artifactId + "-tests"
     }
     library.setGroup(artifact.groupId)
     library.version = artifact.version
