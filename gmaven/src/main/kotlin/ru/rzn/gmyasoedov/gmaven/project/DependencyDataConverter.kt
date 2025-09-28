@@ -167,6 +167,12 @@ private fun createLibrary(
     val artifactFile = getLibraryFile(artifact, classifierModuleNode)
     val library = LibraryData(GMavenConstants.SYSTEM_ID, GServerUtils.getMavenId(artifact), artifactFile == null)
     library.artifactId = artifact.artifactId
+    if (artifact.classifier == "tests") {
+        //todo
+        //in ext.system - com.intellij.openapi.externalSystem.model.project.ModuleDependencyData.productionOnTestDependency
+        //in maven - org.jetbrains.idea.maven.importing.tree.dependency.ModuleDependency (in org.jetbrains.idea.maven.importing.tree.MavenProjectImportContextProvider#getDependency)
+        library.artifactId = artifact.artifactId + "-tests"
+    }
     library.setGroup(artifact.groupId)
     library.version = artifact.version
 
