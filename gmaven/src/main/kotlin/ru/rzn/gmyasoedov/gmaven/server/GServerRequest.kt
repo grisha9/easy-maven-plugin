@@ -6,6 +6,7 @@ import com.intellij.openapi.projectRoots.Sdk
 import ru.rzn.gmyasoedov.gmaven.settings.MavenExecutionSettings
 import java.nio.file.Path
 
+//todo remove. use MavenExecutionSettings
 data class GServerRequest(
     val taskId: ExternalSystemTaskId,
     val projectPath: Path,
@@ -14,6 +15,7 @@ data class GServerRequest(
     val settings: MavenExecutionSettings,
     val installGMavenPlugin: Boolean = false,
     val listener: ExternalSystemTaskNotificationListener? = null,
-    val readOnly: Boolean = false
+    val readOnly: Boolean = false,
+    val debugPort: Int? = null,
 )
 

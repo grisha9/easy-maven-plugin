@@ -47,6 +47,7 @@ public final class GMavenConstants {
     public static final String PLUGIN_ARTIFACT_ID = "maven-model-reader-plugin";
     public static final String TASK_DEPENDENCY_TREE = getModelReaderPluginGAV() + ":tree";
     public static final String DEPENDENCY_TREE_EVENT_SPY_CLASS = "ru.rzn.gmyasoedov.event.spy.GMavenEventSpyConstants";
+    public static final String GMAVEN_ENV_DEBUG_PORT = "gmaven.debug.port";
 
     private static final String PLUGIN_VERSION = "0.5";
 
