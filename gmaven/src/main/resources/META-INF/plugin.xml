@@ -164,6 +164,26 @@
     </extensions>
 
     <actions>
+        <action id="GMaven.RunTestAction" class="ru.rzn.gmyasoedov.gmaven.project.action.RunTestAction">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+        <action id="GMaven.DebugTestAction" class="ru.rzn.gmyasoedov.gmaven.project.action.DebugTestAction">
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="GMaven.RunTestAction"/>
+        </action>
+        <action id="GMaven.RunExecJavaMainAction" class="ru.rzn.gmyasoedov.gmaven.project.action.RunExecJavaMainAction">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+        <action id="GMaven.DebugExecJavaMainAction"
+                class="ru.rzn.gmyasoedov.gmaven.project.action.DebugExecJavaMainAction">
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="GMaven.RunExecJavaMainAction"/>
+        </action>
+        <action id="GMaven.RunSpringMainAction" class="ru.rzn.gmyasoedov.gmaven.project.action.RunSpringMainAction">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+        <action id="GMaven.DebugSpringMainAction" class="ru.rzn.gmyasoedov.gmaven.project.action.DebugSpringMainAction">
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="GMaven.RunSpringMainAction"/>
+        </action>
+
         <action id="GMaven.DependencyAnalyzer.GoTo"
                 class="ru.rzn.gmyasoedov.gmaven.project.dependencyanalyzer.MavenDependencyAnalyzerGoToAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
