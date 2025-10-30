@@ -58,11 +58,7 @@ object CachedModuleDataService {
     fun getCurrentData(): CachedDataHolder = lastResult.get()
 
     private fun getCacheDataHolder(project: Project): CachedDataHolder {
-        val cachedModuleDataList = MavenSettings.getInstance(project).linkedProjectsSettings.asSequence()
-            .mapNotNull { it.externalProjectPath }
-            .mapNotNull { ProjectDataManager.getInstance().getExternalProjectData(project, SYSTEM_ID, it) }
-            .mapNotNull { it.externalProjectStructure }
-            .flatMap { ExternalSystemApiUtil.findAll(it, ProjectKeys.MODULE) }
+        val cachedModuleDataList = getModulesSequence(project)
             .mapNotNull { mapToCachedModuleData(it) }
             .toList()
 
@@ -74,6 +70,13 @@ object CachedModuleDataService {
 
         return CachedDataHolder(cachedModuleDataList, activeConfigPaths, ignoredConfigPaths)
     }
+
+    fun getModulesSequence(project: Project): Sequence<DataNode<ModuleData>> =
+        MavenSettings.getInstance(project).linkedProjectsSettings.asSequence()
+            .mapNotNull { it.externalProjectPath }
+            .mapNotNull { ProjectDataManager.getInstance().getExternalProjectData(project, SYSTEM_ID, it) }
+            .mapNotNull { it.externalProjectStructure }
+            .flatMap { ExternalSystemApiUtil.findAll(it, ProjectKeys.MODULE) }
 
     private fun mapToCachedModuleData(moduleNode: DataNode<ModuleData>): CachedModuleData? {
         val data = moduleNode.data

@@ -27,12 +27,12 @@ class BaseMavenCommandLine(private val request: GServerRequest, private val isIm
     fun getCommandLine(): GeneralCommandLine {
         val commandLine = GeneralCommandLine()
         commandLine.environment["JAVA_HOME"] = request.settings.javaHome
-        setupDebugParam(commandLine)
         setupGmavenPluginsProperty(
             commandLine, request, isImport, resultFilePath.absolutePathString(), getExtClassesJarPathString()
         )
         setupMavenOpts(request, commandLine)
         setupProjectPath(commandLine, request)
+        setupDebugParam(commandLine, request)
 
         commandLine.exePath = getExeMavenPath().absolutePathString()
         commandLine.workDirectory = workingDirectory.toFile()
@@ -103,14 +103,25 @@ class BaseMavenCommandLine(private val request: GServerRequest, private val isIm
             return basePath.resolve("mvn.sh")
         }
 
-        fun setupDebugParam(commandLine: GeneralCommandLine) {
+        private fun setupDebugParam(commandLine: GeneralCommandLine, request: GServerRequest) {
             if (Registry.`is`("gmaven.process.jsonPrettyPrinting")) {
                 commandLine.parametersList.addProperty("jsonPrettyPrinting", "true")
             }
-            val debugPort = getDebugPort() ?: return
+            //force debug mode via Registry key
+            if (Registry.`is`("gmaven.server.debug")) {
+                val debugPort = getDebugPort() ?: return
+                MavenLog.LOG.debug("run force debug")
+                commandLine.environment["MAVEN_DEBUG_OPTS"] =
+                    "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:$debugPort"
+                return
+            }
+            //debug param already exists from any task
+            if (request.settings.arguments.any { it.contains("-agentlib:") }) return
+            //regular maven task debug
+            if (request.debugPort == null) return
             commandLine.parametersList.addProperty("jsonPrettyPrinting", "true")
-            commandLine.addParameter("-Xdebug")
-            commandLine.addParameter("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:$debugPort")
+            commandLine.environment["MAVEN_DEBUG_OPTS"] =
+                "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:${request.debugPort}"
         }
 
         fun setupGmavenPluginsProperty(
@@ -145,13 +156,11 @@ class BaseMavenCommandLine(private val request: GServerRequest, private val isIm
 
         private fun createListParameter(plugins: MutableList<String>) = plugins.joinToString(",")
 
-        private fun getDebugPort(): Int? {
-            if (Registry.`is`("gmaven.server.debug")) {
-                try {
-                    return NetUtils.findAvailableSocketPort()
-                } catch (e: IOException) {
-                    MavenLog.LOG.warn(e)
-                }
+        fun getDebugPort(): Int? {
+            try {
+                return NetUtils.findAvailableSocketPort()
+            } catch (e: IOException) {
+                MavenLog.LOG.warn(e)
             }
             return null
         }
