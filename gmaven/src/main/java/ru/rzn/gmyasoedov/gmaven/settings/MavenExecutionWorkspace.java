@@ -50,6 +50,10 @@ public class MavenExecutionWorkspace implements Serializable {
         return List.copyOf(projectData);
     }
 
+    public void clearProjectData() {
+        projectData.clear();
+    }
+
     @Nullable
     public String getProjectBuildFile() {
         return projectBuildFile;

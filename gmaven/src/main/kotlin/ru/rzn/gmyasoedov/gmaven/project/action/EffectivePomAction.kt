@@ -55,7 +55,6 @@ class EffectivePomAction : ExternalSystemAction() {
         val settings = ExternalSystemTaskExecutionSettings()
 
         val resultNioPath = configNioPath.parent.resolve(virtualFile.name + ".effective")
-        val env = HashMap<String, String>(settings.env)
 
         settings.externalSystemIdString = GMavenConstants.SYSTEM_ID.id
         settings.executionName = TASK_EFFECTIVE_POM
@@ -68,8 +67,6 @@ class EffectivePomAction : ExternalSystemAction() {
         settings.scriptParameters += " " + ParametersListUtil.escape("-Doutput=$resultNioPathString")
         settings.scriptParameters += " -f"
         settings.scriptParameters += " " + ParametersListUtil.escape(mavenPomPathString)
-
-        settings.env = env
 
         ExternalSystemUtil.runTask(
             settings, DefaultRunExecutor.EXECUTOR_ID, project, GMavenConstants.SYSTEM_ID,
