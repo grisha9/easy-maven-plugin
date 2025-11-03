@@ -85,7 +85,7 @@ class BaseMavenCommandLine(private val request: GServerRequest, private val isIm
             if (mavenOpts.isNotBlank()) {
                 commandLine.environment["MAVEN_OPTS"] = mavenOpts
             }
-            val project = request.settings.project ?: return
+            val project = request.taskId.findProject() ?: return
             if (MavenSettings.getInstance(project).isColoredSupport) {
                 commandLine.parametersList.addProperty("style.color", "always")
                 commandLine.parametersList.addProperty("jansi.passthrough", "true")

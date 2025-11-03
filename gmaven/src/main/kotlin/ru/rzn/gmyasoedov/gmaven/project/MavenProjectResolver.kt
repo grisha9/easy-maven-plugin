@@ -61,7 +61,7 @@ class MavenProjectResolver : ExternalSystemProjectResolver<MavenExecutionSetting
         }
 
         val sdk = settings.jdkName?.let { getSdk(it) } ?: throw ProjectJdkNotFoundException() //InvalidJavaHomeException
-        val mavenHome = getMavenHome(settings)
+        val mavenHome = getMavenHome(settings, id)
         val buildPath = Path.of(settings.executionWorkspace.projectBuildFile ?: projectPath)
         val request = getServerRequest(id, buildPath, mavenHome, sdk, listener, settings, resolverPolicy)
         try {

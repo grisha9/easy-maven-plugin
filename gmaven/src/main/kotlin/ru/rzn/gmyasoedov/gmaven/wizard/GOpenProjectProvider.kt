@@ -25,7 +25,6 @@ import ru.rzn.gmyasoedov.gmaven.project.policy.ReadProjectResolverPolicy
 import ru.rzn.gmyasoedov.gmaven.settings.MavenProjectSettings
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils
-import java.util.*
 
 
 class GOpenProjectProvider : AbstractOpenProjectProvider() {
@@ -39,6 +38,10 @@ class GOpenProjectProvider : AbstractOpenProjectProvider() {
         mavenSettings.storeProjectFilesExternally = true
         val mavenProjectSettings = createMavenProjectSettings(projectFile)
         attachProjectAndRefresh(mavenProjectSettings, project)
+    }
+
+    override suspend fun linkProject(projectFile: VirtualFile, project: Project) {
+        linkToExistingProject(projectFile, project)
     }
 
     @VisibleForTesting

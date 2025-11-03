@@ -8,6 +8,7 @@ import com.intellij.openapi.externalSystem.model.ExternalSystemException
 import com.intellij.openapi.externalSystem.model.project.ExternalSystemSourceType
 import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.ProjectData
+import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskId
 import com.intellij.openapi.module.ModuleTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
@@ -33,11 +34,11 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 
-fun getMavenHome(executionSettings: MavenExecutionSettings): Path {
+fun getMavenHome(executionSettings: MavenExecutionSettings, id: ExternalSystemTaskId): Path {
     val distributionSettings = executionSettings.distributionSettings
     if (distributionSettings.type == DistributionType.WRAPPER) {
         val externalProjectPath = executionSettings.executionWorkspace.externalProjectPath
-        val distributionUrl = getDistributionUrl(externalProjectPath, executionSettings.project)
+        val distributionUrl = getDistributionUrl(externalProjectPath, id.findProject())
         if (distributionUrl != distributionSettings.url) {
             distributionSettings.path = null
         }

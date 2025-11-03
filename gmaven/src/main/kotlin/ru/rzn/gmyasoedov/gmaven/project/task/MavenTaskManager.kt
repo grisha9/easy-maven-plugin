@@ -35,7 +35,7 @@ class MavenTaskManager : ExternalSystemTaskManager<MavenExecutionSettings> {
 
         val sdk = settings.jdkName?.let { ExternalSystemJdkUtil.getJdk(null, it) }
             ?: throw ProjectJdkNotFoundException() //InvalidJavaHomeException
-        val mavenHome = getMavenHome(settings)
+        val mavenHome = getMavenHome(settings, id)
         try {
             val request = GServerRequest(id, buildPath, mavenHome, sdk, settings, listener = listener)
             runTasks(request, tasks) { cancellationMap[id] = it }
