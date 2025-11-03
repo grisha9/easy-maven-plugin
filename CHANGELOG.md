@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [252.4] - 2025-11-03
+
+### Added
+
+- Colored Maven output
+
+### Fixes
+
+- Prepare for IDEA 253
+
 ## [252.3] - 2025-09-28
 
 ### Fixes
