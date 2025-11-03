@@ -18,7 +18,7 @@ class ReflectionCompatibilityTest {
 
     @Test
     fun testExternalSystemRunnableStateDebugger() {
-        println(ExternalSystemRunnableState.DEBUGGER_DISPATCH_ADDR_KEY)
+        println(ExternalSystemRunnableState.DEBUGGER_DISPATCH_PORT_KEY)
     }
 
     private fun unlinkProject(project: Project, externalProjectPath: String) {
