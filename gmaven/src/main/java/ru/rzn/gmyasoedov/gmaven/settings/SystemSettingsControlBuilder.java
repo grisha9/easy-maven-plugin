@@ -28,6 +28,8 @@ public class SystemSettingsControlBuilder implements ExternalSystemSettingsContr
     private JBCheckBox readonlyCheckBox;
     @Nullable
     private JBCheckBox wslSupportCheckBox;
+    @Nullable
+    private JBCheckBox colorSupportCheckBox;
 
     public SystemSettingsControlBuilder(@NotNull MavenSettings initialSettings) {
         myInitialSettings = initialSettings;
@@ -44,11 +46,13 @@ public class SystemSettingsControlBuilder implements ExternalSystemSettingsContr
         wslSupportCheckBox = new JBCheckBox(GBundle.message("gmaven.settings.system.wsl"));
         wslSupportCheckBox.setToolTipText(message("gmaven.settings.system.wsl.tooltip"));
         wslSupportCheckBox.setVisible(SystemInfo.isWindows);
+        colorSupportCheckBox = new JBCheckBox(GBundle.message("gmaven.settings.system.colored"));
 
         canvas.add(offlineCheckBox, ExternalSystemUiUtil.getLabelConstraints(indentLevel));
         canvas.add(skipTestsCheckBox, ExternalSystemUiUtil.getLabelConstraints(indentLevel));
         canvas.add(readonlyCheckBox, ExternalSystemUiUtil.getLabelConstraints(indentLevel));
         canvas.add(checkSourcesCheckBox, ExternalSystemUiUtil.getLabelConstraints(indentLevel));
+        canvas.add(colorSupportCheckBox, ExternalSystemUiUtil.getLabelConstraints(indentLevel));
         canvas.add(wslSupportCheckBox, ExternalSystemUiUtil.getFillLineConstraints(0));
     }
 
@@ -74,6 +78,9 @@ public class SystemSettingsControlBuilder implements ExternalSystemSettingsContr
         if (wslSupportCheckBox != null) {
             wslSupportCheckBox.setSelected(Registry.is("gmaven.wsl.support"));
         }
+        if (colorSupportCheckBox != null) {
+            colorSupportCheckBox.setSelected(myInitialSettings.isColoredSupport());
+        }
     }
 
     @Override
@@ -92,6 +99,9 @@ public class SystemSettingsControlBuilder implements ExternalSystemSettingsContr
         }
         if (checkSourcesCheckBox != null
                 && checkSourcesCheckBox.isSelected() != myInitialSettings.isCheckSourcesInLocalRepo()) {
+            return true;
+        }
+        if (colorSupportCheckBox != null && colorSupportCheckBox.isSelected() != myInitialSettings.isColoredSupport()) {
             return true;
         }
         return false;
@@ -113,6 +123,9 @@ public class SystemSettingsControlBuilder implements ExternalSystemSettingsContr
         }
         if (wslSupportCheckBox != null) {
             Registry.get("gmaven.wsl.support").setValue(wslSupportCheckBox.isSelected());
+        }
+        if (colorSupportCheckBox != null) {
+            settings.setColoredSupport(colorSupportCheckBox.isSelected());
         }
     }
 
