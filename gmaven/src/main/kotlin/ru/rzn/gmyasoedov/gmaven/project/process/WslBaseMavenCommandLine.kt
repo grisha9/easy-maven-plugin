@@ -54,7 +54,7 @@ class WslBaseMavenCommandLine(
         commandLine.workDirectory = workingDirectory.toFile()
         commandLine.isRedirectErrorStream = true
 
-        wslDistribution.patchCommandLine(commandLine, request.settings.project, WSLCommandLineOptions())
+        wslDistribution.patchCommandLine(commandLine, request.taskId.findProject(), WSLCommandLineOptions())
         return commandLine
     }
 
