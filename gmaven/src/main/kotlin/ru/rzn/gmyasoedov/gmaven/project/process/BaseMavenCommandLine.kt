@@ -8,6 +8,7 @@ import com.intellij.util.net.NetUtils
 import ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.MavenCompilerFullImportPlugin
 import ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.MavenFullImportPlugin
 import ru.rzn.gmyasoedov.gmaven.server.GServerRequest
+import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import ru.rzn.gmyasoedov.gmaven.util.MavenPathUtil.getExtClassesJarPathString
 import ru.rzn.gmyasoedov.gmaven.utils.MavenLog
 import ru.rzn.gmyasoedov.serverapi.GMavenServer
@@ -83,6 +84,11 @@ class BaseMavenCommandLine(private val request: GServerRequest, private val isIm
             }
             if (mavenOpts.isNotBlank()) {
                 commandLine.environment["MAVEN_OPTS"] = mavenOpts
+            }
+            val project = request.settings.project ?: return
+            if (MavenSettings.getInstance(project).isColoredSupport) {
+                commandLine.parametersList.addProperty("style.color", "always")
+                commandLine.parametersList.addProperty("jansi.passthrough", "true")
             }
         }
 
