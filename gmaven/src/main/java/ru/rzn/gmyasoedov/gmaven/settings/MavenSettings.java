@@ -24,6 +24,7 @@ public class MavenSettings extends AbstractExternalSystemSettings<MavenSettings,
     private boolean skipTests = false;
     private boolean checkSourcesInLocalRepo = false;
     private boolean showAllPhases = false;
+    private boolean coloredSupport = true;
 
     public MavenSettings(@NotNull Project project) {
         super(MavenSettingsListener.TOPIC, project);
@@ -55,6 +56,7 @@ public class MavenSettings extends AbstractExternalSystemSettings<MavenSettings,
         state.setSkipTests(isSkipTests());
         state.setCheckSourcesInLocalRepo(isCheckSourcesInLocalRepo());
         state.setShowAllPhases(showAllPhases);
+        state.setColoredSupport(coloredSupport);
         return state;
     }
 
@@ -65,6 +67,7 @@ public class MavenSettings extends AbstractExternalSystemSettings<MavenSettings,
         setSkipTests(state.skipTests);
         setCheckSourcesInLocalRepo(state.checkSourcesInLocalRepo);
         setShowAllPhases(state.showAllPhases);
+        setColoredSupport(state.coloredSupport);
     }
 
     public boolean isOfflineMode() {
@@ -99,6 +102,14 @@ public class MavenSettings extends AbstractExternalSystemSettings<MavenSettings,
         this.showAllPhases = showAllPhases;
     }
 
+    public boolean isColoredSupport() {
+        return coloredSupport;
+    }
+
+    public void setColoredSupport(boolean coloredSupport) {
+        this.coloredSupport = coloredSupport;
+    }
+
     public boolean getStoreProjectFilesExternally() {
         return ExternalStorageConfigurationManager.getInstance(getProject()).isEnabled();
     }
@@ -117,6 +128,7 @@ public class MavenSettings extends AbstractExternalSystemSettings<MavenSettings,
         private boolean skipTests = false;
         private boolean checkSourcesInLocalRepo = false;
         private boolean showAllPhases = false;
+        private boolean coloredSupport = true;
 
         @Override
         @XCollection(elementTypes = MavenProjectSettings.class)
@@ -161,6 +173,14 @@ public class MavenSettings extends AbstractExternalSystemSettings<MavenSettings,
 
         public void setShowAllPhases(boolean showAllPhases) {
             this.showAllPhases = showAllPhases;
+        }
+
+        public boolean isColoredSupport() {
+            return coloredSupport;
+        }
+
+        public void setColoredSupport(boolean coloredSupport) {
+            this.coloredSupport = coloredSupport;
         }
     }
 }
