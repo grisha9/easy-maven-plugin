@@ -2,8 +2,8 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "2.1.10"
-    id("org.jetbrains.intellij.platform") version "2.5.0"
+    id("org.jetbrains.kotlin.jvm") version "2.2.0"
+    id("org.jetbrains.intellij.platform") version "2.10.4"
     id("org.jetbrains.changelog") version "2.1.0"
 }
 
@@ -19,8 +19,9 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity(providers.gradleProperty("platformVersion"))
-        jetbrainsRuntime()
+        intellijIdea(providers.gradleProperty("platformVersion")) {
+            useInstaller = false
+        }
 
         bundledPlugin("com.intellij.java")
         bundledPlugin("com.intellij.properties")
@@ -42,6 +43,7 @@ dependencies {
 }
 
 intellijPlatform {
+    buildSearchableOptions = false
 
     pluginConfiguration {
         id = "ru.rzn.gmyasoedov.gmaven"

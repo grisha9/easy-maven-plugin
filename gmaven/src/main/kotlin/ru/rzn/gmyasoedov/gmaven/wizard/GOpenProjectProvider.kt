@@ -122,7 +122,7 @@ class GOpenProjectProvider : AbstractOpenProjectProvider() {
         }
     }
 
-    override suspend fun unlinkProject(project: Project, externalProjectPath: String) {
+    suspend fun unlinkProject(project: Project, externalProjectPath: String) {
         val projectData = ExternalSystemApiUtil.findProjectNode(project, systemId, externalProjectPath)?.data ?: return
         withContext(Dispatchers.EDT) {
             val method =
