@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [253.1] - 2025-11-09
+
+### Added
+
+- Run test via Maven. Context menu on test method name.
+
+### Fixes
+
+- Support IDEA 253
+
 ## [252.4] - 2025-11-03
 
 ### Added
