@@ -6,27 +6,25 @@ This provides greater simplicity and original build tool behavior in obtaining p
 
 ### IntelliJ Plugin [page](https://plugins.jetbrains.com/plugin/22370-easy-maven)
 
-### Plugin [wiki](https://github.com/grisha9/gmaven-plugin/wiki)
+### Maven Plugin for IntelliJ IDEA [GitHub-Wiki](https://github.com/grisha9/gmaven-plugin/wiki)
 
-![Screenshot](.github/readme-logo1.png)
+The plugin adds support for the Maven for Java language projects:
+
+- Original Maven behavior for importing project model into IDEA
+- Run Task & Debug test via Maven
+- Dependency analyzer
+- Maven 4 support
+- Groovy support
+- Kotlin JVM support
+
+![Screenshot](.github/readme-logo1.png)  
+![Screenshot](.github/run-test.gif)
 
 #### Articles about Easy Maven
 
 - [dev.to](https://dev.to/grisha9/my-intellij-idea-plugin-for-maven-support-gmaven-cn9);
 - [habr1.com](https://habr.com/ru/articles/753828/) (Russian);
 - [habr2.com](https://habr.com/ru/articles/882778/) (Russian);
-
-### Maven Plugin for IntelliJ IDEA
-
-The plugin adds support for the Maven for Java language projects:
-
-- Original Maven behavior for importing project model into IDEA
-- Maven 4 support
-- Dependency analyzer
-- Execution Maven tasks
-- Support separate modules for production and test roots
-- Groovy support
-- Kotlin JVM support
 
 ### Prerequisites
 
