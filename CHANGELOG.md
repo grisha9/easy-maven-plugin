@@ -6,7 +6,7 @@
 
 ### Added
 
-- Run test via Maven. Context menu on test method name.
+- Run test via Maven. [Wiki](https://github.com/grisha9/easy-maven-plugin/wiki/Run-&-Debug-test-via-Maven-'test'-phase).
 
 ### Fixes
 
