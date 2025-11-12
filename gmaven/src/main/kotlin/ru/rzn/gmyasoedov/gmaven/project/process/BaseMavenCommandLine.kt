@@ -109,7 +109,7 @@ class BaseMavenCommandLine(private val request: GServerRequest, private val isIm
             }
             //force debug mode via Registry key
             if (Registry.`is`("gmaven.server.debug")) {
-                val debugPort = getDebugPort() ?: return
+                val debugPort = getDebugPort()
                 MavenLog.LOG.debug("run force debug")
                 commandLine.environment["MAVEN_DEBUG_OPTS"] =
                     "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=*:$debugPort"
@@ -156,13 +156,13 @@ class BaseMavenCommandLine(private val request: GServerRequest, private val isIm
 
         private fun createListParameter(plugins: MutableList<String>) = plugins.joinToString(",")
 
-        fun getDebugPort(): Int? {
+        fun getDebugPort(): Int {
             try {
                 return NetUtils.findAvailableSocketPort()
             } catch (e: IOException) {
                 MavenLog.LOG.warn(e)
             }
-            return null
+            return 5005
         }
     }
 }

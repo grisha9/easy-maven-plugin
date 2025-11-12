@@ -4,12 +4,10 @@ import com.intellij.openapi.externalSystem.model.execution.ExternalSystemTaskExe
 import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiElement
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.project.process.BaseMavenCommandLine
-import ru.rzn.gmyasoedov.gmaven.project.task.MavenDebugType
-import ru.rzn.gmyasoedov.gmaven.utils.MavenLog
+import ru.rzn.gmyasoedov.gmaven.settings.debug.MavenDebugType
 
 object MvnUtil {
 
@@ -37,15 +35,11 @@ object MvnUtil {
     }
 
     fun setRemoteDebugJvmParam(debugType: MavenDebugType, settings: ExternalSystemTaskExecutionSettings) {
-        val debugPort = BaseMavenCommandLine.getDebugPort()
-        if (debugPort != null) {
-            settings.env[GMavenConstants.GMAVEN_ENV_DEBUG_PORT] = debugPort.toString()
-            settings.scriptParameters += " -D${debugType.paramName}=${debugType.getValue(debugPort)}"
-        } else {
-            MavenLog.LOG.warn("no port for remote debug")
-        }
+        val debugParams = debugType.getDebugParams(BaseMavenCommandLine.getDebugPort())
+        settings.env[GMavenConstants.GMAVEN_ENV_DEBUG_PORT] = debugParams.first.toString()
+        settings.scriptParameters += " -D${debugType.getName()}=${debugParams.second}"
     }
 
-    private fun isSourceSetModule(moduleName: @NlsSafe String): Boolean =
+    private fun isSourceSetModule(moduleName: String): Boolean =
         moduleName.endsWith(".test") || moduleName.endsWith(".main")
 }

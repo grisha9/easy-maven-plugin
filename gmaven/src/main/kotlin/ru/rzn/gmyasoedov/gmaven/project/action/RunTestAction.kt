@@ -17,7 +17,7 @@ import org.jetbrains.uast.getContainingUClass
 import org.jetbrains.uast.toUElement
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
-import ru.rzn.gmyasoedov.gmaven.project.task.MavenDebugType
+import ru.rzn.gmyasoedov.gmaven.settings.debug.MavenDebugType
 import ru.rzn.gmyasoedov.gmaven.util.CachedModuleDataService
 import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 

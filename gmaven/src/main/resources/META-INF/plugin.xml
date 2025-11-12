@@ -65,6 +65,11 @@
         <projectConfigurable groupId="build.tools" groupWeight="200" id="reference.settingsdialog.project.gmaven"
                              instance="ru.rzn.gmyasoedov.gmaven.settings.GMavenConfigurable"
                              key="gmaven.name" bundle="messages.GBundle"/>
+        <projectConfigurable dynamic="true"
+                             instance="ru.rzn.gmyasoedov.gmaven.settings.debug.MavenDebugSettingsControl"
+                             id="ru.rzn.gmyasoedov.gmaven.settings.debug.MavenDebugSettingsControl"
+                             parentId="reference.settingsdialog.project.gmaven"
+                             displayName="Debug"/>
 
         <externalSystemManager implementation="ru.rzn.gmyasoedov.gmaven.MavenManager"/>
         <projectService serviceImplementation="ru.rzn.gmyasoedov.gmaven.settings.MavenSettings"/>
