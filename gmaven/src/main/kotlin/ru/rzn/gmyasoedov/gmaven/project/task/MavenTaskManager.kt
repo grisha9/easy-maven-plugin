@@ -14,7 +14,6 @@ import org.jetbrains.annotations.VisibleForTesting
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.project.MavenProjectResolver
 import ru.rzn.gmyasoedov.gmaven.project.getMavenHome
-import ru.rzn.gmyasoedov.gmaven.project.process.BaseMavenCommandLine
 import ru.rzn.gmyasoedov.gmaven.server.GServerRequest
 import ru.rzn.gmyasoedov.gmaven.server.runTasks
 import ru.rzn.gmyasoedov.gmaven.settings.MavenExecutionSettings
@@ -67,7 +66,7 @@ class MavenTaskManager : ExternalSystemTaskManager<MavenExecutionSettings> {
             val value = field.get(null) as? Key<*> ?: return null
             if (value.let { settings.getUserData(it) } == null) return null
             MavenLog.LOG.debug("run debug task")
-            settings.env[GMavenConstants.GMAVEN_ENV_DEBUG_PORT]?.toInt() ?: BaseMavenCommandLine.getDebugPort()
+            settings.env[GMavenConstants.GMAVEN_ENV_DEBUG_PORT]?.toInt()
         } catch (_: Exception) {
             null
         }
@@ -122,15 +121,5 @@ class MavenTaskManager : ExternalSystemTaskManager<MavenExecutionSettings> {
         } catch (_: Exception) {
             MavenLog.LOG.warn("Custom pom file not found")
         }
-    }
-}
-
-enum class MavenDebugType(val paramName: String) {
-    TEST("maven.surefire.debug"),
-    SPRING("spring-boot.run.jvmArguments"),
-    EXEC("exec.args"), ;
-
-    fun getValue(debugPort: Int): String {
-        return "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:%s".format(debugPort)
     }
 }
