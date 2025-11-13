@@ -52,13 +52,25 @@ enum class MavenDebugType(val paramName: String) {
             SPRING -> state.springDebugValue
             EXEC -> state.execDebugValue
         } ?: throw exception
-        val debugParams = value.substringAfter("-agentlib:").split(",")
+        val debugParams = value.substringAfter("-agentlib:jdwp=").split(",")
         val processedParams = debugParams.map { processPort(it, defaultPort) }
-        return defaultPort.get() to "-agentlib:" + processedParams.joinToString(",")
+        return defaultPort.get() to "-agentlib:jdwp=" + processedParams.joinToString(",")
     }
 
     private fun processPort(param: String, defaultPort: AtomicReference<Int>): String {
         if (!param.startsWith("address")) return param
+        if (!param.contains("=")) return param
+        val substringValue = param.substringAfter("=")
+        //no ":" delimiter
+        if (!substringValue.contains(":")) {
+            if (substringValue.trim() == "*") {
+                return param.substringBefore("=") + "=" + defaultPort.get()
+            } else {
+                defaultPort.set(substringValue.trim().toInt())
+            }
+            return param
+        }
+
         val portParam = param.substringAfter(":")
         if (portParam.trim() == "*") {
             return param.substringBefore(":") + ":" + defaultPort.get()

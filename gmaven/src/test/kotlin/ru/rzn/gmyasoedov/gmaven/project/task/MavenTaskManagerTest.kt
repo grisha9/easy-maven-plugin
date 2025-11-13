@@ -6,7 +6,7 @@ import org.junit.Test
 class MavenTaskManagerTest {
 
     @Test
-    fun deploytestOrder() {
+    fun testOrder() {
         val taskManager = MavenTaskManager()
         var tasks = taskManager.prepareTaskOrder(listOf("clean", "package"))
         assertEquals(listOf("clean", "package"), tasks)
