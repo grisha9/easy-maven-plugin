@@ -230,10 +230,10 @@
                 class="ru.rzn.gmyasoedov.gmaven.project.action.ResetProfileStateToDefaultAction">
             <add-to-group group-id="ExternalSystemView.BaseProjectMenu" anchor="last"/>
         </action>
-        <action id="GMaven.ExternalSystem.AndroidRefreshAll" icon="AllIcons.Actions.Refresh"
+        <!--<action id="GMaven.ExternalSystem.AndroidRefreshAll" icon="AllIcons.Actions.Refresh"
                 class="ru.rzn.gmyasoedov.gmaven.project.action.AndroidRefreshAllExternalProjectsAction">
             <add-to-group group-id="ExternalSystemView.ActionsToolbar.LeftPanel" anchor="first"/>
-        </action>
+        </action>-->
 
         <group id="ExternalSystemView.GMaven.ProfileMenu">
             <reference ref="GMaven.ExternalSystem.ResetProfileState"/>
