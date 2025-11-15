@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [252.5] - 2025-11-11
+
+### Added
+
+- Run test via Maven. [Wiki](https://github.com/grisha9/easy-maven-plugin/wiki/Run-&-Debug-test-via-Maven-'test'-phase).
+- Maven colored output
+
 ## [252.4] - 2025-11-03
 
 ### Added
