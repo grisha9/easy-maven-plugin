@@ -8,6 +8,7 @@ import com.intellij.ide.fileTemplates.FileTemplate;
 import com.intellij.ide.fileTemplates.FileTemplateManager;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManagerCore;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.extensions.PluginDescriptor;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.externalSystem.model.project.ModuleData;
@@ -167,7 +168,11 @@ public class MavenUtils {
         ProjectJdkTable projectJdkTable = ProjectJdkTable.getInstance();
         Sdk[] allJdks = projectJdkTable.getAllJdks();
         if (allJdks.length == 0) {
-            projectJdkTable.preconfigure();
+            try {
+                projectJdkTable.preconfigure(); //todo rework to suspend or check on EDT
+            } catch (Throwable e) {
+                ApplicationManager.getApplication().invokeLater(projectJdkTable::preconfigure);
+            }
         }
         SdkType sdkType = ExternalSystemJdkUtil.getJavaSdkType();
         return projectJdkTable.getSdksOfType(sdkType).stream()
