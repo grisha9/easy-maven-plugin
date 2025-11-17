@@ -78,7 +78,7 @@ internal class DownloadSourceAction(
         val artifactNioPath = MavenArtifactUtil
             .getArtifactNioPath(Path.of(localRepoPath), split[0], split[1], split[2], "jar", "sources")
         if (artifactNioPath.exists()) {
-            attachSources(artifactNioPath.toFile(), orderEntries)
+            attachSources(artifactNioPath, orderEntries)
             return ActionCallback.DONE
         }
         val settings = ExternalSystemTaskExecutionSettings()
@@ -109,7 +109,7 @@ internal class DownloadSourceAction(
                         errorNotification(e.localizedMessage, project)
                         return
                     }
-                    attachSources(sourceJar, orderEntries)
+                    attachSources(artifactNioPath, orderEntries)
                     resultWrapper.setDone()
                 }
 
@@ -133,7 +133,7 @@ internal class DownloadSourceAction(
         GMavenNotification.errorExternalSystemNotification(title, message, project)
     }
 
-    private fun attachSources(sourcesJar: File, orderEntries: List<LibraryOrderEntry>) {
+    private fun attachSources(sourcesJar: Path, orderEntries: List<LibraryOrderEntry>) {
         ApplicationManager.getApplication()
             .invokeLater {
                 InternetAttachSourceProvider.attachSourceJar(sourcesJar, orderEntries.mapNotNull { it.library })

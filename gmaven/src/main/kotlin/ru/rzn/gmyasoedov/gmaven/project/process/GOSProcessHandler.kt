@@ -4,6 +4,7 @@ import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.OSProcessHandler
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
+import com.intellij.execution.process.ProcessOutputType
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.util.text.StringUtil
@@ -27,7 +28,7 @@ class GOSProcessHandler(
                 if (Registry.`is`("gmaven.server.debug")) {
                     println(text)
                 }
-                request.listener?.onTaskOutput(request.taskId, text, true)
+                request.listener?.onTaskOutput(request.taskId, text, ProcessOutputType.STDOUT)
                 if (request.debugPort != null && text.contains("T E S T S")) {
                     addListeningRemoteAddress(request.debugPort)
                 }
@@ -39,7 +40,7 @@ class GOSProcessHandler(
         request.listener?.onTaskOutput(
             request.taskId,
             "Easy Maven: Listening for transport dt_socket at address: $debugPort" + System.lineSeparator(),
-            true
+            ProcessOutputType.STDOUT
         )
     }
 

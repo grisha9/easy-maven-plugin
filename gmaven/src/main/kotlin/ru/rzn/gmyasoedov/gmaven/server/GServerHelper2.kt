@@ -4,6 +4,7 @@ package ru.rzn.gmyasoedov.gmaven.server
 
 import com.google.gson.Gson
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.process.ProcessOutputType
 import com.intellij.execution.wsl.WSLDistribution
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.externalSystem.model.ExternalSystemException
@@ -84,7 +85,7 @@ private fun printDebugCommandLine(request: GServerRequest, commandLine: GeneralC
         stringBuilder.append(" $parameter")
     }
     stringBuilder.append(System.lineSeparator()).append(System.lineSeparator())
-    request.listener?.onTaskOutput(request.taskId, stringBuilder.toString(), true)
+    request.listener?.onTaskOutput(request.taskId, stringBuilder.toString(), ProcessOutputType.STDOUT)
     if (ApplicationManager.getApplication().isUnitTestMode) {
         println(stringBuilder.toString())
     }

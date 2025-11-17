@@ -16,10 +16,10 @@ class GMavenSchemaProvider : StandardResourceProvider {
     }
 
     private fun addStdResource(registrar: ResourceRegistrar, schemaUrl: String, schemaPath: String) {
-        registrar.addStdResource(schemaUrl, schemaPath, javaClass)
+        registrar.addStdResource(schemaUrl, schemaPath, javaClass.classLoader)
         if (schemaUrl.startsWith("http://")) {
             val schemaUrlHttps = schemaUrl.replace("http://", "https://")
-            registrar.addStdResource(schemaUrlHttps, schemaPath, javaClass)
+            registrar.addStdResource(schemaUrlHttps, schemaPath, javaClass.classLoader)
         }
     }
 }
