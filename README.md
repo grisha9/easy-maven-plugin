@@ -23,6 +23,7 @@ The plugin adds support for the Maven for Java language projects:
 - [dev.to](https://dev.to/grisha9/my-intellij-idea-plugin-for-maven-support-gmaven-cn9);
 - [habr1.com](https://habr.com/ru/articles/753828/) (Russian);
 - [habr2.com](https://habr.com/ru/articles/882778/) (Russian);
+- [habr3.com](https://habr.com/ru/articles/969386/) (Russian);
 
 ### Prerequisites
 
