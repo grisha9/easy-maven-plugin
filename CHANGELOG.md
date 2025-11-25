@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [223.36] - 2025-11-25
+
+### Added
+
+- Run test via Maven. Escape
+  space. [Wiki](https://github.com/grisha9/easy-maven-plugin/wiki/Run-&-Debug-test-via-Maven-'test'-phase).
+- Open Local Repo Action. [Issue](https://github.com/grisha9/gmaven-plugin/issues/47)
+
 ## [223.35] - 2025-11-11
 
 ### Added
