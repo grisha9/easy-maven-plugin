@@ -11,6 +11,7 @@ import com.intellij.openapi.externalSystem.model.execution.ExternalSystemTaskExe
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.module.ModuleUtil
 import com.intellij.psi.PsiElement
+import com.intellij.util.execution.ParametersListUtil
 import org.jetbrains.uast.UClass
 import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.getContainingUClass
@@ -64,8 +65,9 @@ private fun updateAction(e: AnActionEvent, executorId: String) {
     val psiElement = e.getData(CommonDataKeys.PSI_ELEMENT)
     val uElement = psiElement?.toUElement()
     if ((uElement is UMethod && !uElement.isStatic && uElement.name != "main") || uElement is UClass) {
+        val underProject = MvnUtil.isUnderProject(psiElement)
         val testFile = MvnUtil.isTestFile(psiElement)
-        e.presentation.isEnabledAndVisible = testFile
+        e.presentation.isEnabledAndVisible = underProject && testFile
         if (testFile) {
             e.presentation.text = message + " '${uElement.name}'"
         }
@@ -83,7 +85,7 @@ private fun actionPerformed(e: AnActionEvent, executorId: String) {
     val testParam = getTestParam(element) ?: return
 
     val settings = ExternalSystemTaskExecutionSettings()
-    settings.scriptParameters = " -Dtest=$testParam"
+    settings.scriptParameters = ParametersListUtil.escape("-Dtest=$testParam")
     settings.scriptParameters += " -Dsurefire.failIfNoSpecifiedTests=false"
     if (executorId == DefaultDebugExecutor.EXECUTOR_ID) {
         MvnUtil.setRemoteDebugJvmParam(MavenDebugType.TEST, settings)
