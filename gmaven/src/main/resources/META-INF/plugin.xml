@@ -275,6 +275,11 @@
                 class="ru.rzn.gmyasoedov.gmaven.project.action.ShowAllPhasesAction">
             <add-to-group group-id="ExternalSystemView.BaseProjectMenu" anchor="last"/>
         </action>
+
+        <action id="GMaven.ExternalSystem.OpenLocalRepoAction"
+                class="ru.rzn.gmyasoedov.gmaven.project.action.OpenLocalRepoAction">
+            <add-to-group group-id="ExternalSystemView.BaseProjectMenu" anchor="last"/>
+        </action>
     </actions>
 
     <extensions defaultExtensionNs="org.jetbrains.kotlin">
