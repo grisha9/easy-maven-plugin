@@ -9,6 +9,7 @@ import com.intellij.util.PathUtil
 import org.jetbrains.annotations.TestOnly
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.DEPENDENCY_TREE_EVENT_SPY_CLASS
 import ru.rzn.gmyasoedov.gmaven.settings.MavenExecutionSettings
+import kotlin.io.path.Path
 
 object MavenPathUtil {
 
@@ -35,7 +36,7 @@ object MavenPathUtil {
             WslPath.getDistributionByWindowsUncPath(path) else null
         wslDistribution ?: return path
 
-        return wslDistribution.getWslPath(path)!!
+        return wslDistribution.getWslPath(Path(path))!!
     }
 
     @TestOnly
