@@ -5,8 +5,10 @@ import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.PsiElement
+import com.intellij.util.execution.ParametersListUtil
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.project.process.BaseMavenCommandLine
+import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import ru.rzn.gmyasoedov.gmaven.settings.debug.MavenDebugType
 
 object MvnUtil {
@@ -37,7 +39,14 @@ object MvnUtil {
     fun setRemoteDebugJvmParam(debugType: MavenDebugType, settings: ExternalSystemTaskExecutionSettings) {
         val debugParams = debugType.getDebugParams(BaseMavenCommandLine.getDebugPort())
         settings.env[GMavenConstants.GMAVEN_ENV_DEBUG_PORT] = debugParams.first.toString()
-        settings.scriptParameters += " -D${debugType.getName()}=${debugParams.second}"
+        val debugArgs = ParametersListUtil.escape("-D${debugType.getName()}=${debugParams.second}")
+        settings.scriptParameters += " $debugArgs"
+    }
+
+    fun isUnderProject(psiElement: PsiElement): Boolean {
+        val canonicalPath = psiElement.containingFile?.virtualFile?.canonicalPath ?: return false
+        return MavenSettings.getInstance(psiElement.project).linkedProjectsSettings
+            .any { canonicalPath.startsWith(it.externalProjectPath) }
     }
 
     private fun isSourceSetModule(moduleName: String): Boolean =
