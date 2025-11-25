@@ -11,12 +11,14 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.externalSystem.model.execution.ExternalSystemTaskExecutionSettings
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.module.ModuleUtil
+import com.intellij.util.execution.ParametersListUtil
 import org.jetbrains.uast.*
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.MODULE_PROP_BUILD_FILE
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle.message
 import ru.rzn.gmyasoedov.gmaven.settings.debug.MavenDebugType
 import ru.rzn.gmyasoedov.gmaven.util.CachedModuleDataService
+import ru.rzn.gmyasoedov.gmaven.util.MavenPathUtil
 import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 
 private const val SPRING_BOOT_APPLICATION = "org.springframework.boot.autoconfigure.SpringBootApplication"
@@ -97,7 +99,7 @@ private fun updateActionJava(e: AnActionEvent, executorId: String) {
     val psiElement = e.getData(CommonDataKeys.PSI_ELEMENT)
     val uElement = psiElement?.toUElement()
     if (uElement is UMethod && uElement.name == "main" && !isSpring(uElement)) {
-        e.presentation.isEnabledAndVisible = true
+        e.presentation.isEnabledAndVisible = MvnUtil.isUnderProject(psiElement)
         e.presentation.text = if (executorId == DefaultRunExecutor.EXECUTOR_ID)
             message("gmaven.action.run.exec.java") else message("gmaven.action.debug.exec.java")
         return
@@ -109,7 +111,7 @@ private fun updateActionSpring(e: AnActionEvent, executorId: String) {
     val psiElement = e.getData(CommonDataKeys.PSI_ELEMENT)
     val uElement = psiElement?.toUElement()
     if (uElement is UMethod && uElement.name == "main" && isSpring(uElement)) {
-        e.presentation.isEnabledAndVisible = true
+        e.presentation.isEnabledAndVisible = MvnUtil.isUnderProject(psiElement)
         e.presentation.text = if (executorId == DefaultRunExecutor.EXECUTOR_ID)
             message("gmaven.action.run.spring") else message("gmaven.action.debug.spring")
         return
@@ -128,8 +130,9 @@ private fun actionPerformedJava(e: AnActionEvent, executorId: String) {
     val execClass = element.toUElement()?.getContainingUClass()?.qualifiedName ?: return
 
     val settings = ExternalSystemTaskExecutionSettings()
-    settings.scriptParameters = " -Dexec.mainClass=$execClass"
-    settings.scriptParameters += " -f $pomPath"
+    settings.scriptParameters = ParametersListUtil.escape("-Dexec.mainClass=$execClass")
+    settings.scriptParameters += " -f"
+    settings.scriptParameters += " " + ParametersListUtil.escape(MavenPathUtil.checkOnWsl(pomPath))
     if (isTest) {
         settings.scriptParameters += " -Dexec.classpathScope=test"
     } else {
@@ -157,8 +160,9 @@ private fun actionPerformedSpring(e: AnActionEvent, executorId: String) {
     val isTest = MvnUtil.isTestFile(element)
 
     val settings = ExternalSystemTaskExecutionSettings()
-    settings.scriptParameters = " -Dspring-boot.run.main-class=$sprigMainClass"
-    settings.scriptParameters += " -f $pomPath"
+    settings.scriptParameters = ParametersListUtil.escape("-Dspring-boot.run.main-class=$sprigMainClass")
+    settings.scriptParameters += " -f"
+    settings.scriptParameters += " " + ParametersListUtil.escape(MavenPathUtil.checkOnWsl(pomPath))
     if (!isTest) {
         settings.scriptParameters += " -DskipTests"
     }
