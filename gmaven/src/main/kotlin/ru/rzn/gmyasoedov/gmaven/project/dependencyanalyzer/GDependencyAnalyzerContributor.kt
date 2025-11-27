@@ -10,7 +10,11 @@ import com.intellij.openapi.externalSystem.model.ExternalProjectInfo
 import com.intellij.openapi.externalSystem.model.ProjectKeys
 import com.intellij.openapi.externalSystem.model.execution.ExternalSystemTaskExecutionSettings
 import com.intellij.openapi.externalSystem.model.project.ModuleData
+import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskId
+import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskNotificationListener
+import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskType
 import com.intellij.openapi.externalSystem.service.execution.ProgressExecutionMode
+import com.intellij.openapi.externalSystem.service.notification.ExternalSystemProgressNotificationManager
 import com.intellij.openapi.externalSystem.service.project.ProjectDataManager
 import com.intellij.openapi.externalSystem.task.TaskCallback
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
@@ -48,7 +52,17 @@ class GDependencyAnalyzerContributor(private val project: Project) : DependencyA
     private var moduleMapByProject: Map<String, Pair<DAProject, ModuleData>>? = null
     private val dependencyTreeByProject: MutableMap<String, List<DependencyTreeNode>> = ConcurrentHashMap()
 
-    override fun whenDataChanged(listener: () -> Unit, parentDisposable: Disposable) {}
+    override fun whenDataChanged(listener: () -> Unit, parentDisposable: Disposable) {
+        val progressManager = ExternalSystemProgressNotificationManager.getInstance()
+        progressManager.addNotificationListener(object : ExternalSystemTaskNotificationListener {
+            override fun onEnd(path: String, id: ExternalSystemTaskId) {
+                if (id.type != ExternalSystemTaskType.RESOLVE_PROJECT) return
+                if (id.projectSystemId != SYSTEM_ID) return
+                moduleMapByProject = null
+                dependencyTreeByProject.clear()
+            }
+        }, parentDisposable)
+    }
 
     override fun getProjects(): List<DependencyAnalyzerProject> {
         val moduleMap = getModuleMap()
