@@ -7,6 +7,7 @@ import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyze
 import com.intellij.openapi.externalSystem.model.ExternalSystemDataKeys
 import com.intellij.openapi.externalSystem.view.ExternalSystemNode
 import com.intellij.openapi.externalSystem.view.ModuleNode
+import com.intellij.openapi.externalSystem.view.ProjectNode
 import com.intellij.openapi.module.Module
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils
@@ -34,7 +35,9 @@ class ViewDependencyAnalyzerAction : AbstractDependencyAnalyzerAction<ExternalSy
 
     override fun getModule(e: AnActionEvent, selectedData: ExternalSystemNode<*>): Module? {
         val project = e.project ?: return null
-        val findNode = selectedData.findNode(ModuleNode::class.java)?.data ?: return null
+        val findNode = selectedData.findNode(ModuleNode::class.java)?.data
+            ?: selectedData.findNode(ProjectNode::class.java)?.effectiveRoot?.data
+            ?: return null
         return MavenUtils.findIdeModule(project, findNode)
     }
 
