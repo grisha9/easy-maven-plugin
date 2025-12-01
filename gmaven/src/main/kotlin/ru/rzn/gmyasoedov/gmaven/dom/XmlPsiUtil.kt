@@ -27,7 +27,7 @@ import kotlin.io.path.name
 object XmlPsiUtil {
 
     fun getParentPath(
-        xmlParentTag: XmlTag, localRepos: List<String>, properties: Map<String, String> = emptyMap()
+        xmlParentTag: XmlTag, localRepos: Collection<String>, properties: Map<String, String> = emptyMap()
     ): Path? {
         try {
             val groupIdText = xmlParentTag.getSubTagText(MavenArtifactUtil.GROUP_ID)
@@ -40,7 +40,7 @@ object XmlPsiUtil {
             val versionText = xmlParentTag.getSubTagText(MavenArtifactUtil.VERSION)
             val version = getPlaceHolderValue(versionText, properties) ?: return null
             return searchInLocalRepo(groupId, artifactId, version, localRepos)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return null
         }
     }
@@ -69,13 +69,7 @@ object XmlPsiUtil {
         }
     }
 
-    /*
-    * FileEditorManagerEx fileEditorManager = FileEditorManagerEx.getInstanceEx(project);
-        EditorWindow curWindow = fileEditorManager.getCurrentWindow();
-        curWindow.split(SwingConstants.HORIZONTAL, false, virtualFile, true);
-        fileEditorManager.openFile(virtualFile, true);
-    * */
-    fun searchInLocalRepo(groupId: String, artifactId: String, version: String, localRepos: List<String>): Path? {
+    fun searchInLocalRepo(groupId: String, artifactId: String, version: String, localRepos: Collection<String>): Path? {
         for (localRepoPath in localRepos) {
             val artifactPath = MavenArtifactUtil
                 .getArtifactNioPath(Path.of(localRepoPath), groupId, artifactId, version, "pom")
@@ -85,7 +79,7 @@ object XmlPsiUtil {
     }
 
     fun fillProperties(
-        xmlFile: XmlFile, propertiesMap: MutableMap<String, XmlTag> = TreeMap(), localRepos: List<String>,
+        xmlFile: XmlFile, propertiesMap: MutableMap<String, XmlTag> = TreeMap(), localRepos: Collection<String>,
         deepCount: Int = 0
     ) {
         if (deepCount > 100) return
@@ -118,13 +112,15 @@ object XmlPsiUtil {
         return librarySet
     }
 
-    fun getLocalRepos(element: PsiElement): List<String> {
-        return MavenSettings.getInstance(element.project).linkedProjectsSettings.mapNotNull { it.localRepositoryPath }
+    //todo to getLocalRepos(project): Collection<String> -> mavenUtil
+    fun getLocalRepos(element: PsiElement): Collection<String> {
+        return MavenSettings.getInstance(element.project).linkedProjectsSettings.asSequence()
+            .mapNotNull { it.localRepositoryPath }.toSet()
     }
 
     private fun fillDependencyManagement(
         xmlFile: XmlFile, librarySet: MutableSet<MavenArtifactInfo>,
-        propertiesMap: MutableMap<String, String>, localRepos: List<String>, deepCount: Int = 0
+        propertiesMap: MutableMap<String, String>, localRepos: Collection<String>, deepCount: Int = 0
     ) {
         if (deepCount > 500) return
         val dependencies = xmlFile.rootTag?.findFirstSubTag(MavenArtifactUtil.DEPENDENCY_MANAGEMENT)
