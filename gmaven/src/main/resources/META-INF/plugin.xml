@@ -68,8 +68,13 @@
         <projectConfigurable dynamic="true"
                              instance="ru.rzn.gmyasoedov.gmaven.settings.debug.MavenDebugSettingsControl"
                              id="ru.rzn.gmyasoedov.gmaven.settings.debug.MavenDebugSettingsControl"
-                             parentId="reference.settingsdialog.project.gmaven"
-                             displayName="Debug"/>
+                             parentId="reference.settingsdialog.project.gmaven" groupWeight="200"
+                             displayName="Debug Settings"/>
+        <projectConfigurable dynamic="true"
+                             instance="ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsControl"
+                             id="ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsControl"
+                             parentId="reference.settingsdialog.project.gmaven" groupWeight="100"
+                             displayName="Advanced Settings"/>
 
         <externalSystemManager implementation="ru.rzn.gmyasoedov.gmaven.MavenManager"/>
         <projectService serviceImplementation="ru.rzn.gmyasoedov.gmaven.settings.MavenSettings"/>
@@ -154,6 +159,7 @@
                                   implementation="ru.rzn.gmyasoedov.gmaven.dom.MavenPropertiesXmlPsiReferenceContributor"/>
         <orderEnumerationHandlerFactory
                 implementation="ru.rzn.gmyasoedov.gmaven.execution.MavenOrderEnumerationHandler$Factory"/>
+        <fileEditorProvider implementation="ru.rzn.gmyasoedov.gmaven.central.PomWebMavenCentralEditorProvider"/>
         <!--        <annotator language="XML" implementationClass="ru.rzn.gmyasoedov.gmaven.dom.annotator.MavenDomGutterAnnotator"/>
         <backspaceHandlerDelegate implementation="ru.rzn.gmyasoedov.gmaven.dom.code.MavenBackspaceHandlerDelegate"/>
         <typedHandler implementation="ru.rzn.gmyasoedov.gmaven.dom.code.MavenTypedHandlerDelegate"/>-->
@@ -162,6 +168,10 @@
     </extensions>
 
     <actions>
+        <action id="GMaven.MavenCentralBrowserAction"
+                class="ru.rzn.gmyasoedov.gmaven.project.action.MavenCentralBrowserAction">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
         <action id="GMaven.RunTestAction" class="ru.rzn.gmyasoedov.gmaven.project.action.RunTestAction">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </action>
