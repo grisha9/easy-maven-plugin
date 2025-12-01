@@ -3,9 +3,7 @@ package ru.rzn.gmyasoedov.gmaven.dom.completion
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.toNioPathOrNull
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
@@ -18,7 +16,6 @@ import ru.rzn.gmyasoedov.gmaven.GMavenConstants.IDEA_PSI_EDIT_TOKEN
 import ru.rzn.gmyasoedov.gmaven.dom.XmlPsiUtil
 import ru.rzn.gmyasoedov.gmaven.util.CachedModuleDataService
 import ru.rzn.gmyasoedov.gmaven.util.MavenArtifactInfo
-import ru.rzn.gmyasoedov.gmaven.util.MavenCentralClient
 import ru.rzn.gmyasoedov.gmaven.utils.MavenArtifactUtil.*
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicLong
@@ -84,9 +81,8 @@ class MavenCoordinateCompletionContributor : CompletionContributor() {
         val parentFolder = folders.joinToString(".")
         val repositoriesPath = XmlPsiUtil.getLocalRepos(tagElement)
         val result = repositoriesPath.flatMapTo(mutableSetOf()) { getListFiles(it, folders, parentFolder) }
-        for (each in result) {
-            resultSet.addElement(LookupElementBuilder.create(each))
-        }
+        result.forEach { resultSet.addElement(LookupElementBuilder.create(it)) }
+
         resultSet.stopHere()
         return null
     }
@@ -142,9 +138,7 @@ private class VersionContributor(val artifactId: String, val groupId: String, va
         return try {
             path.listDirectoryEntries().asSequence()
                 .filter { it.isDirectory() }
-                .filter {
-                    it.name.firstOrNull()?.isDigit() == true
-                }
+                .filter { it.name.firstOrNull()?.isDigit() == true }
                 .map { it.name }
                 .toList()
         } catch (_: Exception) {
@@ -158,7 +152,8 @@ private class GAVContributor(
 ) : Consumer<CompletionResultSet> {
     override fun accept(result: CompletionResultSet) {
         val queryText = result.prefixMatcher.prefix
-        val groupId = parentXmlTag.getSubTagText(GROUP_ID)
+        val isPlugin = parentXmlTag.name == PLUGIN
+        val groupId = getGroupId(isPlugin)
 
         val promise: AsyncPromise<List<MavenArtifactInfo>>? = null//asyncPromise(queryText, groupId)
 
@@ -173,6 +168,11 @@ private class GAVContributor(
         setLookupResult(artifactFromManagementData, result)
         setLookupResult(artifactFromProjectStructure, result)
 
+        val folders = groupId?.split(".")?.takeIf { it.isNotEmpty() } ?: return
+        val repositoriesPath = XmlPsiUtil.getLocalRepos(parentXmlTag)
+        val localArtefactIds = repositoriesPath.flatMapTo(mutableSetOf()) { getArtifactIds(it, folders) }
+        localArtefactIds.forEach { resultSet.addElement(LookupElementBuilder.create(it)) }
+        resultSet.stopHere()
         if (promise == null) return
         val startMillis = System.currentTimeMillis()
         while (promise.getState() == Promise.State.PENDING
@@ -185,15 +185,27 @@ private class GAVContributor(
 
         val artifactInfoList = promise.get() ?: return
         setLookupResult(artifactInfoList, result)
-        resultSet.stopHere()
     }
 
-    private fun asyncPromise(queryText: String, groupId: String?): AsyncPromise<List<MavenArtifactInfo>>? {
-        if (!Registry.`is`("gmaven.search.artifact.maven.central")) return null
-        val promise = AsyncPromise<List<MavenArtifactInfo>>()
-        ApplicationManager.getApplication()
-            .executeOnPooledThread { promise.setResult(MavenCentralClient.findArtifact(queryText, groupId)) }
-        return promise
+    private fun getGroupId(isPlugin: Boolean): String? {
+        val groupId = parentXmlTag.getSubTagText(GROUP_ID)
+        if (groupId == null && isPlugin) {
+            return PLUGIN_GROUP_ID
+        }
+        return groupId
+    }
+
+    private fun getArtifactIds(repo: String, folders: List<String>): List<String> {
+        val path = Path(repo, *folders.toTypedArray())
+        return try {
+            path.listDirectoryEntries().asSequence()
+                .filter { it.isDirectory() }
+                .filter { it.name.firstOrNull()?.isDigit() == false }
+                .map { it.name }
+                .toList()
+        } catch (_: Exception) {
+            emptyList()
+        }
     }
 
     private fun setLookupResult(
