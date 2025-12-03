@@ -1,5 +1,7 @@
-Easy Maven (Old name: GMaven). IntelliJ Plugin [page](https://plugins.jetbrains.com/plugin/22370-easy-maven)
+Easy Maven. IntelliJ Plugin [page](https://plugins.jetbrains.com/plugin/22370-easy-maven)
 ==================
+
+#### (Old name: GMaven)
 
 The lightweight Maven plugin that gets the project model through maven task execution.
 This provides greater simplicity and original build tool behavior in obtaining project data.
