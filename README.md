@@ -3,12 +3,12 @@ Easy Maven. IntelliJ Plugin [page](https://plugins.jetbrains.com/plugin/22370-ea
 
 #### (Old name: GMaven)
 
-Easy Maven is lightweight Maven plugin that gets the project model through maven task execution.  
+Easy Maven is lightweight Maven plugin for IDEA that gets the project model through maven task execution.  
 Easy Maven is a complete replacement for the bundled Maven plugin.
 It provides the most accurate resolution of project dependencies.
 Easy Maven plugin runs on top of pure Maven, without any hidden logic.
-The philosophy of Easy Maven plugin is: "everything is a Maven task".
-Any interaction with Maven: import project, test execution, dependency analysis, debugging—is simply running the
+The philosophy of Easy Maven plugin: "everything is a Maven task".
+Any interaction with Maven: import project, test execution, dependency analysis, debugging - is simply running the
 appropriate Maven plugin task with the required arguments.
 The result is original build tool behavior and a simple implementation.
 
