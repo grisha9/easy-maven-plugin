@@ -69,6 +69,12 @@ object XmlPsiUtil {
         }
     }
 
+    /*
+    * FileEditorManagerEx fileEditorManager = FileEditorManagerEx.getInstanceEx(project);
+        EditorWindow curWindow = fileEditorManager.getCurrentWindow();
+        curWindow.split(SwingConstants.HORIZONTAL, false, virtualFile, true);
+        fileEditorManager.openFile(virtualFile, true);
+    * */
     fun searchInLocalRepo(groupId: String, artifactId: String, version: String, localRepos: List<String>): Path? {
         for (localRepoPath in localRepos) {
             val artifactPath = MavenArtifactUtil
