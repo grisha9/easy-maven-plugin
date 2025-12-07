@@ -13,20 +13,16 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID
-import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 object CachedModuleDataService {
-    private val isPerform = AtomicBoolean(false)
+
     private val lastResult = AtomicReference(CachedDataHolder())
     private val modificationTracker = SimpleModificationTracker()
 
     fun getDataHolder(project: Project): CachedDataHolder {
-        if (!isPerform.compareAndSet(false, true)) {
-            return lastResult.get()
-        }
-        try {
+        if (isNoLinkedProjects(project)) return CachedDataHolder()
+        synchronized(CachedModuleDataService::class.java) {
             val cachedValue = CachedValuesManager.getManager(project).getCachedValue(project) {
                 CachedValueProvider.Result
                     .create(
@@ -36,12 +32,14 @@ object CachedModuleDataService {
             }
             lastResult.set(cachedValue)
             return cachedValue
-        } finally {
-            isPerform.set(false)
         }
     }
 
+    private fun isNoLinkedProjects(project: Project): Boolean =
+        ProjectDataManager.getInstance().getExternalProjectsData(project, SYSTEM_ID).isEmpty()
+
     fun getLibrary(project: Project): List<MavenArtifactInfo> {
+        if (isNoLinkedProjects(project)) return emptyList()
         return CachedValuesManager.getManager(project).getCachedValue(project) {
             CachedValueProvider.Result
                 .create(
@@ -72,9 +70,8 @@ object CachedModuleDataService {
     }
 
     fun getModulesSequence(project: Project): Sequence<DataNode<ModuleData>> =
-        MavenSettings.getInstance(project).linkedProjectsSettings.asSequence()
-            .mapNotNull { it.externalProjectPath }
-            .mapNotNull { ProjectDataManager.getInstance().getExternalProjectData(project, SYSTEM_ID, it) }
+        ProjectDataManager.getInstance().getExternalProjectsData(project, SYSTEM_ID)
+            .asSequence()
             .mapNotNull { it.externalProjectStructure }
             .flatMap { ExternalSystemApiUtil.findAll(it, ProjectKeys.MODULE) }
 
