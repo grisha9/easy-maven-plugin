@@ -163,6 +163,10 @@
     </extensions>
 
     <actions>
+        <action id="GMaven.MavenCentralBrowserAction"
+                class="ru.rzn.gmyasoedov.gmaven.project.action.MavenCentralBrowserAction">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
         <action id="GMaven.RunTestAction" class="ru.rzn.gmyasoedov.gmaven.project.action.RunTestAction">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </action>

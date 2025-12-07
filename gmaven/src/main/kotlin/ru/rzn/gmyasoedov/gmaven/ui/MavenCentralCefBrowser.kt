@@ -4,46 +4,46 @@ import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorState
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.UserDataHolderBase
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.jcef.JBCefApp
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefClient
 import org.jetbrains.concurrency.runAsync
 import java.beans.PropertyChangeListener
-import java.util.*
 
-class MavenCentralCefBrowser(file: VirtualFile) : UserDataHolderBase(), FileEditor {
+class MavenCentralCefBrowser() : UserDataHolderBase(), FileEditor {
 
-    private val specKey = UUID.randomUUID()
     private var disposed = false
-    private val browser: JBCefBrowser
-    private val jbCefClient: JBCefClient = JBCefApp.getInstance().createClient()
+
+    @Volatile
+    private var browser: JBCefBrowser? = null
+
+    @Volatile
+    private var jbCefClient: JBCefClient? = null
 
     init {
-
+        jbCefClient = JBCefApp.getInstance().createClient()
         browser = JBCefBrowser.createBuilder()
             .setClient(jbCefClient)
             .build()
-
-        loadHtml()
+        println("createEditor")
+        loadHtml("https://search.maven.org/")
     }
 
-    fun loadHtml(anchor: String = "") {
+    fun loadHtml(urlString: String) {
         runAsync {
-            browser.loadURL("https://search.maven.org/")
-            //browser.loadURL("https://mvnrepository.com/")
+            browser?.loadURL(urlString)
         }
     }
 
     override fun isModified() = false
     override fun isValid() = !disposed
-    override fun getComponent() = browser.component
-    override fun getPreferredFocusedComponent() = browser.component
+    override fun getComponent() = browser?.component!!
+    override fun getPreferredFocusedComponent() = browser?.component
     override fun getName() = "Maven Central Easy Maven"
 
     override fun dispose() {
-        Disposer.dispose(browser)
-        Disposer.dispose(jbCefClient)
+        browser?.let { Disposer.dispose(it) }
+        jbCefClient?.let { Disposer.dispose(it) }
         disposed = true
     }
 

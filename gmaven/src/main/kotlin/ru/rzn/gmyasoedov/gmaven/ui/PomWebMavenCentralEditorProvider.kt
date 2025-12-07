@@ -17,8 +17,7 @@ class PomWebMavenCentralEditorProvider : FileEditorProvider, DumbAware {
     override fun accept(project: Project, file: VirtualFile): Boolean {
         val path = file.toNioPathOrNull()?.absolutePathString() ?: return false
         val contains = CachedModuleDataService.getDataHolder(project).activeConfigPaths.contains(path)
-        println("!!! $contains $path")
-        return contains
+        return contains && JBCefApp.isSupported()
     }
 
     override fun createEditor(project: Project, file: VirtualFile): FileEditor {
@@ -26,7 +25,7 @@ class PomWebMavenCentralEditorProvider : FileEditorProvider, DumbAware {
         if (!JBCefApp.isSupported()) return fileEditor
 
         return (fileEditor as? TextEditor)?.let {
-            MavenCentralUIEditor(fileEditor, MavenCentralCefBrowser(file))
+            MavenCentralUIEditor(fileEditor, MavenCentralCefBrowser())
         } ?: fileEditor
     }
 
