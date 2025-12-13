@@ -62,7 +62,7 @@ class MavenCoordinateCompletionContributor : CompletionContributor() {
                 VersionContributor(artifactId, groupId, tagElement)
             }
 
-            ARTIFACT_ID -> GAVContributor(tagElement, parentXmlTag)
+            ARTIFACT_ID -> GAVContributor(tagElement, parentXmlTag, resultSet)
 
             else -> fillGroupIdVariants(parameters, tagElement, resultSet)
         }
@@ -74,16 +74,18 @@ class MavenCoordinateCompletionContributor : CompletionContributor() {
         val groupId = getTextUnderCursor(parameters)
 
         val allGroupIds = CachedModuleDataService.getLibrary(tagElement.project).map { it.g }
-        allGroupIds.filter { it.contains(groupId) }
-            .forEach { resultSet.addElement(LookupElementBuilder.create(it)) }
-        popularGroupIds.filter { it.contains(groupId) }
-            .forEach { resultSet.addElement(LookupElementBuilder.create(it)) }
+        allGroupIds.filter { it.contains(groupId) }.forEach {
+            resultSet.addElement(LookupElementBuilder.create(it).withInsertHandler(GroupInsertHandler))
+        }
+        popularGroupIds.filter { it.contains(groupId) }.forEach {
+            resultSet.addElement(LookupElementBuilder.create(it).withInsertHandler(GroupInsertHandler))
+        }
         val folders = getSplitGroupIdOnFolders(groupId)
         val parentFolder = folders.joinToString(".")
         val repositoriesPath = XmlPsiUtil.getLocalRepos(tagElement)
         val result = repositoriesPath.flatMapTo(mutableSetOf()) { getListFiles(it, folders, parentFolder) }
         for (each in result) {
-            resultSet.addElement(LookupElementBuilder.create(each))
+            resultSet.addElement(LookupElementBuilder.create(each).withInsertHandler(GroupInsertHandler))
         }
         resultSet.stopHere()
         return null
@@ -151,7 +153,9 @@ private class VersionContributor(val artifactId: String, val groupId: String, va
     }
 }
 
-private class GAVContributor(val artifactIdTag: XmlTag, val parentXmlTag: XmlTag) : Consumer<CompletionResultSet> {
+private class GAVContributor(
+    val artifactIdTag: XmlTag, val parentXmlTag: XmlTag, val resultSet: CompletionResultSet
+) : Consumer<CompletionResultSet> {
     override fun accept(result: CompletionResultSet) {
         val queryText = result.prefixMatcher.prefix
         val groupId = parentXmlTag.getSubTagText(GROUP_ID)
@@ -181,6 +185,7 @@ private class GAVContributor(val artifactIdTag: XmlTag, val parentXmlTag: XmlTag
 
         val artifactInfoList = promise.get() ?: return
         setLookupResult(artifactInfoList, result)
+        resultSet.stopHere()
     }
 
     private fun asyncPromise(queryText: String, groupId: String?): AsyncPromise<List<MavenArtifactInfo>>? {
@@ -240,17 +245,81 @@ private object GAVInsertHandler : InsertHandler<LookupElement> {
     }
 }
 
+private object GroupInsertHandler : InsertHandler<LookupElement> {
+
+    override fun handleInsert(context: InsertionContext, item: LookupElement) {
+        val groupId: String = item.`object` as? String ?: return
+        val contextFile = context.file as? XmlFile ?: return
+        val element = contextFile.findElementAt(context.startOffset)
+        val xmlTag = PsiTreeUtil.getParentOfType(element, XmlTag::class.java) ?: return
+        context.commitDocument()
+        xmlTag.value.text = groupId
+    }
+}
+
 private val popularGroupIds: List<String> = listOf(
-    "junit", "org.slf4j", "org.jetbrains.kotlin", "com.google.guava", "org.scala-lang", "org.mockito",
-    "com.fasterxml.jackson.core", "org.apache.commons", "ch.qos.logback", "commons-io", "org.projectlombok",
-    "com.google.code.gson", "com.android.support", "org.clojure", "javax.servlet", "log4j", "org.scalatest",
-    "org.assertj", "org.junit.jupiter", "org.apache.httpcomponents", "org.springframework", "org.springframework.boot",
-    "com.google.code.findbugs", "org.renjin", "commons-lang", "commons-codec", "androidx.appcompat",
-    "commons-logging", "org.testng", "org.apache.logging.log4j", "com.squareup.okhttp3", "joda-time",
-    "com.h2database", "org.apache.maven", "org.hamcrest", "mysql", "org.osgi", "javax.inject", "androidx.core",
-    "org.jetbrains.kotlinx", "commons-collections", "javax.validation", "javax.annotation", "javax.xml.bind",
-    "com.fasterxml.jackson.datatype", "clojure-complete", "org.scala-js", "org.json", "commons-beanutils",
-    "com.google.protobuf", "org.apache.maven.plugin-tools", "com.squareup.retrofit2", "com.google.android.material",
-    "com.google.inject", "org.easymock", "org.codehaus.groovy", "commons-cli", "org.yaml", "com.android.support",
-    "org.powermock", "org.postgresql", "org.hibernate", "com.oracle.jdbc "
+    "junit",
+    "org.slf4j",
+    "org.jetbrains.kotlin",
+    "com.google.guava",
+    "org.scala-lang",
+    "org.mockito",
+    "com.fasterxml.jackson.core",
+    "org.apache.commons",
+    "ch.qos.logback",
+    "commons-io",
+    "org.projectlombok",
+    "com.google.code.gson",
+    "com.android.support",
+    "org.clojure",
+    "javax.servlet",
+    "log4j",
+    "org.scalatest",
+    "org.assertj",
+    "org.junit.jupiter",
+    "org.apache.httpcomponents",
+    "org.springframework",
+    "org.springframework.boot",
+    "com.google.code.findbugs",
+    "org.renjin",
+    "commons-lang",
+    "commons-codec",
+    "androidx.appcompat",
+    "commons-logging",
+    "org.testng",
+    "org.apache.logging.log4j",
+    "com.squareup.okhttp3",
+    "joda-time",
+    "com.h2database",
+    "org.apache.maven",
+    "org.hamcrest",
+    "mysql",
+    "org.osgi",
+    "javax.inject",
+    "androidx.core",
+    "org.jetbrains.kotlinx",
+    "commons-collections",
+    "javax.validation",
+    "javax.annotation",
+    "javax.xml.bind",
+    "com.fasterxml.jackson.datatype",
+    "com.fasterxml.jackson.dataformat",
+    "clojure-complete",
+    "org.scala-js",
+    "org.json",
+    "commons-beanutils",
+    "com.google.protobuf",
+    "org.apache.maven.plugin-tools",
+    "com.squareup.retrofit2",
+    "com.google.android.material",
+    "com.google.inject",
+    "org.easymock",
+    "org.codehaus.groovy",
+    "commons-cli",
+    "org.yaml",
+    "com.android.support",
+    "org.powermock",
+    "org.postgresql",
+    "org.hibernate",
+    "com.oracle.jdbc "
 )
