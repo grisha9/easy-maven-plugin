@@ -15,7 +15,7 @@ import kotlin.io.path.Path
 class OpenLocalRepoAction : ExternalSystemNodeAction<ProjectData>(ProjectData::class.java) {
 
     init {
-        getTemplatePresentation().text = GBundle.message("gmaven.action.show.local.repo")
+        templatePresentation.text = GBundle.message("gmaven.action.show.local.repo")
     }
 
     override fun isEnabled(e: AnActionEvent): Boolean {
