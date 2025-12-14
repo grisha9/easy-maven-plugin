@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+## [253.4] - 2025-12-14
+
+### Added
+
+- Completions for GroupId/ArtifactId/version. [Issue](https://github.com/grisha9/easy-maven-plugin/pull/52)
+- Open Local Repo Action. [Issue](https://github.com/grisha9/gmaven-plugin/issues/47)
+
+### Fix
+
+- DA refresh dependency tree. [Issue](https://github.com/grisha9/easy-maven-plugin/issues/49)
+
 ## [253.3] - 2025-11-25
 
 ### Added
