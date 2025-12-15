@@ -82,13 +82,13 @@ internal class DownloadSourceAction(
             return ActionCallback.DONE
         }
         val settings = ExternalSystemTaskExecutionSettings()
-        val env = HashMap<String, String>(settings.env)
-        env["includeGroupIds"] = split[0]
-        env["includeArtifactIds"] = split[1]
+        settings.apply { scriptParameters = "" }
+        settings.scriptParameters += " -DincludeGroupIds=${split[0]}"
+        settings.scriptParameters += " -DincludeArtifactIds=${split[1]}"
+
         settings.executionName = name
         settings.externalProjectPath = externalProjectPath
         settings.taskNames = listOf(TASK_DOWNLOAD_SOURCE)
-        settings.env = env
         settings.externalSystemIdString = SYSTEM_ID.id
         val resultWrapper = ActionCallback()
         ExternalSystemUtil.runTask(
