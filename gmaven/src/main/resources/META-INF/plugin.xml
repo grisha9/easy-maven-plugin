@@ -115,8 +115,8 @@
                                order="first"/>
         <attachSourcesProvider implementation="ru.rzn.gmyasoedov.gmaven.project.externalSystem.service.MavenAttachSourcesProvider"/>
         <annotator language="XML" implementationClass="ru.rzn.gmyasoedov.gmaven.dom.PomXmlDomGutterAnnotator"/>
-        <!--<runLineMarkerContributor language="XML"
-                                  implementationClass="ru.rzn.gmyasoedov.gmaven.dom.GroupIdToLocalRepoLineMarkerContributor"/>-->
+        <runLineMarkerContributor language="XML"
+                                  implementationClass="ru.rzn.gmyasoedov.gmaven.dom.GroupIdToLocalRepoLineMarkerContributor"/>
         <standardResourceProvider implementation="ru.rzn.gmyasoedov.gmaven.dom.GMavenSchemaProvider"/>
 
         <registryKey key="gmaven.server.debug" defaultValue="false"

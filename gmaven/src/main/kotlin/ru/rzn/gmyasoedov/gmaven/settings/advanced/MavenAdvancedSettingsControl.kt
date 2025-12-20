@@ -23,6 +23,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
     private val addGroupIdToSearchBind = propertyGraph.property(false)
     private val searchInSplitWindowBind = propertyGraph.property(false)
     private val groupIdFolderNavigationBind = propertyGraph.property(false)
+    private val completionEasyMavenOnlyBind = propertyGraph.property(false)
 
     private val checkSourcesBind = propertyGraph.property(false)
     private val wslSupportBind = propertyGraph.property(false)
@@ -74,8 +75,12 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
                         .bindSelected(colorSupportBind)
                 }
                 row {
-                    checkBox("Enable groupId folder navigation in project")
+                    checkBox("Navigation to local repo from Dependency")
                         .bindSelected(groupIdFolderNavigationBind)
+                }
+                row {
+                    checkBox("Dependency completion only in Easy Maven projects")
+                        .bindSelected(completionEasyMavenOnlyBind)
                 }
             }
         }
@@ -86,6 +91,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         addGroupIdToSearchBind.set(additionalSettings.addGroupIdToSearch)
         searchInSplitWindowBind.set(additionalSettings.searchInSplitWindow)
         groupIdFolderNavigationBind.set(additionalSettings.groupIdFolderNavigation)
+        completionEasyMavenOnlyBind.set(additionalSettings.completionEasyMavenOnly)
 
         checkSourcesBind.set(baseSettings.isCheckSourcesInLocalRepo)
         colorSupportBind.set(baseSettings.isColoredSupport)
@@ -97,6 +103,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         if (additionalSettings.addGroupIdToSearch != addGroupIdToSearchBind.get()) return true
         if (additionalSettings.searchInSplitWindow != searchInSplitWindowBind.get()) return true
         if (additionalSettings.groupIdFolderNavigation != groupIdFolderNavigationBind.get()) return true
+        if (additionalSettings.completionEasyMavenOnly != completionEasyMavenOnlyBind.get()) return true
 
         if (baseSettings.isCheckSourcesInLocalRepo != checkSourcesBind.get()) return true
         if (baseSettings.isColoredSupport != colorSupportBind.get()) return true
@@ -110,6 +117,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         additionalSettings.addGroupIdToSearch = addGroupIdToSearchBind.get()
         additionalSettings.searchInSplitWindow = searchInSplitWindowBind.get()
         additionalSettings.groupIdFolderNavigation = groupIdFolderNavigationBind.get()
+        additionalSettings.completionEasyMavenOnly = completionEasyMavenOnlyBind.get()
 
         baseSettings.isCheckSourcesInLocalRepo = checkSourcesBind.get()
         baseSettings.isColoredSupport = colorSupportBind.get()
