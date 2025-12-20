@@ -3,19 +3,31 @@ package ru.rzn.gmyasoedov.gmaven.dom.completion
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.java.library.JavaLibraryModificationTracker
+import com.intellij.openapi.module.Module
+import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.roots.OrderEnumerator
+import com.intellij.openapi.roots.OrderRootType
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.toNioPathOrNull
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.xml.XmlFile
 import com.intellij.psi.xml.XmlTag
 import com.intellij.psi.xml.XmlText
+import com.intellij.util.Processor
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.IDEA_PSI_EDIT_TOKEN
 import ru.rzn.gmyasoedov.gmaven.dom.XmlPsiUtil
+import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
 import ru.rzn.gmyasoedov.gmaven.util.CachedModuleDataService
 import ru.rzn.gmyasoedov.gmaven.util.MavenArtifactInfo
+import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 import ru.rzn.gmyasoedov.gmaven.utils.MavenArtifactUtil.*
 import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicLong
@@ -31,9 +43,6 @@ class MavenCoordinateCompletionContributor : CompletionContributor() {
 
     override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
         if (parameters.completionType != CompletionType.BASIC) return
-        val originalFile = parameters.originalFile
-        val configFilePath = originalFile.virtualFile.toNioPathOrNull()?.absolutePathString() ?: return
-        if (!CachedModuleDataService.getDataHolder(originalFile.project).isConfigPath(configFilePath)) return
 
         val currentTimeMillis = System.currentTimeMillis()
         val get = Util.timeStamp.get()
@@ -52,21 +61,28 @@ class MavenCoordinateCompletionContributor : CompletionContributor() {
         if (!supportTagNames.contains(tagElement.name)) return null
         val parentXmlTag = tagElement.parent as? XmlTag ?: return null
 
+        val originalFile = parameters.originalFile
+        val configFilePath = originalFile.virtualFile.toNioPathOrNull()?.absolutePathString() ?: return null
+        val localRepos = getLocalRepos(configFilePath, originalFile).takeIf { it.isNotEmpty() } ?: return null
+
         return when (tagElement.name) {
             VERSION -> {
                 val artifactId = parentXmlTag.getSubTagText(ARTIFACT_ID) ?: return null
                 val groupId = parentXmlTag.getSubTagText(GROUP_ID) ?: return null
-                VersionContributor(artifactId, groupId, tagElement)
+                VersionContributor(artifactId, groupId, localRepos)
             }
 
-            ARTIFACT_ID -> GAVContributor(tagElement, parentXmlTag, resultSet)
+            ARTIFACT_ID -> GAVContributor(tagElement, parentXmlTag, localRepos, resultSet)
 
-            else -> fillGroupIdVariants(parameters, tagElement, resultSet)
+            else -> fillGroupIdVariants(parameters, tagElement, localRepos, resultSet)
         }
     }
 
     private fun fillGroupIdVariants(
-        parameters: CompletionParameters, tagElement: XmlTag, resultSet: CompletionResultSet
+        parameters: CompletionParameters,
+        tagElement: XmlTag,
+        localRepos: Collection<String>,
+        resultSet: CompletionResultSet
     ): Nothing? {
         val groupId = getTextUnderCursor(parameters)
 
@@ -79,11 +95,9 @@ class MavenCoordinateCompletionContributor : CompletionContributor() {
         }
         val folders = getSplitGroupIdOnFolders(groupId)
         val parentFolder = folders.joinToString(".")
-        val repositoriesPath = XmlPsiUtil.getLocalRepos(tagElement)
-        val result = repositoriesPath.flatMapTo(mutableSetOf()) { getListFiles(it, folders, parentFolder) }
-        for (each in result) {
-            resultSet.addElement(LookupElementBuilder.create(each).withInsertHandler(GroupInsertHandler))
-        }
+        val result = localRepos.flatMapTo(mutableSetOf()) { getListFiles(it, folders, parentFolder) }
+        result.forEach { resultSet.addElement(LookupElementBuilder.create(it).withInsertHandler(GroupInsertHandler)) }
+
         resultSet.stopHere()
         return null
     }
@@ -119,19 +133,20 @@ class MavenCoordinateCompletionContributor : CompletionContributor() {
     }
 }
 
-private class VersionContributor(val artifactId: String, val groupId: String, val tagElement: XmlTag) :
-    Consumer<CompletionResultSet> {
+private class VersionContributor(
+    val artifactId: String,
+    val groupId: String,
+    val localRepos: Collection<String>
+) : Consumer<CompletionResultSet> {
 
     override fun accept(result: CompletionResultSet) {
         val folders = groupId.split(".")
-        val repositoriesPath = XmlPsiUtil.getLocalRepos(tagElement)
-        val localVersionList = repositoriesPath.flatMapTo(mutableSetOf()) {
+        val localVersionList = localRepos.flatMapTo(mutableSetOf()) {
             getListVersions(it, folders, artifactId)
         }
         for (each in localVersionList) {
             result.addElement(LookupElementBuilder.create(each))
         }
-
     }
 
     private fun getListVersions(repo: String, folders: List<String>, artifactId: String): List<String> {
@@ -149,7 +164,10 @@ private class VersionContributor(val artifactId: String, val groupId: String, va
 }
 
 private class GAVContributor(
-    val artifactIdTag: XmlTag, val parentXmlTag: XmlTag, val resultSet: CompletionResultSet
+    val artifactIdTag: XmlTag,
+    val parentXmlTag: XmlTag,
+    val localRepos: Collection<String>,
+    val resultSet: CompletionResultSet
 ) : Consumer<CompletionResultSet> {
     override fun accept(result: CompletionResultSet) {
         val queryText = result.prefixMatcher.prefix
@@ -170,8 +188,7 @@ private class GAVContributor(
         setLookupResult(artifactFromProjectStructure, result)
 
         val folders = groupId?.split(".")?.takeIf { it.isNotEmpty() } ?: return
-        val repositoriesPath = XmlPsiUtil.getLocalRepos(parentXmlTag)
-        val localArtefactIds = repositoriesPath.flatMapTo(mutableSetOf()) { getArtifactIds(it, folders) }
+        val localArtefactIds = localRepos.flatMapTo(mutableSetOf()) { getArtifactIds(it, folders) }
         localArtefactIds.forEach { resultSet.addElement(LookupElementBuilder.create(it)) }
         resultSet.stopHere()
         if (promise == null) return
@@ -336,3 +353,41 @@ private val popularGroupIds: List<String> = listOf(
     "org.hibernate",
     "com.oracle.jdbc "
 )
+
+private fun getLocalRepos(configFilePath: String, originalFile: PsiFile): Collection<String> {
+    if (CachedModuleDataService.getDataHolder(originalFile.project).isConfigPath(configFilePath)) {
+        return MvnUtil.getLocalRepos(originalFile.project)
+    }
+
+    if (!MavenAdvancedSettingsState.getInstance().completionEasyMavenOnly) {
+        val module = ModuleUtilCore.findModuleForFile(originalFile) ?: return emptyList()
+        return findMavenLocalReposCacheable(module)
+    }
+    return emptyList()
+}
+
+private fun findMavenLocalReposCacheable(module: Module): List<String> {
+    return CachedValuesManager.getManager(module.project).getCachedValue(module) {
+        CachedValueProvider.Result(
+            findMavenLocalRepos(module),
+            JavaLibraryModificationTracker.getInstance(module.project)
+        )
+    }
+}
+
+private fun findMavenLocalRepos(module: Module): List<String> {
+    var virtualFileM2: VirtualFile? = null
+    OrderEnumerator.orderEntries(module).forEachLibrary(Processor { library ->
+        if (virtualFileM2 != null) return@Processor false
+        val virtualFiles = library.getFiles(OrderRootType.CLASSES)
+        val virtualFile = virtualFiles.firstOrNull { it.canonicalPath?.contains("/.m2/repository") == true }
+        if (virtualFile != null) {
+            virtualFileM2 = virtualFile
+            return@Processor false
+        }
+        return@Processor true
+    })
+    val canonicalPath = virtualFileM2?.canonicalPath ?: return emptyList()
+    val repositoryPath = canonicalPath.substringBefore("/.m2/repository") + "/.m2/repository"
+    return listOf(Path(repositoryPath).absolutePathString())
+}
