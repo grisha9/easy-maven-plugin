@@ -11,6 +11,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.xml.XmlTag
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
+import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
 import ru.rzn.gmyasoedov.gmaven.util.CachedModuleDataService
 import ru.rzn.gmyasoedov.gmaven.utils.MavenArtifactUtil
 import java.nio.file.Path
@@ -21,6 +22,8 @@ import kotlin.io.path.exists
 class GroupIdToLocalRepoLineMarkerContributor : RunLineMarkerContributor() {
 
     override fun getInfo(psiElement: PsiElement): Info? {
+        if (!MavenAdvancedSettingsState.getInstance().groupIdFolderNavigation) return null
+
         val xmlTag = psiElement as? XmlTag ?: return null
         if (xmlTag.name != MavenArtifactUtil.GROUP_ID) return null
         val parentTag = xmlTag.parentTag ?: return null
