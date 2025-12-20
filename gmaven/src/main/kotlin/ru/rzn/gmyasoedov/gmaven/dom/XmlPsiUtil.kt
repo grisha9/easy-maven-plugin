@@ -112,7 +112,7 @@ object XmlPsiUtil {
         return librarySet
     }
 
-    //todo to getLocalRepos(project): Collection<String> -> mavenUtil
+    //todo remove
     fun getLocalRepos(element: PsiElement): Collection<String> {
         return MavenSettings.getInstance(element.project).linkedProjectsSettings.asSequence()
             .mapNotNull { it.localRepositoryPath }.toSet()
