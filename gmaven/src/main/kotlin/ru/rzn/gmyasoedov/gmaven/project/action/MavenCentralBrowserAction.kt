@@ -26,6 +26,7 @@ import org.jetbrains.uast.evaluateString
 import org.jetbrains.uast.toUElement
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
 import ru.rzn.gmyasoedov.gmaven.central.EASY_MAVEN_CENTRAL_SEARCH
+import ru.rzn.gmyasoedov.gmaven.central.MavenCentralCefBrowserState
 import ru.rzn.gmyasoedov.gmaven.central.MavenCentralUIEditor
 import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
 import ru.rzn.gmyasoedov.gmaven.util.CachedModuleDataService
@@ -100,6 +101,7 @@ class MavenCentralBrowserAction : AnAction() {
 
         val virtualFile = VfsUtil.findFile(searchTempPath, true) ?: return
         val psiFile = virtualFile.toPsiFile(project)
+        MavenCentralCefBrowserState.loadDefaultUrl = false
         if (!MavenAdvancedSettingsState.getInstance().searchInSplitWindow && psiFile != null) {
             psiFile.navigate(true)
         } else {

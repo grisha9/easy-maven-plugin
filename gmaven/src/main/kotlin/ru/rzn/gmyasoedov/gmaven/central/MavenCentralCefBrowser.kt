@@ -6,11 +6,18 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.ui.jcef.JBCefBrowser
 import org.jetbrains.concurrency.runAsync
+import ru.rzn.gmyasoedov.gmaven.util.MvnUtil.getMavenCentralSearchUrl
 import java.beans.PropertyChangeListener
 
 class MavenCentralCefBrowser() : UserDataHolderBase(), FileEditor {
 
     private var browser = JBCefBrowser()
+
+    init {
+        if (MavenCentralCefBrowserState.loadDefaultUrl) {
+            browser.loadURL(getMavenCentralSearchUrl())
+        }
+    }
 
     fun loadHtml(urlString: String) {
         runAsync {
@@ -32,4 +39,9 @@ class MavenCentralCefBrowser() : UserDataHolderBase(), FileEditor {
     override fun addPropertyChangeListener(listener: PropertyChangeListener) {}
     override fun removePropertyChangeListener(listener: PropertyChangeListener) {}
 
+}
+
+object MavenCentralCefBrowserState {
+    @Volatile
+    var loadDefaultUrl = true
 }

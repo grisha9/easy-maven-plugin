@@ -11,6 +11,7 @@ class MavenAdvancedSettingsState : PersistentStateComponent<MavenAdvancedSetting
     var addGroupIdToSearch by property(false)
     var searchInSplitWindow by property(true)
     var groupIdFolderNavigation by property(true)
+    var completionEasyMavenOnly by property(false)
 
     override fun getState(): MavenAdvancedSettingsState = this
 

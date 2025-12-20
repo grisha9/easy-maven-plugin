@@ -4,6 +4,7 @@ import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileEditor.TextEditorWithPreview
 import ru.rzn.gmyasoedov.gmaven.settings.advanced.DEFAULT_SEARCH_URL
 import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
+import ru.rzn.gmyasoedov.gmaven.util.MvnUtil.getMavenCentralSearchUrl
 
 class MavenCentralUIEditor(textEditor: TextEditor) :
     TextEditorWithPreview(
@@ -23,7 +24,7 @@ class MavenCentralUIEditor(textEditor: TextEditor) :
 
     private fun getUrl(artifactId: String?, groupId: String?): String {
         val settingsState = MavenAdvancedSettingsState.getInstance()
-        val url = settingsState.searchUrl ?: DEFAULT_SEARCH_URL
+        val url = getMavenCentralSearchUrl()
         if (url == DEFAULT_SEARCH_URL) {
             if (!artifactId.isNullOrEmpty()) {
                 var urlToSearch = url + "search?q=$artifactId"
