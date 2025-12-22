@@ -11,8 +11,8 @@ It provides the most accurate resolution of project dependencies.
 Easy Maven plugin runs on top of pure Maven, without any hidden logic.
 The philosophy of Easy Maven plugin: "everything is a Maven task".  
 Any interaction with Maven: import project, test execution, dependency analysis, debugging - is simply running the
-appropriate Maven plugin task with the required arguments.  
-The result is original build tool behavior and a simple implementation.
+appropriate Maven plugin task with the required arguments. The result is original build tool behavior and a simple
+implementation. More details - [dev.to](https://dev.to/grisha9/my-intellij-idea-plugin-for-maven-support-gmaven-cn9).
 
 ### Maven Plugin for IntelliJ IDEA [GitHub-Wiki](https://github.com/grisha9/gmaven-plugin/wiki)
 
