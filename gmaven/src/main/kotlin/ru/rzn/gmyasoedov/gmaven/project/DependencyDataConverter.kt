@@ -52,7 +52,7 @@ private fun addDependencies(
             addLibrary(moduleByMavenProject, artifact, moduleDataNodeByMavenArtifact, context)
             if (!hasLibrary) hasLibrary = true
         } else {
-            addModuleDependency(moduleByMavenProject, moduleDataNodeByMavenArtifact.data)
+            addModuleDependency(moduleByMavenProject, moduleDataNodeByMavenArtifact.data, artifact)
         }
     }
     if (hasLibrary) {
@@ -76,8 +76,8 @@ private fun addDependencies(
             addLibrary(mainModule, testModule, artifact, moduleDataNodeByMavenArtifact, context)
             if (!hasLibrary) hasLibrary = true
         } else {
-            addModuleDependency(mainModule, moduleDataNodeByMavenArtifact.data)
-            addModuleDependency(testModule, moduleDataNodeByMavenArtifact.data)
+            addModuleDependency(mainModule, moduleDataNodeByMavenArtifact.data, artifact)
+            addModuleDependency(testModule, moduleDataNodeByMavenArtifact.data, artifact)
         }
     }
     if (hasLibrary) {
@@ -154,10 +154,13 @@ private fun linkProjectLibrary(
     return libraryData.data == library
 }
 
-private fun addModuleDependency(parentNode: DataNode<out ModuleData>, targetModule: ModuleData) {
+private fun addModuleDependency(
+    parentNode: DataNode<out ModuleData>, targetModule: ModuleData, artifact: MavenArtifact
+) {
     val ownerModule = parentNode.data
     val data = ModuleDependencyData(ownerModule, targetModule)
     data.order = 1
+    data.scope = getScope(artifact)
     parentNode.createChild(ProjectKeys.MODULE_DEPENDENCY, data)
 }
 
