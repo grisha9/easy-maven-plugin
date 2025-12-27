@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [253.5] - 2025-12-23
+## [253.5.1] - 2025-12-23
 
 ### Added
 
@@ -13,6 +13,7 @@
 ### Fix
 
 - Schema location. [Issue](https://github.com/grisha9/easy-maven-plugin/issues/56)
+- Module scope. [Issue](https://github.com/grisha9/easy-maven-plugin/issues/57)
 
 ## [253.4] - 2025-12-14
 
