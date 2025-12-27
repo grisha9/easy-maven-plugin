@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+## [251.6] - 2025-12-23
+
+### Added
+
+- Search Dependency in Maven Central via
+  Browser. [Demo](https://github.com/grisha9/easy-maven-plugin/wiki/Search-Dependency-in-Maven-Central-in-Browser)
+- Open Local Repo Action. [Demo](https://github.com/grisha9/easy-maven-plugin/wiki/Go-to-local-repository-action)
+
+### Fix
+
+- Schema location. [Issue](https://github.com/grisha9/easy-maven-plugin/issues/56)
+- Module scope. [Issue](https://github.com/grisha9/easy-maven-plugin/issues/57)
+
 ## [251.5] - 2025-12-14
 
 ### Added
