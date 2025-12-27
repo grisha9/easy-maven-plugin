@@ -36,7 +36,7 @@ import javax.swing.SwingConstants
 
 class MavenCentralBrowserAction : AnAction() {
     init {
-        templatePresentation.icon = AllIcons.Actions.StartDebugger
+        templatePresentation.icon = AllIcons.Actions.DependencyAnalyzer
         templatePresentation.text = GBundle.message("gmaven.action.maven.central")
     }
 
