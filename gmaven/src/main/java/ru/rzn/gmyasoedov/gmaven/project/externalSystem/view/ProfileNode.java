@@ -30,7 +30,7 @@ public class ProfileNode extends ExternalSystemNode<ProfileData> {
             presentation.setTooltip("Profile is disable. Double click - change state");
         } else {
             presentation.setIcon(AllIcons.Diff.GutterCheckBoxIndeterminate);
-            presentation.setTooltip("Profile is indeterminate (depends on condition in activation tag)Double click - change state");
+            presentation.setTooltip("Profile is indeterminate (depends on condition in activation tag)<br/>Double click - change state");
         }
     }
 
