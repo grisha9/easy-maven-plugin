@@ -24,13 +24,13 @@ public class ProfileNode extends ExternalSystemNode<ProfileData> {
         String state = getState(getData());
         if (ProfileData.SimpleProfile.ACTIVE.name().equals(state)) {
             presentation.setIcon(AllIcons.Diff.GutterCheckBoxSelected);
-            presentation.setTooltip("Profile is active");
+            presentation.setTooltip("Profile is active. Double click - change state");
         } else if (ProfileData.SimpleProfile.INACTIVE.name().equals(state)) {
             presentation.setIcon(AllIcons.Diff.GutterCheckBox);
-            presentation.setTooltip("Profile is disable");
+            presentation.setTooltip("Profile is disable. Double click - change state");
         } else {
             presentation.setIcon(AllIcons.Diff.GutterCheckBoxIndeterminate);
-            presentation.setTooltip("Profile is indeterminate (depends on condition in activation tag)");
+            presentation.setTooltip("Profile is indeterminate (depends on condition in activation tag)<br/>Double click - change state");
         }
     }
 
