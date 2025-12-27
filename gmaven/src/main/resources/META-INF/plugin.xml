@@ -253,7 +253,6 @@
 
         <group id="GMaven.View.ActionsToolbar.CenterPanel">
             <separator/>
-            <reference ref="GMaven.ExternalSystem.AndroidRefreshAll"/>
             <reference ref="GMaven.Toolbar.RunTasksAction"/>
             <reference ref="GMaven.ToolbarDependencyAnalyzer"/>
             <reference ref="GMaven.Toolbar.Offline"/>
