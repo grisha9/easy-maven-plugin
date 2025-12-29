@@ -18,9 +18,12 @@ implementation. More details - [dev.to](https://dev.to/grisha9/my-intellij-idea-
 
 The plugin adds support for the Maven for Java language projects:
 
-- Original Maven behavior for importing project model into IDEA
-- Run Task & Debug test via Maven
-- Dependency analyzer
+- [Original](https://dev.to/grisha9/my-intellij-idea-plugin-for-maven-support-gmaven-cn9) Maven behavior for importing
+  project model into IDEA
+- [Run & Debug](https://github.com/grisha9/easy-maven-plugin/wiki/Run-&-Debug-test-via-Maven-'test'-phase) tests via
+  Maven
+- Maven Daemon [support](https://github.com/grisha9/easy-maven-plugin/wiki/Run-&-Debug-test-via-Maven-'test'-phase)
+- [Dependency analyzer](https://github.com/grisha9/easy-maven-plugin/wiki/Dependency-analyzer)
 - Maven 4 support
 - Groovy support
 - Kotlin JVM support
