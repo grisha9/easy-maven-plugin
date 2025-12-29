@@ -8,7 +8,7 @@ convenient search for dependencies in Maven Central.
 
 Easy Maven is a complete replacement for the bundled Maven plugin.
 It provides the most accurate resolution of project dependencies.  
-Easy Maven plugin runs on top of pure Maven, without any hidden logic.
+Easy Maven plugin runs on top of pure Maven, without any hidden logic. It's a simple Maven Proxy for IDEA.
 The philosophy of Easy Maven plugin: "everything is a Maven task".  
 Any interaction with Maven: import project, test execution, dependency analysis, debugging - is simply running the
 appropriate Maven plugin task with the required arguments. The result is original build tool behavior and a simple
