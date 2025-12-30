@@ -24,6 +24,8 @@ The plugin adds support for the Maven for Java language projects:
   Maven
 - Maven Daemon [support](https://github.com/grisha9/easy-maven-plugin/wiki/Run-&-Debug-test-via-Maven-'test'-phase)
 - [Dependency analyzer](https://github.com/grisha9/easy-maven-plugin/wiki/Dependency-analyzer)
+- [Search](https://github.com/grisha9/easy-maven-plugin/wiki/Search-Dependency-in-Maven-Central-in-Browser) dependency
+  in Maven Central
 - Maven 4 support
 - Groovy support
 - Kotlin JVM support
