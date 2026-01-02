@@ -24,6 +24,8 @@ The plugin adds support for the Maven for Java language projects:
   project model into IDEA
 - [Run & Debug](https://github.com/grisha9/easy-maven-plugin/wiki/Run-&-Debug-test-via-Maven-'test'-phase) tests via
   Maven
+- [Run & Debug](https://github.com/grisha9/easy-maven-plugin/wiki/Run-&-Debug-Spring-Boot-applications-via-maven-plugin-%E2%80%90-spring%E2%80%90boot:run)
+  Spring Boot Applications via spring-boot Maven plugin
 - Maven Daemon [support](https://github.com/grisha9/easy-maven-plugin/wiki/Run-&-Debug-test-via-Maven-'test'-phase)
 - [Dependency analyzer](https://github.com/grisha9/easy-maven-plugin/wiki/Dependency-analyzer)
 - [Search](https://github.com/grisha9/easy-maven-plugin/wiki/Search-Dependency-in-Maven-Central-in-Browser) dependency
