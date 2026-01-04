@@ -1,8 +1,10 @@
 package ru.rzn.gmyasoedov.gmaven.settings.advanced
 
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory.createSingleFolderDescriptor
 import com.intellij.openapi.observable.properties.PropertyGraph
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.emptyText
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.ui.dsl.builder.AlignX
@@ -10,8 +12,10 @@ import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
+import ru.rzn.gmyasoedov.gmaven.bundle.GBundle.message
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import javax.swing.JComponent
+import kotlin.io.path.absolutePathString
 
 class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurable {
     private val additionalSettings = MavenAdvancedSettingsState.getInstance()
@@ -25,6 +29,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
     private val groupIdFolderNavigationBind = propertyGraph.property(false)
     private val completionEasyMavenOnlyBind = propertyGraph.property(false)
     private val runLineMarkerBind = propertyGraph.property(false)
+    private val defaultMavenHomeBind = propertyGraph.property("")
 
     private val checkSourcesBind = propertyGraph.property(false)
     private val wslSupportBind = propertyGraph.property(false)
@@ -54,6 +59,21 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
             }
 
             group("Other:") {
+                row("Default Maven Home:") {
+                    textFieldWithBrowseButton(
+                        createSingleFolderDescriptor()
+                            .withTitle("Select Maven Home Directory"),
+                        project,
+                        { it.toNioPath().absolutePathString() }
+                    )
+                        .align(AlignX.FILL)
+                        .bindText(defaultMavenHomeBind)
+                        .resizableColumn()
+                        .applyToComponent {
+                            toolTipText = message("gmaven.settings.project.maven.default.dialog.tooltip")
+                            emptyText.text = toolTipText
+                        }.comment(message("gmaven.settings.project.maven.default.dialog.comment"))
+                }
                 row {
                     checkBox(GBundle.message("gmaven.settings.system.check.sources"))
                         .applyToComponent {
@@ -98,6 +118,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         groupIdFolderNavigationBind.set(additionalSettings.groupIdFolderNavigation)
         completionEasyMavenOnlyBind.set(additionalSettings.completionEasyMavenOnly)
         runLineMarkerBind.set(additionalSettings.runLineMarker)
+        defaultMavenHomeBind.set(additionalSettings.defaultMavenHome ?: "")
 
         checkSourcesBind.set(baseSettings.isCheckSourcesInLocalRepo)
         colorSupportBind.set(baseSettings.isColoredSupport)
@@ -111,6 +132,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         if (additionalSettings.groupIdFolderNavigation != groupIdFolderNavigationBind.get()) return true
         if (additionalSettings.completionEasyMavenOnly != completionEasyMavenOnlyBind.get()) return true
         if (additionalSettings.runLineMarker != runLineMarkerBind.get()) return true
+        if ((additionalSettings.defaultMavenHome ?: "") != defaultMavenHomeBind.get()) return true
 
         if (baseSettings.isCheckSourcesInLocalRepo != checkSourcesBind.get()) return true
         if (baseSettings.isColoredSupport != colorSupportBind.get()) return true
@@ -126,6 +148,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         additionalSettings.groupIdFolderNavigation = groupIdFolderNavigationBind.get()
         additionalSettings.completionEasyMavenOnly = completionEasyMavenOnlyBind.get()
         additionalSettings.runLineMarker = runLineMarkerBind.get()
+        additionalSettings.defaultMavenHome = defaultMavenHomeBind.get()
 
         baseSettings.isCheckSourcesInLocalRepo = checkSourcesBind.get()
         baseSettings.isColoredSupport = colorSupportBind.get()
