@@ -96,9 +96,6 @@ fun runTasks(
     tasks: List<String>,
     processConsumer: ((process: GOSProcessHandler) -> Unit)? = null
 ) {
-    if (tasks.isEmpty()) {
-        throw ExternalSystemException("tasks list is empty")
-    }
     val commandLine = getCommandLine(request)
 
     setupBaseParamsFromSettings(request, commandLine)

@@ -13,6 +13,7 @@ class MavenAdvancedSettingsState : PersistentStateComponent<MavenAdvancedSetting
     var groupIdFolderNavigation by property(true)
     var completionEasyMavenOnly by property(false)
     var runLineMarker by property(true)
+    var defaultMavenHome by string("")
 
     override fun getState(): MavenAdvancedSettingsState = this
 
