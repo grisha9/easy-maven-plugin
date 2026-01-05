@@ -35,7 +35,7 @@ private fun getDistributionSettings(
         return DistributionSettings(DistributionType.WRAPPER, null, null)
     }
     val defaultMavenHome = MavenAdvancedSettingsState.getInstance().defaultMavenHome
-    if (defaultMavenHome != null && Path(defaultMavenHome).exists()) {
+    if (!defaultMavenHome.isNullOrEmpty() && Path(defaultMavenHome).exists()) {
         return DistributionSettings(DistributionType.CUSTOM, Path(defaultMavenHome), null)
     }
 
