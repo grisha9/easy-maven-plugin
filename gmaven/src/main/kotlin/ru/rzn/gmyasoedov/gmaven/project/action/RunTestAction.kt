@@ -16,7 +16,6 @@ import org.jetbrains.uast.*
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
 import ru.rzn.gmyasoedov.gmaven.settings.debug.MavenDebugType
-import ru.rzn.gmyasoedov.gmaven.util.CachedModuleDataService
 import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 
 class DebugTestAction() : AnAction() {
@@ -86,8 +85,11 @@ private fun getName(uElement: UElement): String {
 
 private fun actionPerformed(e: AnActionEvent, executorId: String) {
     val element = e.getData(CommonDataKeys.PSI_ELEMENT) ?: return
+    actionPerformedTest(element, executorId)
+}
+
+fun actionPerformedTest(element: PsiElement, executorId: String) {
     val module = ModuleUtil.findModuleForPsiElement(element) ?: return
-    CachedModuleDataService.invalidate()
     val mavenModule = MvnUtil.findMavenModuleData(module) ?: return
 
     val testParam = getTestParam(element) ?: return
