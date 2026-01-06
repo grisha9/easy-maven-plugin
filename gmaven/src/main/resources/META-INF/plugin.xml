@@ -162,6 +162,10 @@
         <orderEnumerationHandlerFactory
                 implementation="ru.rzn.gmyasoedov.gmaven.execution.MavenOrderEnumerationHandler$Factory"/>
         <fileEditorProvider implementation="ru.rzn.gmyasoedov.gmaven.central.PomWebMavenCentralEditorProvider"/>
+        <codeInsight.lineMarkerProvider language="UAST"
+                                        implementationClass="ru.rzn.gmyasoedov.gmaven.project.action.SpringBootRunLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="UAST"
+                                        implementationClass="ru.rzn.gmyasoedov.gmaven.project.action.MavenRunTestLineMarkerProvider"/>
         <!--        <annotator language="XML" implementationClass="ru.rzn.gmyasoedov.gmaven.dom.annotator.MavenDomGutterAnnotator"/>
         <backspaceHandlerDelegate implementation="ru.rzn.gmyasoedov.gmaven.dom.code.MavenBackspaceHandlerDelegate"/>
         <typedHandler implementation="ru.rzn.gmyasoedov.gmaven.dom.code.MavenTypedHandlerDelegate"/>-->
