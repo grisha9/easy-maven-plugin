@@ -11,6 +11,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.externalSystem.model.execution.ExternalSystemTaskExecutionSettings
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.module.ModuleUtil
+import com.intellij.psi.PsiElement
 import com.intellij.util.execution.ParametersListUtil
 import org.jetbrains.uast.*
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.MODULE_PROP_BUILD_FILE
@@ -21,7 +22,7 @@ import ru.rzn.gmyasoedov.gmaven.util.CachedModuleDataService
 import ru.rzn.gmyasoedov.gmaven.util.MavenPathUtil
 import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 
-private const val SPRING_BOOT_APPLICATION = "org.springframework.boot.autoconfigure.SpringBootApplication"
+const val SPRING_BOOT_APPLICATION = "org.springframework.boot.autoconfigure.SpringBootApplication"
 
 class RunExecJavaMainAction : AnAction() {
     val executorId = DefaultRunExecutor.EXECUTOR_ID
@@ -153,8 +154,11 @@ private fun actionPerformedSpring(e: AnActionEvent, executorId: String) {
     val element = e.getData(CommonDataKeys.PSI_ELEMENT) ?: return
     val uMethod = element.toUElement() as? UMethod ?: return
     val sprigMainClass = getSpringMainClass(uMethod)?.qualifiedName ?: return
+    actionPerformedSpring(element, sprigMainClass, executorId)
+}
+
+fun actionPerformedSpring(element: PsiElement, sprigMainClass: String, executorId: String) {
     val module = ModuleUtil.findModuleForPsiElement(element) ?: return
-    CachedModuleDataService.invalidate()
     val mavenModule = MvnUtil.findMavenModuleData(module) ?: return
     val pomPath = mavenModule.getProperty(MODULE_PROP_BUILD_FILE) ?: mavenModule.linkedExternalProjectPath
     val isTest = MvnUtil.isTestFile(element)
