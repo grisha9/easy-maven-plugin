@@ -8,9 +8,11 @@ import com.intellij.openapi.externalSystem.model.project.*
 import com.intellij.openapi.externalSystem.model.project.dependencies.ProjectDependenciesImpl
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.roots.DependencyScope
+import org.jetbrains.kotlin.idea.base.externalSystem.findAll
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.project.MavenProjectResolver.ProjectResolverContext
 import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.SourceSetData
+import ru.rzn.gmyasoedov.gmaven.utils.MavenLog
 import ru.rzn.gmyasoedov.maven.plugin.reader.model.MavenArtifact
 import ru.rzn.gmyasoedov.maven.plugin.reader.model.MavenProject
 import ru.rzn.gmyasoedov.maven.plugin.reader.model.MavenProjectContainer
@@ -171,6 +173,7 @@ private fun createLibrary(
     val library = LibraryData(GMavenConstants.SYSTEM_ID, GServerUtils.getMavenId(artifact), artifactFile == null)
     library.artifactId = artifact.artifactId
     if (artifact.classifier == "tests") {
+        setTestJarSource(context, artifact, library)
         //todo
         //in ext.system - com.intellij.openapi.externalSystem.model.project.ModuleDependencyData.productionOnTestDependency
         //in maven - org.jetbrains.idea.maven.importing.tree.dependency.ModuleDependency (in org.jetbrains.idea.maven.importing.tree.MavenProjectImportContextProvider#getDependency)
@@ -194,6 +197,21 @@ private fun createLibrary(
     return library
 }
 
+private fun setTestJarSource(context: ProjectResolverContext, artifact: MavenArtifact, library: LibraryData) {
+    try {
+        val moduleContextHolder = context.moduleDataByArtifactId[GServerUtils.getMavenId(artifact)]
+        val moduleDataNodeByMavenArtifact = moduleContextHolder?.perSourceSetModules?.testNode
+            ?: moduleContextHolder?.moduleNode
+        val rootNodes = moduleDataNodeByMavenArtifact?.findAll(ProjectKeys.CONTENT_ROOT) ?: return
+        rootNodes
+            .flatMap { it.data.getPaths(ExternalSystemSourceType.TEST) }
+            .mapNotNull { it?.path }
+            .forEach { library.addPath(LibraryPathType.SOURCE, it) }
+    } catch (e: Exception) {
+        MavenLog.LOG.warn("add source to test jat", e)
+    }
+}
+
 private fun getLibraryFile(artifact: MavenArtifact, classifierModuleNode: DataNode<out ModuleData>?): File? {
     if (artifact.filePath != null || artifact.classifier == null || classifierModuleNode == null) {
         return artifact.filePath?.let { File(it) }
@@ -202,7 +220,7 @@ private fun getLibraryFile(artifact: MavenArtifact, classifierModuleNode: DataNo
         val files = Path.of(classifierModuleNode.data.linkedExternalProjectPath).resolve("target").toFile()
             .listFiles()?.filter { it.isFile } ?: emptyList()
         files.find { it.absolutePath.endsWith("-${artifact.classifier}.jar") }
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         null
     }
 }
