@@ -233,7 +233,7 @@ private fun addContentRoot(roots: MutableList<ContentRootData>, type: ExternalSy
         try {
             root.storePath(type, path)
             return
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             errorOnStorePath = true
         }
     }
