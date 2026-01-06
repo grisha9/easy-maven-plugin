@@ -24,6 +24,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
     private val searchInSplitWindowBind = propertyGraph.property(false)
     private val groupIdFolderNavigationBind = propertyGraph.property(false)
     private val completionEasyMavenOnlyBind = propertyGraph.property(false)
+    private val runLineMarkerBind = propertyGraph.property(false)
 
     private val checkSourcesBind = propertyGraph.property(false)
     private val wslSupportBind = propertyGraph.property(false)
@@ -82,6 +83,10 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
                     checkBox("Dependency completion only in Easy Maven projects")
                         .bindSelected(completionEasyMavenOnlyBind)
                 }
+                row {
+                    checkBox("Show gutter run line markers - Tests/SpringBoot")
+                        .bindSelected(runLineMarkerBind)
+                }
             }
         }
     }
@@ -92,6 +97,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         searchInSplitWindowBind.set(additionalSettings.searchInSplitWindow)
         groupIdFolderNavigationBind.set(additionalSettings.groupIdFolderNavigation)
         completionEasyMavenOnlyBind.set(additionalSettings.completionEasyMavenOnly)
+        runLineMarkerBind.set(additionalSettings.runLineMarker)
 
         checkSourcesBind.set(baseSettings.isCheckSourcesInLocalRepo)
         colorSupportBind.set(baseSettings.isColoredSupport)
@@ -104,6 +110,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         if (additionalSettings.searchInSplitWindow != searchInSplitWindowBind.get()) return true
         if (additionalSettings.groupIdFolderNavigation != groupIdFolderNavigationBind.get()) return true
         if (additionalSettings.completionEasyMavenOnly != completionEasyMavenOnlyBind.get()) return true
+        if (additionalSettings.runLineMarker != runLineMarkerBind.get()) return true
 
         if (baseSettings.isCheckSourcesInLocalRepo != checkSourcesBind.get()) return true
         if (baseSettings.isColoredSupport != colorSupportBind.get()) return true
@@ -118,6 +125,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         additionalSettings.searchInSplitWindow = searchInSplitWindowBind.get()
         additionalSettings.groupIdFolderNavigation = groupIdFolderNavigationBind.get()
         additionalSettings.completionEasyMavenOnly = completionEasyMavenOnlyBind.get()
+        additionalSettings.runLineMarker = runLineMarkerBind.get()
 
         baseSettings.isCheckSourcesInLocalRepo = checkSourcesBind.get()
         baseSettings.isColoredSupport = colorSupportBind.get()
