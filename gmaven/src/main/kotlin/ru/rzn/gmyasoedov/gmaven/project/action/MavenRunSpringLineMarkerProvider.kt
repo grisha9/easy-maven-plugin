@@ -9,6 +9,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.psi.PsiAnnotation
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
@@ -18,11 +19,23 @@ import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UClass
 import org.jetbrains.uast.getUParentForIdentifier
 import org.jetbrains.uast.toUElement
+import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
 import ru.rzn.gmyasoedov.gmaven.util.MavenMarkerInfoGroup
+import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 
 class MavenRunSpringLineMarkerProvider : LineMarkerProvider {
+
+    override fun collectSlowLineMarkers(elements: List<PsiElement?>, result: MutableCollection<in LineMarkerInfo<*>>) {
+        if (!MavenAdvancedSettingsState.getInstance().runLineMarker) return
+        super.collectSlowLineMarkers(elements, result)
+    }
+
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         val uElement = getUParentForIdentifier(element) as? UClass ?: return null
+
+        val module = ModuleUtilCore.findModuleForPsiElement(element) ?: return null
+        MvnUtil.findMavenModuleData(module) ?: return null
+
         val springAnnotation = findUAnnotation(uElement) ?: return null
         val sourcePsi = springAnnotation.uastAnchor?.sourcePsi ?: return null
         val actionGroup = DefaultActionGroup()
