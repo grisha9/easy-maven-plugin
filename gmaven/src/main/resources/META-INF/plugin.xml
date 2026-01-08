@@ -172,6 +172,7 @@ The result is original build tool behavior and a simple implementation.
         <orderEnumerationHandlerFactory
                 implementation="ru.rzn.gmyasoedov.gmaven.execution.MavenOrderEnumerationHandler$Factory"/>
         <fileEditorProvider implementation="ru.rzn.gmyasoedov.gmaven.central.PomWebMavenCentralEditorProvider"/>
+        <runAnything.executionProvider implementation="ru.rzn.gmyasoedov.gmaven.execution.MavenRunAnythingProvider"/>
         <!--        <annotator language="XML" implementationClass="ru.rzn.gmyasoedov.gmaven.dom.annotator.MavenDomGutterAnnotator"/>
         <backspaceHandlerDelegate implementation="ru.rzn.gmyasoedov.gmaven.dom.code.MavenBackspaceHandlerDelegate"/>
         <typedHandler implementation="ru.rzn.gmyasoedov.gmaven.dom.code.MavenTypedHandlerDelegate"/>-->

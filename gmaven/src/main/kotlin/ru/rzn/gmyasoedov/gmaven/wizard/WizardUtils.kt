@@ -8,8 +8,11 @@ import ru.rzn.gmyasoedov.gmaven.project.wrapper.MvnDotProperties
 import ru.rzn.gmyasoedov.gmaven.settings.DistributionSettings
 import ru.rzn.gmyasoedov.gmaven.settings.DistributionType
 import ru.rzn.gmyasoedov.gmaven.settings.MavenProjectSettings
+import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
 import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils
+import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.exists
 
 fun createMavenProjectSettings(projectFile: VirtualFile): MavenProjectSettings {
     val projectDirectory = if (projectFile.isDirectory) projectFile else projectFile.parent
@@ -20,7 +23,7 @@ fun createMavenProjectSettings(projectFile: VirtualFile): MavenProjectSettings {
     settings.projectBuildFile = if (!projectFile.isDirectory) projectFile.toNioPath().absolutePathString() else null
     MavenUtils.suggestProjectSdk() //load jdk table
     settings.jdkName = ExternalSystemJdkUtil.USE_PROJECT_JDK
-    return settings;
+    return settings
 }
 
 private fun getDistributionSettings(
@@ -30,6 +33,10 @@ private fun getDistributionSettings(
     if (settings.distributionSettings.type == DistributionType.CUSTOM) return settings.distributionSettings
     if (MvnDotProperties.isWrapperExist(projectDirectory)) {
         return DistributionSettings(DistributionType.WRAPPER, null, null)
+    }
+    val defaultMavenHome = MavenAdvancedSettingsState.getInstance().defaultMavenHome
+    if (!defaultMavenHome.isNullOrEmpty() && Path(defaultMavenHome).exists()) {
+        return DistributionSettings(DistributionType.CUSTOM, Path(defaultMavenHome), null)
     }
 
     val mavenHome = MavenUtils.resolveMavenHome()
