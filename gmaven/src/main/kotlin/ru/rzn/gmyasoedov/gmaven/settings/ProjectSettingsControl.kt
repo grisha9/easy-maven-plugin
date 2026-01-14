@@ -34,6 +34,8 @@ import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle.message
 import ru.rzn.gmyasoedov.gmaven.project.wrapper.MvnDotProperties.getDistributionUrl
 import ru.rzn.gmyasoedov.gmaven.settings.ProjectSettingsControlBuilder.*
+import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
+import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 import ru.rzn.gmyasoedov.gmaven.utils.MavenLog
 import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils
 import java.nio.file.Path
@@ -338,6 +340,19 @@ class ProjectSettingsControl(private val project: Project, private val currentSe
 
         settings.jdkName = jdkComboBox?.let { getJdkName(it.selectedItem) }
         settings.distributionSettings = getDistributionSettings()
+        saveRecentMavenPath(settings.distributionSettings)
+    }
+
+    private fun saveRecentMavenPath(distributionSettings: DistributionSettings) {
+        if (distributionSettings.path == null || distributionSettings.path.absolutePathString().isBlank()) return
+        try {
+            if (distributionSettings.type == DistributionType.CUSTOM) {
+                MavenAdvancedSettingsState.getInstance().lastMvnPath = distributionSettings.path.absolutePathString()
+            } else if (distributionSettings.type == DistributionType.CUSTOM_MVND) {
+                MavenAdvancedSettingsState.getInstance().lastMvndPath = distributionSettings.path.absolutePathString()
+            }
+        } catch (_: Exception) {
+        }
     }
 
     private fun getDistributionSettings(): DistributionSettings {
@@ -375,6 +390,7 @@ class ProjectSettingsControl(private val project: Project, private val currentSe
             distributionTypeMap[each.description] = each.distributionSettings
             if (isCustomPathDistribution(each.distributionSettings.type)) {
                 val customPath = mavenCustomPathBind.get().takeIf { it.isNotEmpty() }
+                    ?: MvnUtil.getRecentMvnPath(each.distributionSettings.type == DistributionType.CUSTOM_MVND)
                     ?: currentSettings.localRepositoryPath ?: ""
                 each.distributionSettings.path = Path.of(customPath)
             }
