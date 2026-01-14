@@ -62,6 +62,16 @@ object MvnUtil {
             .mapNotNull { it.localRepositoryPath }.toSet()
     }
 
+    fun getRecentMvnPath(isDaemon: Boolean = false): String? {
+        return (if (isDaemon) {
+            MavenAdvancedSettingsState.getInstance().lastMvndPath
+                ?.takeIf { it.isNotEmpty() } ?: MavenAdvancedSettingsState.getInstance().lastMvnPath
+        } else {
+            MavenAdvancedSettingsState.getInstance().lastMvnPath
+                ?.takeIf { it.isNotEmpty() } ?: MavenAdvancedSettingsState.getInstance().lastMvndPath
+        })?.takeIf { it.isNotEmpty() }
+    }
+
     private fun isSourceSetModule(moduleName: String): Boolean =
         moduleName.endsWith(".test") || moduleName.endsWith(".main")
 }
