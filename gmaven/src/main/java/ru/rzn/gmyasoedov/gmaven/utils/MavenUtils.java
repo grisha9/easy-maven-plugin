@@ -167,7 +167,10 @@ public class MavenUtils {
         ProjectJdkTable projectJdkTable = ProjectJdkTable.getInstance();
         Sdk[] allJdks = projectJdkTable.getAllJdks();
         if (allJdks.length == 0) {
-            projectJdkTable.preconfigure();
+            try {
+                projectJdkTable.preconfigure();
+            } catch (Throwable ignore) {
+            }
         }
         SdkType sdkType = ExternalSystemJdkUtil.getJavaSdkType();
         return projectJdkTable.getSdksOfType(sdkType).stream()

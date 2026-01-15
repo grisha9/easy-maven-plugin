@@ -10,11 +10,9 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleUtilCore
-import com.intellij.psi.PsiAnnotation
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiModifierListOwner
+import com.intellij.psi.*
 import icons.GMavenIcons
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UClass
@@ -32,6 +30,7 @@ class SpringBootRunLineMarkerProvider : LineMarkerProvider {
         if (!MavenAdvancedSettingsState.getInstance().runLineMarker) return
         val element = elements.firstOrNull() ?: return
         val module = ModuleUtilCore.findModuleForPsiElement(element) ?: return
+        if (!isSpringBootModule(module)) return
         MvnUtil.findMavenModuleData(module) ?: return
         val uClasses = (element.containingFile?.toUElement() as? UFile)?.classes ?: emptyList()
         uClasses.forEach {
@@ -54,6 +53,11 @@ class SpringBootRunLineMarkerProvider : LineMarkerProvider {
             { "Run or Debug Application via Spring-Boot Maven Plugin" },
             actionGroup
         )
+    }
+
+    private fun isSpringBootModule(module: Module): Boolean {
+        return JavaPsiFacade.getInstance(module.project)
+            .findClass(SPRING_BOOT_APPLICATION, module.moduleWithLibrariesScope) != null
     }
 
     private fun findUAnnotation(uElement: UClass): UAnnotation? {
