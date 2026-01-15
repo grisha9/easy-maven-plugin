@@ -41,6 +41,7 @@ import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils
 import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.Callable
+import kotlin.io.path.absolutePathString
 import kotlin.io.path.exists
 
 class ProjectSettingsControl(private val project: Project, private val currentSettings: MavenProjectSettings) :
