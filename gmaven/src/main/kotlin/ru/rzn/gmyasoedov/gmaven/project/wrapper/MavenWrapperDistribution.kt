@@ -125,7 +125,7 @@ class MavenWrapperDistribution {
         }
 
         private fun getMavenDir(zipFile: File): File {
-            val dirs = zipFile.parentFile.listFiles { it.isDirectory }
+            val dirs = zipFile.parentFile.listFiles { it -> it.isDirectory }
             if (dirs == null || dirs.size != 1) {
                 MavenLog.LOG.warn("Expected exactly 1 top level dir in Maven distribution, found: " + dirs?.asList())
                 throw IllegalStateException(message("gmaven.wrapper.zip.is.not.correct", zipFile.absoluteFile))
@@ -138,7 +138,7 @@ class MavenWrapperDistribution {
         }
 
         private fun getCurrentMavenWrapperPath(zipFile: File): File? {
-            val dirs = zipFile.parentFile.listFiles { it.isDirectory } ?: emptyArray()
+            val dirs = zipFile.parentFile.listFiles { it -> it.isDirectory } ?: emptyArray()
             if (dirs.size == 1 && MavenUtils.isValidMavenHome(dirs[0])) {
                 return dirs[0]
             }
@@ -185,7 +185,7 @@ class MavenWrapperDistribution {
             } finally {
                 if (errorUnpacking) {
                     indicator?.apply { text = message("gmaven.wrapper.failure") }
-                    zip.parentFile.listFiles { it.name != zip.name }?.forEach { FileUtil.delete(it) }
+                    zip.parentFile.listFiles { it -> it.name != zip.name }?.forEach { FileUtil.delete(it) }
                 }
             }
         }

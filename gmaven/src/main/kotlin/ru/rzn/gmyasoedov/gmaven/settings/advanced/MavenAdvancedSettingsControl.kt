@@ -15,7 +15,6 @@ import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle.message
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import javax.swing.JComponent
-import kotlin.io.path.absolutePathString
 
 class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurable {
     private val additionalSettings = MavenAdvancedSettingsState.getInstance()
@@ -61,10 +60,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
             group("Other:") {
                 row("Default Maven Home:") {
                     textFieldWithBrowseButton(
-                        createSingleFolderDescriptor()
-                            .withTitle("Select Maven Home Directory"),
-                        project,
-                        { it.toNioPath().absolutePathString() }
+                        "Select Maven Home Directory", project, createSingleFolderDescriptor()
                     )
                         .align(AlignX.FILL)
                         .bindText(defaultMavenHomeBind)
