@@ -13,29 +13,22 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
 import icons.GMavenIcons
-import org.jetbrains.uast.UFile
 import org.jetbrains.uast.UMethod
-import org.jetbrains.uast.toUElement
+import org.jetbrains.uast.getUParentForIdentifier
 import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
 import ru.rzn.gmyasoedov.gmaven.util.MavenMarkerInfoGroup
 import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 
 class MavenRunTestLineMarkerProvider : LineMarkerProvider {
 
-    override fun getLineMarkerInfo(element: PsiElement) = null
-
-    override fun collectSlowLineMarkers(elements: List<PsiElement?>, result: MutableCollection<in LineMarkerInfo<*>>) {
-        if (!MavenAdvancedSettingsState.getInstance().runLineMarker) return
-        val element = elements.firstOrNull() ?: return
-        if (!MvnUtil.isTestFile(element)) return
-        val module = ModuleUtilCore.findModuleForPsiElement(element) ?: return
-        if (!MvnUtil.isUnderProject(element)) return
-        MvnUtil.findMavenModuleData(module) ?: return
-        val uClasses = (element.containingFile?.toUElement() as? UFile)?.classes ?: emptyList()
-
-        uClasses.flatMap { it.methods.asSequence() }.forEach {
-            getTestLineMarkerInfo(it)?.let { marker -> result += marker }
-        }
+    override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
+        if (!MavenAdvancedSettingsState.getInstance().runLineMarker) return null
+        if (!MvnUtil.isTestFile(element)) return null
+        val uMethod = getUParentForIdentifier(element) as? UMethod ?: return null
+        val module = ModuleUtilCore.findModuleForPsiElement(element) ?: return null
+        if (!MvnUtil.isUnderProject(element)) return null
+        MvnUtil.findMavenModuleData(module) ?: return null
+        return getTestLineMarkerInfo(uMethod)
     }
 
     private fun getTestLineMarkerInfo(uMethod: UMethod): LineMarkerInfo<*>? {
@@ -65,10 +58,10 @@ internal class RunTestGutterAction(
 ) : AnAction() {
     init {
         if (executorId == DefaultRunExecutor.EXECUTOR_ID) {
-            templatePresentation.text = "Run Spring Boot Application"
+            templatePresentation.text = "Run Test - Maven Surefire Plugin"
             templatePresentation.icon = AllIcons.Actions.Execute
         } else {
-            templatePresentation.text = "Debug Spring Boot Application"
+            templatePresentation.text = "Debug Test - Maven Surefire Plugin"
             templatePresentation.icon = AllIcons.Actions.StartDebugger
         }
     }
