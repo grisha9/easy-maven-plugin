@@ -16,7 +16,7 @@ import com.intellij.psi.*
 import icons.GMavenIcons
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UClass
-import org.jetbrains.uast.UFile
+import org.jetbrains.uast.getUParentForIdentifier
 import org.jetbrains.uast.toUElement
 import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
 import ru.rzn.gmyasoedov.gmaven.util.MavenMarkerInfoGroup
@@ -24,18 +24,13 @@ import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 
 class SpringBootRunLineMarkerProvider : LineMarkerProvider {
 
-    override fun getLineMarkerInfo(element: PsiElement) = null
-
-    override fun collectSlowLineMarkers(elements: List<PsiElement?>, result: MutableCollection<in LineMarkerInfo<*>>) {
-        if (!MavenAdvancedSettingsState.getInstance().runLineMarker) return
-        val element = elements.firstOrNull() ?: return
-        val module = ModuleUtilCore.findModuleForPsiElement(element) ?: return
-        if (!isSpringBootModule(module)) return
-        MvnUtil.findMavenModuleData(module) ?: return
-        val uClasses = (element.containingFile?.toUElement() as? UFile)?.classes ?: emptyList()
-        uClasses.forEach {
-            getSpringBootLineMarkerInfo(it)?.let { marker -> result += marker }
-        }
+    override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
+        if (!MavenAdvancedSettingsState.getInstance().runLineMarker) return null
+        val module = ModuleUtilCore.findModuleForPsiElement(element) ?: return null
+        if (!isSpringBootModule(module)) return null
+        val uClass = getUParentForIdentifier(element) as? UClass ?: return null
+        MvnUtil.findMavenModuleData(module) ?: return null
+        return getSpringBootLineMarkerInfo(uClass)
     }
 
     private fun getSpringBootLineMarkerInfo(uClass: UClass): LineMarkerInfo<*>? {
