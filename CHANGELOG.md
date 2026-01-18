@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+## [253.6] - 2026-01-15
+
+### Added
+
+- Maven default path. [Issue](https://github.com/grisha9/easy-maven-plugin/issues/62)
+- Test-jar. Added module sources, but *-test.jar should be exists in target or
+  repo [Issue](https://github.com/grisha9/easy-maven-plugin/issues/61)
+- Run anything if bundled Maven is disabled
+- Gutter icons for run Test ot SpringBoot apps via maven
+  task. [PR](https://github.com/grisha9/easy-maven-plugin/pull/65)
+
 ## [253.5.1] - 2025-12-23
 
 ### Added
