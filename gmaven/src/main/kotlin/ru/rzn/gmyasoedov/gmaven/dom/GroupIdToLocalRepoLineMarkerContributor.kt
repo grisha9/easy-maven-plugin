@@ -5,6 +5,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.actions.RevealFileAction
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.toNioPathOrNull
 import com.intellij.psi.PsiElement
@@ -12,7 +13,7 @@ import com.intellij.psi.xml.XmlTag
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
-import ru.rzn.gmyasoedov.gmaven.util.CachedModuleDataService
+import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 import ru.rzn.gmyasoedov.gmaven.utils.MavenArtifactUtil
 import java.nio.file.Path
 import kotlin.io.path.Path
@@ -32,7 +33,7 @@ class GroupIdToLocalRepoLineMarkerContributor : RunLineMarkerContributor() {
         val groupIdValue = xmlTag.value.trimmedText.takeIf { it.isNotEmpty() } ?: return null
         val virtualFile = xmlTag.containingFile?.virtualFile ?: return null
         val configPath = virtualFile.toNioPathOrNull()?.absolutePathString() ?: return null
-        if (!CachedModuleDataService.getDataHolder(xmlTag.project).isConfigPath(configPath)) return null
+        //if (!CachedModuleDataService.getDataHolder(xmlTag.project).isConfigPath(configPath)) return null
 
         val artifactId = parentTag.getSubTagText(MavenArtifactUtil.ARTIFACT_ID)?.trim()?.takeIf { it.isNotEmpty() }
         return Info(
@@ -59,6 +60,8 @@ private class OpenArtifactFolderAction(
             .getLinkedProjectSettings(modulePath)
             ?.localRepositoryPath
             ?: MavenSettings.getInstance(project).linkedProjectsSettings.firstOrNull()?.localRepositoryPath
+            ?: ModuleUtilCore.findModuleForFile(configVirtualFile, project)
+                ?.let { MvnUtil.getMavenLocalReposFromIDEA(it).firstOrNull() }
             ?: return
         val path = getPath(localRepoPath)
         RevealFileAction.openFile(path)

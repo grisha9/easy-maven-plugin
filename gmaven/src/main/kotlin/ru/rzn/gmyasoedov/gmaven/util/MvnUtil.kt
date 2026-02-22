@@ -4,8 +4,12 @@ import com.intellij.openapi.externalSystem.model.execution.ExternalSystemTaskExe
 import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.OrderEnumerator
+import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.intellij.util.Processor
 import com.intellij.util.execution.ParametersListUtil
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.project.process.BaseMavenCommandLine
@@ -13,6 +17,8 @@ import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import ru.rzn.gmyasoedov.gmaven.settings.advanced.DEFAULT_SEARCH_URL
 import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
 import ru.rzn.gmyasoedov.gmaven.settings.debug.MavenDebugType
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
 
 object MvnUtil {
 
@@ -70,6 +76,23 @@ object MvnUtil {
             MavenAdvancedSettingsState.getInstance().lastMvnPath
                 ?.takeIf { it.isNotEmpty() } ?: MavenAdvancedSettingsState.getInstance().lastMvndPath
         })?.takeIf { it.isNotEmpty() }
+    }
+
+    fun getMavenLocalReposFromIDEA(module: Module): List<String> {
+        var virtualFileM2: VirtualFile? = null
+        OrderEnumerator.orderEntries(module).forEachLibrary(Processor { library ->
+            if (virtualFileM2 != null) return@Processor false
+            val virtualFiles = library.getFiles(OrderRootType.CLASSES)
+            val virtualFile = virtualFiles.firstOrNull { it.canonicalPath?.contains("/.m2/repository") == true }
+            if (virtualFile != null) {
+                virtualFileM2 = virtualFile
+                return@Processor false
+            }
+            return@Processor true
+        })
+        val canonicalPath = virtualFileM2?.canonicalPath ?: return emptyList()
+        val repositoryPath = canonicalPath.substringBefore("/.m2/repository") + "/.m2/repository"
+        return listOf(Path(repositoryPath).absolutePathString())
     }
 
     private fun isSourceSetModule(moduleName: String): Boolean =

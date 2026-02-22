@@ -7,9 +7,6 @@ import com.intellij.java.library.JavaLibraryModificationTracker
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.roots.OrderEnumerator
-import com.intellij.openapi.roots.OrderRootType
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.toNioPathOrNull
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -19,7 +16,6 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.xml.XmlFile
 import com.intellij.psi.xml.XmlTag
 import com.intellij.psi.xml.XmlText
-import com.intellij.util.Processor
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.IDEA_PSI_EDIT_TOKEN
@@ -369,25 +365,9 @@ private fun getLocalRepos(configFilePath: String, originalFile: PsiFile): Collec
 private fun findMavenLocalReposCacheable(module: Module): List<String> {
     return CachedValuesManager.getManager(module.project).getCachedValue(module) {
         CachedValueProvider.Result(
-            findMavenLocalRepos(module),
+            MvnUtil.getMavenLocalReposFromIDEA(module),
             JavaLibraryModificationTracker.getInstance(module.project)
         )
     }
 }
 
-private fun findMavenLocalRepos(module: Module): List<String> {
-    var virtualFileM2: VirtualFile? = null
-    OrderEnumerator.orderEntries(module).forEachLibrary(Processor { library ->
-        if (virtualFileM2 != null) return@Processor false
-        val virtualFiles = library.getFiles(OrderRootType.CLASSES)
-        val virtualFile = virtualFiles.firstOrNull { it.canonicalPath?.contains("/.m2/repository") == true }
-        if (virtualFile != null) {
-            virtualFileM2 = virtualFile
-            return@Processor false
-        }
-        return@Processor true
-    })
-    val canonicalPath = virtualFileM2?.canonicalPath ?: return emptyList()
-    val repositoryPath = canonicalPath.substringBefore("/.m2/repository") + "/.m2/repository"
-    return listOf(Path(repositoryPath).absolutePathString())
-}
