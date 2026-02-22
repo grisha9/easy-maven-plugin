@@ -2,8 +2,8 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "2.2.0"
-    id("org.jetbrains.intellij.platform") version "2.10.4"
+    id("org.jetbrains.kotlin.jvm") version "2.3.0"
+    id("org.jetbrains.intellij.platform") version "2.18.1"
     id("org.jetbrains.changelog") version "2.1.0"
 }
 
@@ -22,6 +22,7 @@ dependencies {
         intellijIdea(providers.gradleProperty("platformVersion")) {
             useInstaller = false
         }
+
 
         bundledPlugin("com.intellij.java")
         bundledPlugin("com.intellij.properties")
@@ -85,11 +86,11 @@ intellijPlatform {
 }
 
 kotlin {
-    jvmToolchain(JavaVersion.VERSION_21.majorVersion.toInt())
+    jvmToolchain(JavaVersion.VERSION_25.majorVersion.toInt())
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
 }
 
 
