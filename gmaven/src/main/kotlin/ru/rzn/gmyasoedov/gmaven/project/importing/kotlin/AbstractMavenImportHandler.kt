@@ -25,7 +25,7 @@ abstract class AbstractMavenImportHandler {
     private fun getPluginSetup(kotlinMavenPluginData: KotlinMavenPluginData): CompilerPluginSetup? {
         val enabledCompilerPlugins = kotlinMavenPluginData.compilerPlugins
         val compilerPluginOptions = kotlinMavenPluginData.pluginOptions
-        val classpath = listOf(pluginJarFileFromIdea.absolutePath)
+        val classpath = listOf(pluginJarFileFromIdea.toPath())
         val options = getOptions(enabledCompilerPlugins, compilerPluginOptions) ?: return null
         return CompilerPluginSetup(options, classpath)
     }

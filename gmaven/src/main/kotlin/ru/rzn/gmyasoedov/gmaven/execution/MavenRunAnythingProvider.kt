@@ -20,7 +20,6 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.SimpleColoredComponent
 import com.intellij.ui.SimpleTextAttributes
 import icons.GMavenIcons
-import org.jetbrains.kotlin.idea.refactoring.project
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.BASIC_PHASES
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID
@@ -55,8 +54,7 @@ class MavenRunAnythingProvider : RunAnythingCommandLineProvider() {
         RunAnythingEasyMavenItem(getCommand(value), getIcon(value))
 
     override fun getExecutionContexts(dataContext: DataContext): List<RunAnythingContext> {
-        val project = dataContext.project
-        if (CachedModuleDataService.getDataHolder(project).modules.isEmpty()) {
+        if (CachedModuleDataService.getCurrentData().modules.isEmpty()) {
             return super.getExecutionContexts(dataContext).filterIsInstance<ProjectContext>()
         }
         return super.getExecutionContexts(dataContext).filter {
