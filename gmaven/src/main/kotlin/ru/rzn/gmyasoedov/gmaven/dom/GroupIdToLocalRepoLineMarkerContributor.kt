@@ -13,6 +13,7 @@ import com.intellij.psi.xml.XmlTag
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
+import ru.rzn.gmyasoedov.gmaven.util.CachedModuleDataService
 import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 import ru.rzn.gmyasoedov.gmaven.utils.MavenArtifactUtil
 import java.nio.file.Path
@@ -33,7 +34,7 @@ class GroupIdToLocalRepoLineMarkerContributor : RunLineMarkerContributor() {
         val groupIdValue = xmlTag.value.trimmedText.takeIf { it.isNotEmpty() } ?: return null
         val virtualFile = xmlTag.containingFile?.virtualFile ?: return null
         val configPath = virtualFile.toNioPathOrNull()?.absolutePathString() ?: return null
-        //if (!CachedModuleDataService.getDataHolder(xmlTag.project).isConfigPath(configPath)) return null
+        if (!CachedModuleDataService.getDataHolder(xmlTag.project).isConfigPath(configPath)) return null
 
         val artifactId = parentTag.getSubTagText(MavenArtifactUtil.ARTIFACT_ID)?.trim()?.takeIf { it.isNotEmpty() }
         return Info(
