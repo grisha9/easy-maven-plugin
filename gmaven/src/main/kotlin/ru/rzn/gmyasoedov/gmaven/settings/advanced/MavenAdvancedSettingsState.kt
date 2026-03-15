@@ -18,6 +18,9 @@ class MavenAdvancedSettingsState : PersistentStateComponent<MavenAdvancedSetting
     var lastMvnPath by string("")
     var lastMvndPath by string("")
 
+    var junitJvmArgs by string("")
+    var junitEnv by string("")
+
     override fun getState(): MavenAdvancedSettingsState = this
 
     override fun loadState(state: MavenAdvancedSettingsState) = this.copyFrom(state)

@@ -30,6 +30,8 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
     private val completionEasyMavenOnlyBind = propertyGraph.property(false)
     private val runLineMarkerBind = propertyGraph.property(false)
     private val defaultMavenHomeBind = propertyGraph.property("")
+    private val junitJvmArgsBind = propertyGraph.property("")
+    private val junitEnvBind = propertyGraph.property("")
 
     private val checkSourcesBind = propertyGraph.property(false)
     private val wslSupportBind = propertyGraph.property(false)
@@ -55,6 +57,29 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
                 row {
                     checkBox("Search in split window")
                         .bindSelected(searchInSplitWindowBind)
+                }
+            }
+
+            group("JUnit Run Configuration:") {
+                row("JVM Arguments:") {
+                    textField()
+                        .align(AlignX.FILL)
+                        .bindText(junitJvmArgsBind)
+                        .resizableColumn()
+                        .applyToComponent {
+                            toolTipText = "Additional JVM arguments for JUnit tests (e.g., -Xmx512m -Dkey=value)"
+                            emptyText.text = toolTipText
+                        }
+                }
+                row("Environment Variables:") {
+                    textField()
+                        .align(AlignX.FILL)
+                        .bindText(junitEnvBind)
+                        .resizableColumn()
+                        .applyToComponent {
+                            toolTipText = "Environment variables for JUnit tests (e.g., KEY1=value1;KEY2=value2)"
+                            emptyText.text = toolTipText
+                        }
                 }
             }
 
@@ -119,6 +144,8 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         completionEasyMavenOnlyBind.set(additionalSettings.completionEasyMavenOnly)
         runLineMarkerBind.set(additionalSettings.runLineMarker)
         defaultMavenHomeBind.set(additionalSettings.defaultMavenHome ?: "")
+        junitJvmArgsBind.set(additionalSettings.junitJvmArgs ?: "")
+        junitEnvBind.set(additionalSettings.junitEnv ?: "")
 
         checkSourcesBind.set(baseSettings.isCheckSourcesInLocalRepo)
         colorSupportBind.set(baseSettings.isColoredSupport)
@@ -133,6 +160,8 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         if (additionalSettings.completionEasyMavenOnly != completionEasyMavenOnlyBind.get()) return true
         if (additionalSettings.runLineMarker != runLineMarkerBind.get()) return true
         if ((additionalSettings.defaultMavenHome ?: "") != defaultMavenHomeBind.get()) return true
+        if ((additionalSettings.junitJvmArgs ?: "") != junitJvmArgsBind.get()) return true
+        if ((additionalSettings.junitEnv ?: "") != junitEnvBind.get()) return true
 
         if (baseSettings.isCheckSourcesInLocalRepo != checkSourcesBind.get()) return true
         if (baseSettings.isColoredSupport != colorSupportBind.get()) return true
@@ -149,6 +178,8 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         additionalSettings.completionEasyMavenOnly = completionEasyMavenOnlyBind.get()
         additionalSettings.runLineMarker = runLineMarkerBind.get()
         additionalSettings.defaultMavenHome = defaultMavenHomeBind.get()
+        additionalSettings.junitJvmArgs = junitJvmArgsBind.get()
+        additionalSettings.junitEnv = junitEnvBind.get()
 
         baseSettings.isCheckSourcesInLocalRepo = checkSourcesBind.get()
         baseSettings.isColoredSupport = colorSupportBind.get()
