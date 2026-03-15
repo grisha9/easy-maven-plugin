@@ -111,6 +111,7 @@
         <runLineMarkerContributor language="XML"
                                   implementationClass="ru.rzn.gmyasoedov.gmaven.dom.GroupIdToLocalRepoLineMarkerContributor"/>
         <standardResourceProvider implementation="ru.rzn.gmyasoedov.gmaven.dom.GMavenSchemaProvider"/>
+        <junitPatcher implementation="ru.rzn.gmyasoedov.gmaven.junit.JUnitRunConfigurationPatcher"/>
 
         <registryKey key="gmaven.server.debug" defaultValue="false"
                      description="Debug maven server"/>
