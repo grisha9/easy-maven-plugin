@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [252.10] - 2026-04-04
+
+### Added
+
+- JUnit Run Configuration - settings for vmArgs & envs [#70](https://github.com/grisha9/easy-maven-plugin/issues/70)
+- Show dependencies search action in build file [#72](https://github.com/grisha9/easy-maven-plugin/issues/72)
+
 ## [252.9] - 2026-01-15
 
 ### Added
