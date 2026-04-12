@@ -25,7 +25,6 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.util.registry.Registry.Companion.stringValue
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.CollectionComboBoxModel
-import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.UIBundle
 import com.intellij.ui.dsl.builder.*
 import com.intellij.ui.layout.ValidationInfoBuilder
@@ -214,12 +213,7 @@ class ProjectSettingsControl(private val project: Project, private val currentSe
         }
 
         settingsPanel.registerValidators(disposable)
-        mainPanel = panel {
-            row {
-                cell(ScrollPaneFactory.createScrollPane(settingsPanel, true)).align(Align.FILL)
-            }.resizableRow()
-        }
-        content.add(mainPanel, ExternalSystemUiUtil.getFillLineConstraints(0).insets(0, 0, 0, 0))
+        content.add(settingsPanel, ExternalSystemUiUtil.getFillLineConstraints(0).insets(0, 0, 0, 0))
     }
 
     private fun validationInfo(component: TextFieldWithBrowseButton): ValidationInfo? {

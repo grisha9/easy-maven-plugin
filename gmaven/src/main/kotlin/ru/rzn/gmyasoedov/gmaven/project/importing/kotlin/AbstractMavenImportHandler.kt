@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.idea.compilerPlugin.modifyCompilerArgumentsForPlugin
 import org.jetbrains.kotlin.idea.facet.KotlinFacet
 import ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.kotlin.KotlinMavenPluginData
 import java.io.File
+import kotlin.io.path.absolutePathString
 
 abstract class AbstractMavenImportHandler {
     abstract val compilerPluginId: String
@@ -25,7 +26,7 @@ abstract class AbstractMavenImportHandler {
     private fun getPluginSetup(kotlinMavenPluginData: KotlinMavenPluginData): CompilerPluginSetup? {
         val enabledCompilerPlugins = kotlinMavenPluginData.compilerPlugins
         val compilerPluginOptions = kotlinMavenPluginData.pluginOptions
-        val classpath = listOf(pluginJarFileFromIdea.absolutePath)
+        val classpath = listOf(pluginJarFileFromIdea.toPath().absolutePathString())
         val options = getOptions(enabledCompilerPlugins, compilerPluginOptions) ?: return null
         return CompilerPluginSetup(options, classpath)
     }
