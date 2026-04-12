@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [253.8] - 2026-04-12
+
+### Fixed
+
+- Cannot display Easy Maven Projects settings on idea
+  2026.1 [#74](https://github.com/grisha9/easy-maven-plugin/issues/74)
+
 ## [253.7] - 2026-04-04
 
 ### Added
