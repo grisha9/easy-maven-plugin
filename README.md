@@ -57,5 +57,7 @@ If you found a bug, please report it on https://github.com/grisha9/easy-maven-pl
 
 Wiki about issues: https://github.com/grisha9/easy-maven-plugin/wiki/Issues
 
+---
+
 
 
