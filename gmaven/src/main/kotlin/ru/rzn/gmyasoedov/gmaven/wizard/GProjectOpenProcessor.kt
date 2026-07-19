@@ -1,5 +1,6 @@
 package ru.rzn.gmyasoedov.gmaven.wizard
 
+import com.intellij.ide.impl.toOpenProjectTask
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -18,8 +19,7 @@ internal class GProjectOpenProcessor : ProjectOpenProcessor() {
         virtualFile: VirtualFile,
         projectOpenOptions: ProjectOpenOptions
     ): Project? {
-     //   return importProvider.openProject(virtualFile, projectOpenOptions)
-        return null
+        return importProvider.openProject(virtualFile, projectOpenOptions.toOpenProjectTask())
     }
 
     override val name = GMavenConstants.SYSTEM_ID.readableName

@@ -28,6 +28,7 @@ dependencies {
         bundledPlugin("com.intellij.properties")
         bundledPlugin("org.intellij.groovy")
         bundledPlugin("org.jetbrains.kotlin")
+        bundledPlugin("com.intellij.modules.jcef")
 
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Plugin.Java)

@@ -48,6 +48,7 @@ The result is original build tool behavior and a simple implementation.
     <depends>com.intellij.modules.java</depends>
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.properties</depends>
+    <depends>com.intellij.modules.jcef</depends>
     <depends optional="true" config-file="groovy-support.xml">org.intellij.groovy</depends>
     <depends optional="true" config-file="kotlin-support.xml">org.jetbrains.kotlin</depends>
 
