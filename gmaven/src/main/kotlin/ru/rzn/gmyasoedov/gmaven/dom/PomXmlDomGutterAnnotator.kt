@@ -1,7 +1,6 @@
 package ru.rzn.gmyasoedov.gmaven.dom
 
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
-import com.intellij.find.FindBundle
 import com.intellij.find.FindModel
 import com.intellij.find.findInProject.FindInProjectManager
 import com.intellij.icons.AllIcons
@@ -96,7 +95,7 @@ class PomXmlDomGutterAnnotator : Annotator {
         val renderer = NavigationGutterIconBuilder
             .create(AllIcons.Actions.Search)
             .setTarget(artifactIdTag)
-            .setTooltipText(FindBundle.message("find.what.group") + " $artifactId")
+            .setTooltipText("Find: $artifactId")
             .createGutterIconRenderer(xmlTag.project) { event, element -> performSearch(event, element, artifactId) }
 
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)

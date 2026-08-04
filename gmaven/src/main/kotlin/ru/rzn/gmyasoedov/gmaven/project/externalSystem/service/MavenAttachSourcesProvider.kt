@@ -19,6 +19,7 @@ import com.intellij.psi.PsiFile
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.TASK_DOWNLOAD_SOURCE
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
+import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
 import ru.rzn.gmyasoedov.gmaven.util.GMavenNotification
 import ru.rzn.gmyasoedov.gmaven.util.getLocalRepoPath
 import ru.rzn.gmyasoedov.gmaven.utils.MavenArtifactUtil
@@ -81,14 +82,20 @@ internal class DownloadSourceAction(
             attachSources(artifactNioPath, orderEntries)
             return ActionCallback.DONE
         }
+
+        val downloadSourceTask = getDownloadSourceTask()
         val settings = ExternalSystemTaskExecutionSettings()
         settings.apply { scriptParameters = "" }
-        settings.scriptParameters += " -DincludeGroupIds=${split[0]}"
-        settings.scriptParameters += " -DincludeArtifactIds=${split[1]}"
+        if (downloadSourceTask.contains(TASK_DOWNLOAD_SOURCE)) {
+            settings.scriptParameters += " -DincludeGroupIds=${split[0]}"
+            settings.scriptParameters += " -DincludeArtifactIds=${split[1]}"
+        } else {
+            settings.scriptParameters += " -Dartifact=${artifactCoordinates}:jar:sources"
+        }
 
         settings.executionName = name
         settings.externalProjectPath = externalProjectPath
-        settings.taskNames = listOf(TASK_DOWNLOAD_SOURCE)
+        settings.taskNames = downloadSourceTask
         settings.externalSystemIdString = SYSTEM_ID.id
         val resultWrapper = ActionCallback()
         ExternalSystemUtil.runTask(
@@ -123,6 +130,13 @@ internal class DownloadSourceAction(
             }, ProgressExecutionMode.IN_BACKGROUND_ASYNC, true
         )
         return resultWrapper
+    }
+
+    private fun getDownloadSourceTask(): List<String> {
+        val sourcesTask = (MavenAdvancedSettingsState.getInstance().sourcesMavenTask
+            ?.ifEmpty { TASK_DOWNLOAD_SOURCE }
+            ?: TASK_DOWNLOAD_SOURCE)
+        return sourcesTask.trim().split(" ")
     }
 
     private fun errorNotification(

@@ -6,7 +6,6 @@ import com.intellij.execution.wsl.WSLDistribution;
 import com.intellij.execution.wsl.WslPath;
 import com.intellij.ide.fileTemplates.FileTemplate;
 import com.intellij.ide.fileTemplates.FileTemplateManager;
-import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.extensions.PluginId;
@@ -405,14 +404,8 @@ public class MavenUtils {
         }
     }
 
-    @Nullable
-    public static IdeaPluginDescriptor getPlugin(@NotNull String pluginId) {
-        return PluginManagerCore.getPlugin(PluginId.getId(pluginId));
-    }
-
     public static boolean pluginEnabled(@NotNull String pluginId) {
-        return Optional.ofNullable(PluginManagerCore.getPlugin(PluginId.getId(pluginId)))
-                .map(PluginManagerCore::isLoaded).orElse(false);
+        return PluginManagerCore.isPluginInstalled(PluginId.getId(pluginId));
     }
 
     public static boolean groovyPluginEnabled() {
