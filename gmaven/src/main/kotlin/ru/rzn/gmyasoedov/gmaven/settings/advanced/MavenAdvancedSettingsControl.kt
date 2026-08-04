@@ -30,6 +30,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
     private val completionEasyMavenOnlyBind = propertyGraph.property(false)
     private val runLineMarkerBind = propertyGraph.property(false)
     private val defaultMavenHomeBind = propertyGraph.property("")
+    private val sourcesMavenTaskBind = propertyGraph.property("")
     private val junitJvmArgsBind = propertyGraph.property("")
     private val junitEnvBind = propertyGraph.property("")
 
@@ -99,6 +100,18 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
                             emptyText.text = toolTipText
                         }.comment(message("gmaven.settings.project.maven.default.dialog.comment"))
                 }
+                row("Sources Maven Task:") {
+                    textField()
+                        .align(AlignX.FILL)
+                        .bindText(sourcesMavenTaskBind)
+                        .resizableColumn()
+                        .applyToComponent {
+                            toolTipText = "Maven task used to download sources"
+                            emptyText.text = toolTipText
+                        }
+
+                    link("To default") { sourcesMavenTaskBind.set(DEFAULT_SOURCE_TASK) }
+                }
                 row {
                     checkBox(GBundle.message("gmaven.settings.system.check.sources"))
                         .applyToComponent {
@@ -144,6 +157,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         completionEasyMavenOnlyBind.set(additionalSettings.completionEasyMavenOnly)
         runLineMarkerBind.set(additionalSettings.runLineMarker)
         defaultMavenHomeBind.set(additionalSettings.defaultMavenHome ?: "")
+        sourcesMavenTaskBind.set(additionalSettings.sourcesMavenTask ?: "")
         junitJvmArgsBind.set(additionalSettings.junitJvmArgs ?: "")
         junitEnvBind.set(additionalSettings.junitEnv ?: "")
 
@@ -160,6 +174,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         if (additionalSettings.completionEasyMavenOnly != completionEasyMavenOnlyBind.get()) return true
         if (additionalSettings.runLineMarker != runLineMarkerBind.get()) return true
         if ((additionalSettings.defaultMavenHome ?: "") != defaultMavenHomeBind.get()) return true
+        if ((additionalSettings.sourcesMavenTask ?: "") != sourcesMavenTaskBind.get()) return true
         if ((additionalSettings.junitJvmArgs ?: "") != junitJvmArgsBind.get()) return true
         if ((additionalSettings.junitEnv ?: "") != junitEnvBind.get()) return true
 
@@ -178,6 +193,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         additionalSettings.completionEasyMavenOnly = completionEasyMavenOnlyBind.get()
         additionalSettings.runLineMarker = runLineMarkerBind.get()
         additionalSettings.defaultMavenHome = defaultMavenHomeBind.get()
+        additionalSettings.sourcesMavenTask = sourcesMavenTaskBind.get()
         additionalSettings.junitJvmArgs = junitJvmArgsBind.get()
         additionalSettings.junitEnv = junitEnvBind.get()
 

@@ -3,6 +3,7 @@ package ru.rzn.gmyasoedov.gmaven.settings.advanced
 import com.intellij.openapi.components.*
 
 const val DEFAULT_SEARCH_URL = "https://search.maven.org/"
+const val DEFAULT_SOURCE_TASK = "dependency:get -N"
 
 @Service(Service.Level.APP)
 @State(name = "EasyMavenAdvancedSettings", storages = [Storage("EasyMavenAdvancedSettings.xml")])
@@ -15,6 +16,7 @@ class MavenAdvancedSettingsState : PersistentStateComponent<MavenAdvancedSetting
     var runLineMarker by property(true)
 
     var defaultMavenHome by string("")
+    var sourcesMavenTask by string(DEFAULT_SOURCE_TASK)
     var lastMvnPath by string("")
     var lastMvndPath by string("")
 
