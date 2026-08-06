@@ -42,7 +42,6 @@ import ru.rzn.gmyasoedov.gmaven.util.GMavenNotification;
 import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils;
 
 import javax.swing.*;
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +103,7 @@ public final class MavenManager
         return MavenProjectResolver.class;
     }
 
+    @NotNull
     @Override
     public Class<? extends ExternalSystemTaskManager<MavenExecutionSettings>> getTaskManagerClass() {
         return MavenTaskManager.class;
@@ -151,11 +151,6 @@ public final class MavenManager
     @Override
     public String getAffectedExternalProjectPath(@NotNull String changedFileOrDirPath, @NotNull Project project) {
         return autoImportAwareDelegate.getAffectedExternalProjectPath(changedFileOrDirPath, project);
-    }
-
-    @Override
-    public List<File> getAffectedExternalProjectFiles(String projectPath, @NotNull Project project) {
-        return autoImportAwareDelegate.getAffectedExternalProjectFiles(projectPath, project);
     }
 
     @Override
@@ -256,11 +251,11 @@ public final class MavenManager
             @NotNull Project project, @Nullable MavenProjectSettings projectSettings, MavenExecutionSettings result
     ) {
         String jdkName = projectSettings != null ? projectSettings.getJdkName() : null;
-        Sdk jdk = ExternalSystemJdkUtil.getJdk(project, jdkName);
+        Sdk jdk = ExternalSystemJdkUtil.resolveJdkName(project, jdkName);
         if (jdk == null) {
             jdk = MavenUtils.suggestProjectSdk();
             if (jdk == null) {
-                jdk = ExternalSystemJdkUtil.getJdk(project, USE_INTERNAL_JAVA);
+                jdk = ExternalSystemJdkUtil.resolveJdkName(project, USE_INTERNAL_JAVA);
             }
         }
         if (jdk != null) {
