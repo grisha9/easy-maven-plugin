@@ -9,7 +9,6 @@ import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.toNioPathOrNull
 import com.intellij.psi.PsiElement
@@ -19,8 +18,8 @@ import icons.GMavenIcons
 import kotlinx.collections.immutable.toImmutableSet
 import ru.rzn.gmyasoedov.gmaven.dom.XmlPsiUtil.getPlaceHolderValue
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
+import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 import ru.rzn.gmyasoedov.gmaven.utils.MavenArtifactUtil.*
-import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils
 import java.awt.event.MouseEvent
 import java.nio.file.Path
 import java.util.*
@@ -32,8 +31,8 @@ class PomXmlDomGutterAnnotator : Annotator {
     private var dependencyManagement: DependencyManagement? = null
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        if (MavenUtils.pluginEnabled(MavenUtils.INTELLIJ_MAVEN_PLUGIN_ID)) return
-        if (!Registry.`is`("gmaven.gutter.annotation")) return
+        if (!MvnUtil.usePomNavigation(element)) return
+
         val xmlTag = element as? XmlTag ?: return
         val project = element.project
         val xmlFile = xmlTag.containingFile as? XmlFile ?: return
