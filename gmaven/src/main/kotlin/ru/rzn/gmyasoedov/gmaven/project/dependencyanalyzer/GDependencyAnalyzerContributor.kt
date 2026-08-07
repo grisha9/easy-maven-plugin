@@ -236,13 +236,19 @@ class GDependencyAnalyzerContributor(private val project: Project) : DependencyA
             mavenArtifactNode.relatedArtifact?.version?.also {
                 val message =
                     ExternalSystemBundle.message("external.system.dependency.analyzer.warning.version.conflict", it)
-                status.add(DAWarning(message))
+
+                status.add(DAWarning(SYSTEM_ID.readableName, message))
             }
         } else if (mavenArtifactNode.state == MavenArtifactState.DUPLICATE) {
             status.add(DAOmitted)
         }
         if (dependencyData is DAArtifact && !mavenArtifactNode.artifact.isResolved) {
-            status.add(DAWarning(ExternalSystemBundle.message("external.system.dependency.analyzer.warning.unresolved")))
+            status.add(
+                DAWarning(
+                    SYSTEM_ID.readableName,
+                    ExternalSystemBundle.message("external.system.dependency.analyzer.warning.unresolved")
+                )
+            )
         }
         return status
     }
