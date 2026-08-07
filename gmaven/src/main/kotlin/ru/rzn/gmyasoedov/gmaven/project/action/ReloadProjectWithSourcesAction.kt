@@ -8,6 +8,7 @@ import com.intellij.openapi.externalSystem.model.ProjectSystemId
 import com.intellij.openapi.externalSystem.model.project.AbstractExternalEntityData
 import com.intellij.openapi.externalSystem.model.project.ExternalConfigPathAware
 import com.intellij.openapi.externalSystem.model.project.ProjectData
+import com.intellij.openapi.externalSystem.service.project.trusted.ExternalSystemTrustedProjectDialog
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
@@ -61,7 +62,7 @@ class ReloadProjectWithSourcesAction :
 
         val importSpec = ImportSpecBuilder(project, projectSystemId)
             .withArguments("compile -DskipTests $TASK_DOWNLOAD_SOURCE")
-        if (ExternalSystemUtil.confirmLoadingUntrustedProject(project, projectSystemId)) {
+        if (ExternalSystemTrustedProjectDialog.confirmLoadingUntrustedProject(project, projectSystemId)) {
             ExternalSystemUtil.refreshProject(externalProjectPath, importSpec)
         }
     }

@@ -174,7 +174,7 @@ public class MavenUtils {
         }
         SdkType sdkType = ExternalSystemJdkUtil.getJavaSdkType();
         return projectJdkTable.getSdksOfType(sdkType).stream()
-                .filter(it -> it.getHomePath() != null && JdkUtil.checkForJre(it.getHomePath()))
+                .filter(it -> it.getHomePath() != null && JdkUtil.checkForJre(Path.of(it.getHomePath())))
                 .max(sdkType.versionComparator())
                 .orElse(null);
     }

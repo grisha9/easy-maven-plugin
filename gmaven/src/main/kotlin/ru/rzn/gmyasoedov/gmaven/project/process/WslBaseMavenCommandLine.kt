@@ -15,6 +15,7 @@ import ru.rzn.gmyasoedov.gmaven.server.GServerRequest
 import ru.rzn.gmyasoedov.gmaven.util.MavenPathUtil.getExtClassesJarPathString
 import ru.rzn.gmyasoedov.serverapi.GMavenServer
 import java.nio.file.Path
+import kotlin.io.path.absolutePathString
 import kotlin.io.path.name
 
 
@@ -28,15 +29,12 @@ class WslBaseMavenCommandLine(
 
     fun getCommandLine(): GeneralCommandLine {
         val commandLine = GeneralCommandLine()
-        val javaHomeWsl = request.settings.javaHome?.let { WslPath.getDistributionByWindowsUncPath(it) }
-        if (javaHomeWsl == null) {
-            val message = "WSL " + ExternalSystemBundle.message(
-                "external.system.project_jdk.not_specified", OpenProjectJdkSettingsCallback.ID
-            )
-            throw ExternalSystemJdkException(message, null, OpenProjectJdkSettingsCallback.ID)
-        }
-        commandLine.environment["JAVA_HOME"] = wslDistribution.getWslPath(request.settings.javaHome!!)
-        val wslExtClassesJarPath = wslDistribution.getWslPath(getExtClassesJarPathString())!!
+        val javaHomePath = request.settings.javaHome?.let { Path.of(it) } ?: throwWslHomeException()
+        WslPath.getDistributionByWindowsUncPath(javaHomePath.absolutePathString()) ?: throwWslHomeException()
+
+        commandLine.environment["JAVA_HOME"] = wslDistribution.getWslPath(javaHomePath)
+        val wslExtClassesJarPath = wslDistribution.getWslPath(Path.of(getExtClassesJarPathString()))
+            ?: throwWslHomeException()
         val resultJsonFilePath = wslDistribution.getWslPath(resultFilePath)!!
         BaseMavenCommandLine.setupGmavenPluginsProperty(
             commandLine, request, isImport, resultJsonFilePath, wslExtClassesJarPath
@@ -56,6 +54,13 @@ class WslBaseMavenCommandLine(
 
         wslDistribution.patchCommandLine(commandLine, request.taskId.findProject(), WSLCommandLineOptions())
         return commandLine
+    }
+
+    private fun throwWslHomeException(): Nothing {
+        val message = "WSL " + ExternalSystemBundle.message(
+            "external.system.project_jdk.not_specified", OpenProjectJdkSettingsCallback.ID
+        )
+        throw ExternalSystemJdkException(message, null, OpenProjectJdkSettingsCallback.ID)
     }
 
     private fun setupProjectPath(commandLine: GeneralCommandLine, request: GServerRequest) {

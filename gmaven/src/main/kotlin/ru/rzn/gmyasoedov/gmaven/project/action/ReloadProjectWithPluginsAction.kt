@@ -9,6 +9,7 @@ import com.intellij.openapi.externalSystem.model.project.AbstractExternalEntityD
 import com.intellij.openapi.externalSystem.model.project.ExternalConfigPathAware
 import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.ProjectData
+import com.intellij.openapi.externalSystem.service.project.trusted.ExternalSystemTrustedProjectDialog
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
@@ -57,7 +58,7 @@ class ReloadProjectWithPluginsAction :
             configPathAware.linkedExternalProjectPath else projectSettings.externalProjectPath
 
         val importSpec = ImportSpecBuilder(project, projectSystemId).withArguments(TASK_RESOLVE_PLUGINS)
-        if (ExternalSystemUtil.confirmLoadingUntrustedProject(project, projectSystemId)) {
+        if (ExternalSystemTrustedProjectDialog.confirmLoadingUntrustedProject(project, projectSystemId)) {
             ExternalSystemUtil.refreshProject(externalProjectPath, importSpec)
         }
     }
