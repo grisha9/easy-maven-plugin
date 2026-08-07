@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [252.10] - 2026-08-07
+
+### Added
+
+- Dependency sources to dependency:get [#77](https://github.com/grisha9/easy-maven-plugin/issues/77)
+- Pom navigation [#76](https://github.com/grisha9/easy-maven-plugin/issues/76)
+
+
 ## [252.10] - 2026-04-04
 
 ### Added
