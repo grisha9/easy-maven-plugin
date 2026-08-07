@@ -11,7 +11,6 @@ import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.bindSelected
 import com.intellij.ui.dsl.builder.bindText
 import com.intellij.ui.dsl.builder.panel
-import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle.message
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import javax.swing.JComponent
@@ -29,6 +28,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
     private val groupIdFolderNavigationBind = propertyGraph.property(false)
     private val completionEasyMavenOnlyBind = propertyGraph.property(false)
     private val runLineMarkerBind = propertyGraph.property(false)
+    private val pomNavigationBind = propertyGraph.property(false)
     private val defaultMavenHomeBind = propertyGraph.property("")
     private val sourcesMavenTaskBind = propertyGraph.property("")
     private val junitJvmArgsBind = propertyGraph.property("")
@@ -113,24 +113,24 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
                     link("To default") { sourcesMavenTaskBind.set(DEFAULT_SOURCE_TASK) }
                 }
                 row {
-                    checkBox(GBundle.message("gmaven.settings.system.check.sources"))
+                    checkBox(message("gmaven.settings.system.check.sources"))
                         .applyToComponent {
                             toolTipText =
-                                GBundle.message("gmaven.settings.system.check.sources.tooltip")
+                                message("gmaven.settings.system.check.sources.tooltip")
                         }
                         .bindSelected(checkSourcesBind)
                 }
                 row {
-                    checkBox(GBundle.message("gmaven.settings.system.wsl"))
+                    checkBox(message("gmaven.settings.system.wsl"))
                         .applyToComponent {
                             toolTipText =
-                                GBundle.message("gmaven.settings.system.wsl.tooltip")
+                                message("gmaven.settings.system.wsl.tooltip")
                         }
                         .visible(SystemInfo.isWindows)
                         .bindSelected(wslSupportBind)
                 }
                 row {
-                    checkBox(GBundle.message("gmaven.settings.system.colored"))
+                    checkBox(message("gmaven.settings.system.colored"))
                         .bindSelected(colorSupportBind)
                 }
                 row {
@@ -145,6 +145,10 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
                     checkBox("Show gutter run line markers - Tests/SpringBoot")
                         .bindSelected(runLineMarkerBind)
                 }
+                row {
+                    checkBox("Use Easy Maven navigation in pom.xml")
+                        .bindSelected(pomNavigationBind)
+                }
             }
         }
     }
@@ -156,6 +160,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         groupIdFolderNavigationBind.set(additionalSettings.groupIdFolderNavigation)
         completionEasyMavenOnlyBind.set(additionalSettings.completionEasyMavenOnly)
         runLineMarkerBind.set(additionalSettings.runLineMarker)
+        pomNavigationBind.set(additionalSettings.pomNavigation)
         defaultMavenHomeBind.set(additionalSettings.defaultMavenHome ?: "")
         sourcesMavenTaskBind.set(additionalSettings.sourcesMavenTask ?: "")
         junitJvmArgsBind.set(additionalSettings.junitJvmArgs ?: "")
@@ -173,6 +178,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         if (additionalSettings.groupIdFolderNavigation != groupIdFolderNavigationBind.get()) return true
         if (additionalSettings.completionEasyMavenOnly != completionEasyMavenOnlyBind.get()) return true
         if (additionalSettings.runLineMarker != runLineMarkerBind.get()) return true
+        if (additionalSettings.pomNavigation != pomNavigationBind.get()) return true
         if ((additionalSettings.defaultMavenHome ?: "") != defaultMavenHomeBind.get()) return true
         if ((additionalSettings.sourcesMavenTask ?: "") != sourcesMavenTaskBind.get()) return true
         if ((additionalSettings.junitJvmArgs ?: "") != junitJvmArgsBind.get()) return true
@@ -192,6 +198,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         additionalSettings.groupIdFolderNavigation = groupIdFolderNavigationBind.get()
         additionalSettings.completionEasyMavenOnly = completionEasyMavenOnlyBind.get()
         additionalSettings.runLineMarker = runLineMarkerBind.get()
+        additionalSettings.pomNavigation = pomNavigationBind.get()
         additionalSettings.defaultMavenHome = defaultMavenHomeBind.get()
         additionalSettings.sourcesMavenTask = sourcesMavenTaskBind.get()
         additionalSettings.junitJvmArgs = junitJvmArgsBind.get()
