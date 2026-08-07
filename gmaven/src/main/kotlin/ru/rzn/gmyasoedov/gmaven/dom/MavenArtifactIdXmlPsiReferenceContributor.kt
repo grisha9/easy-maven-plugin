@@ -5,22 +5,22 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.patterns.XmlPatterns
 import com.intellij.psi.*
 import com.intellij.psi.PsiReferenceBase.Immediate
-import com.intellij.psi.PsiReferenceRegistrar.LOWER_PRIORITY
 import com.intellij.psi.xml.XmlFile
 import com.intellij.psi.xml.XmlTag
 import com.intellij.util.ProcessingContext
 import ru.rzn.gmyasoedov.gmaven.dom.reference.MavenArtifactIdPsiReference
+import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
 import ru.rzn.gmyasoedov.gmaven.util.CachedModuleData
 import ru.rzn.gmyasoedov.gmaven.util.CachedModuleDataService
+import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 import ru.rzn.gmyasoedov.gmaven.utils.MavenArtifactUtil
-import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils
 import kotlin.io.path.Path
 
 
 class MavenArtifactIdXmlPsiReferenceContributor : PsiReferenceContributor() {
 
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
-        if (MavenUtils.pluginEnabled(MavenUtils.INTELLIJ_MAVEN_PLUGIN_ID)) return
+        if (!MavenAdvancedSettingsState.getInstance().pomNavigation) return
 
         val patternDependency = XmlPatterns.xmlTag()
             .withName(MavenArtifactUtil.ARTIFACT_ID)
@@ -30,8 +30,8 @@ class MavenArtifactIdXmlPsiReferenceContributor : PsiReferenceContributor() {
             .withParent(XmlPatterns.xmlTag().withName(MavenArtifactUtil.PARENT))
 
         val psiReferenceProvider = MavenArtifactIdXmlPsiReferenceProvider()
-        registrar.registerReferenceProvider(patternDependency, psiReferenceProvider, LOWER_PRIORITY)
-        registrar.registerReferenceProvider(patternParent, psiReferenceProvider, LOWER_PRIORITY)
+        registrar.registerReferenceProvider(patternDependency, psiReferenceProvider)
+        registrar.registerReferenceProvider(patternParent, psiReferenceProvider)
     }
 }
 
@@ -39,6 +39,8 @@ private class MavenArtifactIdXmlPsiReferenceProvider : PsiReferenceProvider() {
 
     override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
         val xmlTag = element as? XmlTag ?: return emptyArray()
+        if (!MvnUtil.usePomNavigation(element)) return emptyArray()
+
         val file = element.containingFile as? XmlFile ?: return emptyArray()
         val moduleName = file.rootTag?.getSubTagText(MavenArtifactUtil.ARTIFACT_ID) ?: return emptyArray()
         if (xmlTag.name != MavenArtifactUtil.ARTIFACT_ID) return emptyArray()
