@@ -6,7 +6,6 @@ import com.intellij.openapi.externalSystem.service.ui.command.line.CompletionTab
 import com.intellij.openapi.externalSystem.service.ui.completion.TextCompletionInfo
 import com.intellij.openapi.externalSystem.service.ui.project.path.WorkingDirectoryField
 import com.intellij.openapi.observable.util.createTextModificationTracker
-import com.intellij.openapi.progress.blockingContext
 import com.intellij.openapi.util.ModificationTracker
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
@@ -62,14 +61,13 @@ class GMavenCommandLineInfo(workingDirectoryField: WorkingDirectoryField) : Comm
         override val dataColumnName: String = GBundle.message("gmaven.run.configuration.command.line.argument.column")
 
         override val descriptionColumnIcon: Icon? = null
-        override val descriptionColumnName: String = GBundle.message("gmaven.run.configuration.command.line.description.column")
+        override val descriptionColumnName: String =
+            GBundle.message("gmaven.run.configuration.command.line.description.column")
 
-        private suspend fun collectOptionCompletion(isLongOptions: Boolean): List<TextCompletionInfo> {
-            return blockingContext {
-                MavenCommandLineOptions.allOptions
-                    .map { TextCompletionInfo(if (isLongOptions) it.name else it.longName, it.description) }
-                    .sortedBy { it.text }
-            }
+        private fun collectOptionCompletion(isLongOptions: Boolean): List<TextCompletionInfo> {
+            return MavenCommandLineOptions.allOptions
+                .map { TextCompletionInfo(if (isLongOptions) it.name else it.longName, it.description) }
+                .sortedBy { it.text }
         }
 
         override suspend fun collectCompletionInfo(): List<TextCompletionInfo> {

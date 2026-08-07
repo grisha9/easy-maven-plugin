@@ -2,6 +2,7 @@ package ru.rzn.gmyasoedov.gmaven.project.importing.kotlin
 
 import org.jetbrains.kotlin.idea.base.plugin.artifacts.KotlinArtifacts
 import org.jetbrains.kotlin.idea.compilerPlugin.CompilerPluginSetup
+import java.io.File
 
 
 object AllOpenMavenProjectImportHandler : AbstractMavenImportHandler() {
@@ -30,7 +31,7 @@ object AllOpenMavenProjectImportHandler : AbstractMavenImportHandler() {
 
     override val compilerPluginId = "org.jetbrains.kotlin.allopen"
     override val pluginName = "allopen"
-    override val pluginJarFileFromIdea = KotlinArtifacts.allopenCompilerPlugin
+    override val pluginJarFileFromIdea: File = KotlinArtifacts.allopenCompilerPluginPath.toFile()
 
     override fun getOptions(
         enabledCompilerPlugins: List<String>,

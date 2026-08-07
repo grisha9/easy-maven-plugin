@@ -2,6 +2,7 @@ package ru.rzn.gmyasoedov.gmaven.project.importing.kotlin
 
 import org.jetbrains.kotlin.idea.base.plugin.artifacts.KotlinArtifacts
 import org.jetbrains.kotlin.idea.compilerPlugin.CompilerPluginSetup
+import java.io.File
 
 object NoArgMavenProjectImportHandler : AbstractMavenImportHandler() {
 
@@ -20,7 +21,7 @@ object NoArgMavenProjectImportHandler : AbstractMavenImportHandler() {
 
     override val compilerPluginId = "org.jetbrains.kotlin.noarg"
     override val pluginName = "noarg"
-    override val pluginJarFileFromIdea = KotlinArtifacts.noargCompilerPlugin
+    override val pluginJarFileFromIdea: File = KotlinArtifacts.noargCompilerPluginPath.toFile()
 
     override fun getOptions(
         enabledCompilerPlugins: List<String>,
