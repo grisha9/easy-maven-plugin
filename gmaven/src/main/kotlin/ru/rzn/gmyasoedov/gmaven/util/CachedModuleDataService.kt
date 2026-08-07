@@ -9,11 +9,15 @@ import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.SimpleModificationTracker
+import com.intellij.openapi.vfs.toNioPathOrNull
+import com.intellij.psi.PsiElement
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
+import com.intellij.util.concurrency.annotations.RequiresReadLock
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.io.path.absolutePathString
 
 object CachedModuleDataService {
 
@@ -33,6 +37,12 @@ object CachedModuleDataService {
             lastResult.set(cachedValue)
             return cachedValue
         }
+    }
+
+    @RequiresReadLock
+    fun isConfigPath(psiElement: PsiElement): Boolean {
+        val filePath = psiElement.containingFile?.virtualFile?.toNioPathOrNull()?.absolutePathString() ?: return false
+        return getDataHolder(psiElement.project).isConfigPath(filePath)
     }
 
     private fun isNoLinkedProjects(project: Project): Boolean =

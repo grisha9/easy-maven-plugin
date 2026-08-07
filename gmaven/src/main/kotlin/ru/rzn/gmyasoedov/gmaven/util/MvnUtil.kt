@@ -97,4 +97,9 @@ object MvnUtil {
 
     private fun isSourceSetModule(moduleName: String): Boolean =
         moduleName.endsWith(".test") || moduleName.endsWith(".main")
+
+    fun usePomNavigation(element: PsiElement): Boolean {
+        MavenAdvancedSettingsState.getInstance().pomNavigation.takeIf { it } ?: return false
+        return CachedModuleDataService.isConfigPath(element)
+    }
 }
