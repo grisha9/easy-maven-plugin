@@ -133,7 +133,7 @@ class MavenProjectResolver : ExternalSystemProjectResolver<MavenExecutionSetting
         }
         val javaProjectData = JavaProjectData(
             GMavenConstants.SYSTEM_ID, project.outputDirectory, languageLevel,
-            languageLevel!!.toFeatureString(), emptyList()
+            languageLevel.toFeatureString(), emptyList()
         )
         projectDataNode.createChild(JavaProjectData.KEY, javaProjectData)
 

@@ -103,7 +103,7 @@ The result is original build tool behavior and a simple implementation.
         <externalProjectDataService implementation="ru.rzn.gmyasoedov.gmaven.project.importing.ProjectSettingsLocalRepoDataService"/>
         <externalSystemDependencyAnalyzer
                 implementation="ru.rzn.gmyasoedov.gmaven.project.dependencyanalyzer.MavenDependencyAnalyzerExtension"/>
-        <externalSystemUnlinkedProjectAware implementation="ru.rzn.gmyasoedov.gmaven.project.externalSystem.service.UnlinkedProjectAware"/>
+        <!--<externalSystemUnlinkedProjectAware implementation="ru.rzn.gmyasoedov.gmaven.project.externalSystem.service.UnlinkedProjectAware"/>-->
         <externalSystem.runConfigurationEx
                 implementation="ru.rzn.gmyasoedov.gmaven.project.task.GMavenRunConfigurationExtension"/>
         <externalSystemViewContributor id="GMaven"
