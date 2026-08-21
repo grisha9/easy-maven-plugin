@@ -88,6 +88,9 @@ intellijPlatform {
 
 kotlin {
     jvmToolchain(JavaVersion.VERSION_25.majorVersion.toInt())
+    compilerOptions {
+        freeCompilerArgs = listOf("-Xjvm-default=all")
+    }
 }
 
 java {
