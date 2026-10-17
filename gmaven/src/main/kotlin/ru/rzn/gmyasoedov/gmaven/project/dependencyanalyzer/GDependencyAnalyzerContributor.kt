@@ -18,7 +18,6 @@ import com.intellij.openapi.externalSystem.service.notification.ExternalSystemPr
 import com.intellij.openapi.externalSystem.service.project.ProjectDataManager
 import com.intellij.openapi.externalSystem.task.TaskCallback
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
@@ -234,9 +233,7 @@ class GDependencyAnalyzerContributor(private val project: Project) : DependencyA
         if (mavenArtifactNode.state == MavenArtifactState.CONFLICT) {
             status.add(DAOmitted)
             mavenArtifactNode.relatedArtifact?.version?.also {
-                val message =
-                    ExternalSystemBundle.message("external.system.dependency.analyzer.warning.version.conflict", it)
-
+                val message = "conflict with $it"
                 status.add(DAWarning(SYSTEM_ID.readableName, message))
             }
         } else if (mavenArtifactNode.state == MavenArtifactState.DUPLICATE) {
@@ -244,10 +241,7 @@ class GDependencyAnalyzerContributor(private val project: Project) : DependencyA
         }
         if (dependencyData is DAArtifact && !mavenArtifactNode.artifact.isResolved) {
             status.add(
-                DAWarning(
-                    SYSTEM_ID.readableName,
-                    ExternalSystemBundle.message("external.system.dependency.analyzer.warning.unresolved")
-                )
+                DAWarning(SYSTEM_ID.readableName, "unresolved")
             )
         }
         return status

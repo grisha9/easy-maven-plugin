@@ -5,18 +5,18 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
 import com.intellij.openapi.externalSystem.model.ExternalSystemDataKeys.EXTERNAL_SYSTEM_ID
-import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.project.DumbAwareAction
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID
+import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
 
 class AndroidRefreshAllExternalProjectsAction : DumbAwareAction() {
     init {
         templatePresentation.setText(
-            ExternalSystemBundle.messagePointer("action.refresh.all.projects.text", SYSTEM_ID.readableName)
+            GBundle.messagePointer("gmaven.action.refresh.all.projects.text", SYSTEM_ID.readableName)
         )
         templatePresentation.setDescription(
-            ExternalSystemBundle.messagePointer("action.refresh.all.projects.description", SYSTEM_ID.readableName)
+            GBundle.messagePointer("gmaven.action.refresh.all.projects.text", SYSTEM_ID.readableName)
         )
     }
 

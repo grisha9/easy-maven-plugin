@@ -10,7 +10,6 @@ import com.intellij.openapi.externalSystem.model.project.ExternalConfigPathAware
 import com.intellij.openapi.externalSystem.model.project.ProjectData
 import com.intellij.openapi.externalSystem.service.project.trusted.ExternalSystemTrustedProjectDialog
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.DumbAware
@@ -28,7 +27,7 @@ class ReloadProjectWithSourcesAction :
     init {
         getTemplatePresentation().text = GBundle.message("gmaven.action.reload.with.sources.text")
         getTemplatePresentation().setDescription(
-            ExternalSystemBundle.messagePointer("action.refresh.project.description", "External")
+            GBundle.messagePointer("gmaven.action.refresh.project.description", "External")
         )
     }
 

@@ -11,7 +11,6 @@ import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.ProjectData
 import com.intellij.openapi.externalSystem.service.project.trusted.ExternalSystemTrustedProjectDialog
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.DumbAware
@@ -28,7 +27,7 @@ class ReloadProjectWithPluginsAction :
     init {
         templatePresentation.text = GBundle.message("gmaven.action.reload.with.plugins.text")
         templatePresentation.setDescription(
-            ExternalSystemBundle.messagePointer("action.refresh.project.description", "External")
+            GBundle.messagePointer("gmaven.action.refresh.all.projects.text", "External")
         )
     }
 

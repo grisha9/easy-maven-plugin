@@ -8,7 +8,6 @@ import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.service.project.ProjectDataManager
 import com.intellij.openapi.externalSystem.service.project.wizard.MavenizedNewProjectWizardStep
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import com.intellij.openapi.externalSystem.util.ui.DataView
 import com.intellij.openapi.projectRoots.JavaSdkType
 import com.intellij.openapi.projectRoots.Sdk
@@ -23,6 +22,7 @@ import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.layout.ValidationInfoBuilder
 import icons.GMavenIcons
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
+import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
 import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils
 import ru.rzn.gmyasoedov.maven.plugin.reader.model.MavenProject
 import ru.rzn.gmyasoedov.serverapi.GServerUtils
@@ -85,8 +85,8 @@ abstract class GMavenNewProjectWizardStep<ParentStep>(parent: ParentStep) :
     private fun ValidationInfoBuilder.validateCoordinates(): ValidationInfo? {
         val mavenIds = parentsData.map { it.groupId to it.artifactId }.toSet()
         if (groupId to artifactId in mavenIds) {
-            val message = ExternalSystemBundle.message(
-                "external.system.mavenized.structure.wizard.entity.coordinates.already.exists.error",
+            val message = GBundle.message(
+                "gmaven.mavenized.structure.wizard.entity.coordinates.already.exists.error",
                 if (context.isCreatingNewProject) 1 else 0, "$groupId:$artifactId"
             )
             return error(message)

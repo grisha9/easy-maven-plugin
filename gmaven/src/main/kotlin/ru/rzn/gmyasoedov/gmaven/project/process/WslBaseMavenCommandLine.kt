@@ -7,7 +7,6 @@ import com.intellij.execution.wsl.WslPath
 import com.intellij.openapi.externalSystem.model.ExternalSystemException
 import com.intellij.openapi.externalSystem.service.execution.ExternalSystemJdkException
 import com.intellij.openapi.externalSystem.service.notification.callback.OpenProjectJdkSettingsCallback
-import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle
 import ru.rzn.gmyasoedov.gmaven.project.externalSystem.notification.OpenGMavenSettingsCallback
 import ru.rzn.gmyasoedov.gmaven.project.process.BaseMavenCommandLine.Companion.setupMavenOpts
@@ -57,8 +56,8 @@ class WslBaseMavenCommandLine(
     }
 
     private fun throwWslHomeException(): Nothing {
-        val message = "WSL " + ExternalSystemBundle.message(
-            "external.system.project_jdk.not_specified", OpenProjectJdkSettingsCallback.ID
+        val message = "WSL " + GBundle.message(
+            "gmaven.project_jdk.not_specified", OpenProjectJdkSettingsCallback.ID
         )
         throw ExternalSystemJdkException(message, null, OpenProjectJdkSettingsCallback.ID)
     }

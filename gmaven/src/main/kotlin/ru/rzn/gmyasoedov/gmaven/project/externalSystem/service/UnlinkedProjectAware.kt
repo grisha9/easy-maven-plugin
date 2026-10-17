@@ -1,4 +1,3 @@
-/*
 package ru.rzn.gmyasoedov.gmaven.project.externalSystem.service
 
 import com.intellij.openapi.Disposable
@@ -69,4 +68,4 @@ class UnlinkedProjectAware : ExternalSystemUnlinkedProjectAware {
             false
         }
     }
-}*/
+}
