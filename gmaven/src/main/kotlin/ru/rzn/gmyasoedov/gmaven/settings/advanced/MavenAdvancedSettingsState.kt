@@ -15,6 +15,7 @@ class MavenAdvancedSettingsState : PersistentStateComponent<MavenAdvancedSetting
     var completionEasyMavenOnly by property(false)
     var runLineMarker by property(true)
     var pomNavigation by property(true)
+    var moduleTestJarAsJarFile by property(false)
 
     var defaultMavenHome by string("")
     var sourcesMavenTask by string(DEFAULT_SOURCE_TASK)
