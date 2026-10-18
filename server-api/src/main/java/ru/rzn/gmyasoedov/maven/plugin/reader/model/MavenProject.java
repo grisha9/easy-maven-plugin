@@ -35,6 +35,15 @@ public class MavenProject implements MavenId, Serializable {
     private List<String> excludedPaths = Collections.emptyList();
     private String generatedPath;
     private String testGeneratedPath;
+    private boolean testJar;
+
+    public boolean isTestJar() {
+        return testJar;
+    }
+
+    public void setTestJar(boolean testJar) {
+        this.testJar = testJar;
+    }
 
     @Override
     public String getArtifactId() {
