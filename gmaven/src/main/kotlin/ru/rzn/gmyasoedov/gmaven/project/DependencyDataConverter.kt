@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.idea.base.externalSystem.findAll
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.project.MavenProjectResolver.ProjectResolverContext
 import ru.rzn.gmyasoedov.gmaven.project.externalSystem.model.SourceSetData
+import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
 import ru.rzn.gmyasoedov.gmaven.utils.MavenLog
 import ru.rzn.gmyasoedov.maven.plugin.reader.model.MavenArtifact
 import ru.rzn.gmyasoedov.maven.plugin.reader.model.MavenProject
@@ -22,6 +23,8 @@ import java.nio.file.Path
 import kotlin.io.path.exists
 
 private const val MIN_MODULES_COUNT_TO_CHECK_SOURCES = 10
+private const val TEST_JAR_TYPE = "test-jar"
+private const val TESTS_CLASSIFIER = "tests"
 
 fun addDependencies(
     container: MavenProjectContainer, projectNode: DataNode<ProjectData>, context: ProjectResolverContext
@@ -48,9 +51,8 @@ private fun addDependencies(
     var hasLibrary = false
     for (artifact in project.resolvedArtifacts) {
         val moduleContextHolder = context.moduleDataByArtifactId[GServerUtils.getMavenId(artifact)]
-        val moduleDataNodeByMavenArtifact = moduleContextHolder?.perSourceSetModules?.mainNode
-            ?: moduleContextHolder?.moduleNode
-        if (moduleDataNodeByMavenArtifact == null || isClassifierJar(artifact)) {
+        val moduleDataNodeByMavenArtifact = getModuleDataNodeByMavenArtifact(moduleContextHolder, artifact)
+        if (moduleDataNodeByMavenArtifact == null || moduleTestJarAsJarFile(artifact)) {
             addLibrary(moduleByMavenProject, artifact, moduleDataNodeByMavenArtifact, context)
             if (!hasLibrary) hasLibrary = true
         } else {
@@ -72,14 +74,17 @@ private fun addDependencies(
     var hasLibrary = false
     for (artifact in project.resolvedArtifacts) {
         val moduleContextHolder = context.moduleDataByArtifactId[GServerUtils.getMavenId(artifact)]
-        val moduleDataNodeByMavenArtifact = moduleContextHolder?.perSourceSetModules?.mainNode
-            ?: moduleContextHolder?.moduleNode
-        if (moduleDataNodeByMavenArtifact == null || isClassifierJar(artifact)) {
+        val moduleDataNodeByMavenArtifact = getModuleDataNodeByMavenArtifact(moduleContextHolder, artifact)
+        if (moduleDataNodeByMavenArtifact == null || moduleTestJarAsJarFile(artifact)) {
             addLibrary(mainModule, testModule, artifact, moduleDataNodeByMavenArtifact, context)
             if (!hasLibrary) hasLibrary = true
         } else {
-            addModuleDependency(mainModule, moduleDataNodeByMavenArtifact.data, artifact)
-            addModuleDependency(testModule, moduleDataNodeByMavenArtifact.data, artifact)
+            if (getScope(artifact) == DependencyScope.TEST) {
+                addModuleDependency(testModule, moduleDataNodeByMavenArtifact.data, artifact)
+            } else {
+                addModuleDependency(mainModule, moduleDataNodeByMavenArtifact.data, artifact)
+                addModuleDependency(testModule, moduleDataNodeByMavenArtifact.data, artifact)
+            }
         }
     }
     if (hasLibrary) {
@@ -88,6 +93,20 @@ private fun addDependencies(
 
         testModule.data.setProperty(GMavenConstants.MODULE_PROP_HAS_DEPENDENCIES, true.toString())
         testModule.createChild(ProjectKeys.DEPENDENCIES_GRAPH, ProjectDependenciesImpl())
+    }
+}
+
+private fun getModuleDataNodeByMavenArtifact(
+    moduleContextHolder: MavenProjectResolver.ModuleContextHolder?,
+    artifact: MavenArtifact
+): DataNode<out ModuleData>? {
+    if (moduleContextHolder == null) {
+        return null
+    }
+    return if (isTestJar(artifact) && !MavenAdvancedSettingsState.getInstance().moduleTestJarAsJarFile) {
+        moduleContextHolder.perSourceSetModules?.testNode
+    } else {
+        moduleContextHolder.perSourceSetModules?.mainNode ?: moduleContextHolder.moduleNode
     }
 }
 
@@ -161,6 +180,7 @@ private fun addModuleDependency(
 ) {
     val ownerModule = parentNode.data
     val data = ModuleDependencyData(ownerModule, targetModule)
+    data.isProductionOnTestDependency = isTestJar(artifact)
     data.order = 1
     data.scope = getScope(artifact)
     parentNode.createChild(ProjectKeys.MODULE_DEPENDENCY, data)
@@ -172,11 +192,8 @@ private fun createLibrary(
     val artifactFile = getLibraryFile(artifact, classifierModuleNode)
     val library = LibraryData(GMavenConstants.SYSTEM_ID, GServerUtils.getMavenId(artifact), artifactFile == null)
     library.artifactId = artifact.artifactId
-    if (artifact.classifier == "tests") {
+    if (isTestJar(artifact)) {
         setTestJarSource(context, artifact, library)
-        //todo
-        //in ext.system - com.intellij.openapi.externalSystem.model.project.ModuleDependencyData.productionOnTestDependency
-        //in maven - org.jetbrains.idea.maven.importing.tree.dependency.ModuleDependency (in org.jetbrains.idea.maven.importing.tree.MavenProjectImportContextProvider#getDependency)
         library.artifactId = artifact.artifactId + "-tests"
     }
     library.setGroup(artifact.groupId)
@@ -253,6 +270,10 @@ private fun getLibraryPathType(artifact: MavenArtifact): LibraryPathType {
 
 private fun isTestScope(artifact: MavenArtifact) = GMavenConstants.SCOPE_TEST == artifact.scope
 
-private fun isClassifierJar(artifact: MavenArtifact): Boolean {
-    return artifact.classifier != null && artifact.classifier.isNotEmpty()
+private fun moduleTestJarAsJarFile(artifact: MavenArtifact): Boolean {
+    return MavenAdvancedSettingsState.getInstance().moduleTestJarAsJarFile && isTestJar(artifact)
+}
+
+private fun isTestJar(artifact: MavenArtifact): Boolean {
+    return TEST_JAR_TYPE == artifact.type || TESTS_CLASSIFIER == artifact.classifier
 }

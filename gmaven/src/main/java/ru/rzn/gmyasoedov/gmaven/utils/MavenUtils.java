@@ -364,6 +364,7 @@ public class MavenUtils {
             @NotNull CompilerData compilerData) {
         if (!settings.isResolveModulePerSourceSet()) return false;
         if (isPomProject(project)) return false;
+        if (project.isTestJar()) return true;
         return !Objects.equals(compilerData.getSourceLevel(), compilerData.getTestSourceLevel())
                 || !Objects.equals(compilerData.getTargetLevel(), compilerData.getTestTargetLevel());
     }
