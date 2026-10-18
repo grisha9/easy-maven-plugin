@@ -49,7 +49,7 @@ public final class GMavenConstants {
     public static final String DEPENDENCY_TREE_EVENT_SPY_CLASS = "ru.rzn.gmyasoedov.event.spy.GMavenEventSpyConstants";
     public static final String GMAVEN_ENV_DEBUG_PORT = "gmaven.debug.port";
 
-    private static final String PLUGIN_VERSION = "0.5";
+    private static final String PLUGIN_VERSION = "0.6";
 
     @NotNull
     @NonNls
