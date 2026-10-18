@@ -141,7 +141,7 @@ The result is original build tool behavior and a simple implementation.
         <registryKey key="gmaven.subtask.args" defaultValue="-am"
                      description="Additional Maven args for sub-task(not root pom) execution(comma delimiter)"/>
         <registryKey key="gmaven.show.full.log" defaultValue="false" description="Show full log"/>
-        <registryKey key="gmaven.model.plugin.version" defaultValue="0.5"
+        <registryKey key="gmaven.model.plugin.version" defaultValue="0.6"
                      description="Version of: io.github.grisha9:maven-model-reader-plugin"/>
         <registryKey key="gmaven.search.artifact.maven.central" defaultValue="true"
                      description="Search artifacts in maven central"/>
