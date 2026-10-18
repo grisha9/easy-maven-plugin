@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants;
 import ru.rzn.gmyasoedov.gmaven.bundle.GBundle;
+import ru.rzn.gmyasoedov.gmaven.dom.XmlPsiUtil;
 import ru.rzn.gmyasoedov.gmaven.util.GMavenNotification;
 import ru.rzn.gmyasoedov.gmaven.utils.MavenLog;
 import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils;
@@ -126,12 +127,12 @@ public class GMavenModuleBuilderHelper {
             }
             XmlTag rootTag = ((XmlFile) psiFile).getRootTag();
             if (rootTag == null) return;
-            XmlTag modules = getOrCreateTag(rootTag, "modules", null);
+            XmlTag modules = XmlPsiUtil.INSTANCE.getOrCreateTag(rootTag, "modules", null);
             String relativePath = findRelativePath(parentBuildFile, buildScriptFile.getParent(), File.separatorChar);
             XmlTag module = modules.createChildTag("module", null, relativePath, true);
             modules.addSubTag(module, false);
 
-            XmlTag packaging = getOrCreateTag(rootTag, "packaging", "pom");
+            XmlTag packaging = XmlPsiUtil.INSTANCE.getOrCreateTag(rootTag, "packaging", "pom");
             XmlText xmlText = (XmlText) Arrays.stream(packaging.getChildren())
                     .filter(p -> p instanceof XmlText)
                     .findFirst()
@@ -142,18 +143,6 @@ public class GMavenModuleBuilderHelper {
             CodeStyleManager.getInstance(project).reformat(getPsiFile(project, parentBuildFile));
             unblockAndSaveDocuments(project, parentBuildFile);
         }
-    }
-
-    private XmlTag getOrCreateTag(@NotNull XmlTag rootTag, @NotNull String tagName, @Nullable String value) {
-        XmlTag xmlTag = rootTag.findFirstSubTag(tagName);
-        if (xmlTag != null) {
-            return xmlTag;
-        }
-        xmlTag = rootTag.createChildTag(tagName, null, value, false);
-        rootTag.addSubTag(xmlTag, false);
-        xmlTag = rootTag.findFirstSubTag(tagName);
-        assert xmlTag != null;
-        return xmlTag;
     }
 
     private void updateProjectPom(final Project project, final VirtualFile pom) {
