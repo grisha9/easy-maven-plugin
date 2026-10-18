@@ -29,6 +29,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
     private val completionEasyMavenOnlyBind = propertyGraph.property(false)
     private val runLineMarkerBind = propertyGraph.property(false)
     private val pomNavigationBind = propertyGraph.property(false)
+    private val moduleTestJarAsJarFileBind = propertyGraph.property(false)
     private val defaultMavenHomeBind = propertyGraph.property("")
     private val sourcesMavenTaskBind = propertyGraph.property("")
     private val junitJvmArgsBind = propertyGraph.property("")
@@ -149,6 +150,13 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
                     checkBox("Use Easy Maven navigation in pom.xml")
                         .bindSelected(pomNavigationBind)
                 }
+                row {
+                    checkBox(message("gmaven.settings.system.module.test.jar.as.jar.file"))
+                        .applyToComponent {
+                            toolTipText = message("gmaven.settings.system.module.test.jar.as.jar.file.tooltip")
+                        }
+                        .bindSelected(moduleTestJarAsJarFileBind)
+                }
             }
         }
     }
@@ -161,6 +169,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         completionEasyMavenOnlyBind.set(additionalSettings.completionEasyMavenOnly)
         runLineMarkerBind.set(additionalSettings.runLineMarker)
         pomNavigationBind.set(additionalSettings.pomNavigation)
+        moduleTestJarAsJarFileBind.set(additionalSettings.moduleTestJarAsJarFile)
         defaultMavenHomeBind.set(additionalSettings.defaultMavenHome ?: "")
         sourcesMavenTaskBind.set(additionalSettings.sourcesMavenTask ?: "")
         junitJvmArgsBind.set(additionalSettings.junitJvmArgs ?: "")
@@ -179,6 +188,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         if (additionalSettings.completionEasyMavenOnly != completionEasyMavenOnlyBind.get()) return true
         if (additionalSettings.runLineMarker != runLineMarkerBind.get()) return true
         if (additionalSettings.pomNavigation != pomNavigationBind.get()) return true
+        if (additionalSettings.moduleTestJarAsJarFile != moduleTestJarAsJarFileBind.get()) return true
         if ((additionalSettings.defaultMavenHome ?: "") != defaultMavenHomeBind.get()) return true
         if ((additionalSettings.sourcesMavenTask ?: "") != sourcesMavenTaskBind.get()) return true
         if ((additionalSettings.junitJvmArgs ?: "") != junitJvmArgsBind.get()) return true
@@ -199,6 +209,7 @@ class MavenAdvancedSettingsControl(val project: Project) : SearchableConfigurabl
         additionalSettings.completionEasyMavenOnly = completionEasyMavenOnlyBind.get()
         additionalSettings.runLineMarker = runLineMarkerBind.get()
         additionalSettings.pomNavigation = pomNavigationBind.get()
+        additionalSettings.moduleTestJarAsJarFile = moduleTestJarAsJarFileBind.get()
         additionalSettings.defaultMavenHome = defaultMavenHomeBind.get()
         additionalSettings.sourcesMavenTask = sourcesMavenTaskBind.get()
         additionalSettings.junitJvmArgs = junitJvmArgsBind.get()
