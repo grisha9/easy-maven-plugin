@@ -291,6 +291,12 @@ The result is original build tool behavior and a simple implementation.
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="ProjectViewPopupMenu"/>
         </action>
+        <action id="Gmaven.AddBuildCacheExtension"
+                class="ru.rzn.gmyasoedov.gmaven.project.action.AddBuildCacheExtensionAction"
+                icon="GMavenIcons.ExecuteMavenGoal">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="ProjectViewPopupMenu"/>
+        </action>
 
         <action id="GMaven.ExternalSystem.ShowAllPhases"
                 class="ru.rzn.gmyasoedov.gmaven.project.action.ShowAllPhasesAction">
