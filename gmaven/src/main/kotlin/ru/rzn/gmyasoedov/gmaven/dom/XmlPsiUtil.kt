@@ -162,4 +162,16 @@ object XmlPsiUtil {
         val id = "$groupId:$artifactId:$version"
         return MavenArtifactInfo(id, groupId, artifactId, version)
     }
+
+    fun getOrCreateTag(rootTag: XmlTag, tagName: String, value: String?): XmlTag {
+        var xmlTag = rootTag.findFirstSubTag(tagName)
+        if (xmlTag != null) {
+            return xmlTag
+        }
+        xmlTag = rootTag.createChildTag(tagName, null, value, false)
+        rootTag.addSubTag(xmlTag, false)
+        xmlTag = rootTag.findFirstSubTag(tagName)
+        checkNotNull(xmlTag)
+        return xmlTag
+    }
 }
