@@ -62,6 +62,7 @@ public class MavenUtils {
     private static final String POLYGLOT_PREFIX = ".polyglot.";
     public static final String INTELLIJ_GROOVY_PLUGIN_ID = "org.intellij.groovy";
     public static final String INTELLIJ_MAVEN_PLUGIN_ID = "org.jetbrains.idea.maven";
+    public static final String INTELLIJ_JCEF = "com.intellij.modules.jcef";
 
     private MavenUtils() {
     }
