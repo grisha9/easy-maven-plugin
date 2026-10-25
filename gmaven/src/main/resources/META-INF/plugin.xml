@@ -305,6 +305,14 @@ The result is original build tool behavior and a simple implementation.
                 class="ru.rzn.gmyasoedov.gmaven.project.action.OpenLocalRepoAction">
             <add-to-group group-id="ExternalSystemView.BaseProjectMenu" anchor="last"/>
         </action>
+
+        <action id="GMaven.SelectOpenedFileInCommitView"
+                class="ru.rzn.gmyasoedov.gmaven.ui.commit.SelectOpenedFileInCommitViewAction"
+                icon="AllIcons.General.Locate"
+                text="Easy Maven: Select in Project View"
+                description="Open the Project tool window and select the file chosen in the Commit tool window">
+            <add-to-group group-id="ChangesViewToolbar.Shared" anchor="last"/>
+        </action>
     </actions>
 
     <extensions defaultExtensionNs="org.jetbrains.kotlin">
