@@ -15,6 +15,7 @@ import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import ru.rzn.gmyasoedov.gmaven.settings.advanced.MavenAdvancedSettingsState
 import ru.rzn.gmyasoedov.gmaven.util.MvnUtil
 import ru.rzn.gmyasoedov.gmaven.utils.MavenArtifactUtil
+import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils
 import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.exists
@@ -25,7 +26,7 @@ class GroupIdToLocalRepoLineMarkerContributor : RunLineMarkerContributor() {
         if (!MavenAdvancedSettingsState.getInstance().groupIdFolderNavigation) return null
 
         val xmlTag = psiElement as? XmlTag ?: return null
-        if (xmlTag.name == MavenArtifactUtil.DEPENDENCIES) {
+        if (xmlTag.name == MavenArtifactUtil.DEPENDENCIES && MavenUtils.pluginEnabled(MavenUtils.INTELLIJ_JCEF)) {
             return Info(
                 AllIcons.Actions.Search,
                 arrayOf(MavenCentralBrowserAction()),
