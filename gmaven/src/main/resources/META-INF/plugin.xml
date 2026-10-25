@@ -48,7 +48,8 @@
         <import.full.plugin implementation="ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.ApacheMavenCompilerPlugin"/>
         <import.full.plugin implementation="ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.BuildHelperMavenPlugin"/>
         <import.full.plugin implementation="ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.DevAspectjMavenPlugin"/>
-        <import.full.plugin implementation="ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.CodehausAspectjMavenPlugin"/>
+        <import.full.plugin
+                implementation="ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.CodehausAspectjMavenPlugin"/>
         <import.full.plugin implementation="ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.TychoCompilerPlugin"/>
     </extensions>
     <!-- Extension points defined by the plugin.
@@ -88,17 +89,22 @@
         <externalProjectDataService
                 implementation="ru.rzn.gmyasoedov.gmaven.project.importing.MainJavaCompilerDataService"/>
         <externalProjectDataService implementation="ru.rzn.gmyasoedov.gmaven.project.importing.SourceSetDataService"/>
-        <externalProjectDataService implementation="ru.rzn.gmyasoedov.gmaven.project.importing.ProjectSettingsLocalRepoDataService"/>
+        <externalProjectDataService
+                implementation="ru.rzn.gmyasoedov.gmaven.project.importing.ProjectSettingsLocalRepoDataService"/>
         <externalSystemDependencyAnalyzer
                 implementation="ru.rzn.gmyasoedov.gmaven.project.dependencyanalyzer.MavenDependencyAnalyzerExtension"/>
-        <externalSystemUnlinkedProjectAware implementation="ru.rzn.gmyasoedov.gmaven.project.externalSystem.service.UnlinkedProjectAware"/>
+        <externalSystemUnlinkedProjectAware
+                implementation="ru.rzn.gmyasoedov.gmaven.project.externalSystem.service.UnlinkedProjectAware"/>
         <externalSystem.runConfigurationEx
                 implementation="ru.rzn.gmyasoedov.gmaven.project.task.GMavenRunConfigurationExtension"/>
         <externalSystemViewContributor id="GMaven"
                                        implementation="ru.rzn.gmyasoedov.gmaven.ui.MavenExternalViewContributor"/>
         <externalIconProvider key="GMAVEN" implementationClass="ru.rzn.gmyasoedov.gmaven.ui.GMavenIconProvider"/>
-        <externalSystemNotificationExtension implementation="ru.rzn.gmyasoedov.gmaven.project.externalSystem.service.GMavenNotificationExtension" order="last"/>
-        <externalSystemConfigLocator implementation="ru.rzn.gmyasoedov.gmaven.project.externalSystem.service.GMavenSystemConfigLocator"/>
+        <externalSystemNotificationExtension
+                implementation="ru.rzn.gmyasoedov.gmaven.project.externalSystem.service.GMavenNotificationExtension"
+                order="last"/>
+        <externalSystemConfigLocator
+                implementation="ru.rzn.gmyasoedov.gmaven.project.externalSystem.service.GMavenSystemConfigLocator"/>
 
         <stepsBeforeRunProvider implementation="ru.rzn.gmyasoedov.gmaven.project.task.GMavenBeforeRunTaskProvider"/>
 
@@ -106,7 +112,8 @@
                     factoryClass="ru.rzn.gmyasoedov.gmaven.ui.MavenToolWindowFactory"/>
         <consoleFilterProvider implementation="ru.rzn.gmyasoedov.gmaven.project.filter.MavenConsoleFilterProvider"
                                order="first"/>
-        <attachSourcesProvider implementation="ru.rzn.gmyasoedov.gmaven.project.externalSystem.service.MavenAttachSourcesProvider"/>
+        <attachSourcesProvider
+                implementation="ru.rzn.gmyasoedov.gmaven.project.externalSystem.service.MavenAttachSourcesProvider"/>
         <annotator language="XML" implementationClass="ru.rzn.gmyasoedov.gmaven.dom.PomXmlDomGutterAnnotator"/>
         <runLineMarkerContributor language="XML"
                                   implementationClass="ru.rzn.gmyasoedov.gmaven.dom.GroupIdToLocalRepoLineMarkerContributor"/>
@@ -145,7 +152,8 @@
         <registryKey key="gmaven.process.tree.fallback" defaultValue="false"
                      description="Maven dependency tree for whole project - take extra time but more stable"/>
         <registryKey key="gmaven.process.remove.result.file" defaultValue="true" description="Remove result json file"/>
-        <registryKey key="gmaven.import.readonly" defaultValue="false" description="Read only project import. Without download dependencies"/>
+        <registryKey key="gmaven.import.readonly" defaultValue="false"
+                     description="Read only project import. Without download dependencies"/>
         <notificationGroup id="Easy Maven" displayType="BALLOON"/>
 
         <fileTypeOverrider implementation="ru.rzn.gmyasoedov.gmaven.dom.PomFileTypeOverrider" order="first"/>
@@ -223,8 +231,10 @@
         <action id="GMaven.Toolbar.RunTasksAction" class="ru.rzn.gmyasoedov.gmaven.project.action.RunTasksAction"/>
         <action id="GMaven.ExternalSystem.RefreshProjectWithPlugins" icon="AllIcons.Actions.Refresh"
                 class="ru.rzn.gmyasoedov.gmaven.project.action.ReloadProjectWithPluginsAction">
-            <add-to-group group-id="ExternalSystemView.BaseProjectMenu" anchor="after" relative-to-action="ExternalSystem.RefreshProject"/>
-            <add-to-group group-id="ExternalSystemView.ModuleMenu" anchor="after" relative-to-action="ExternalSystem.RefreshProject"/>
+            <add-to-group group-id="ExternalSystemView.BaseProjectMenu" anchor="after"
+                          relative-to-action="ExternalSystem.RefreshProject"/>
+            <add-to-group group-id="ExternalSystemView.ModuleMenu" anchor="after"
+                          relative-to-action="ExternalSystem.RefreshProject"/>
         </action>
         <action id="GMaven.ExternalSystem.RunSimplePomTaskAction"
                 class="ru.rzn.gmyasoedov.gmaven.project.action.RunSimplePomTaskAction">
@@ -233,7 +243,8 @@
         </action>
         <action id="GMaven.ExternalSystem.RefreshProjectWithSources" icon="AllIcons.Actions.Refresh"
                 class="ru.rzn.gmyasoedov.gmaven.project.action.ReloadProjectWithSourcesAction">
-            <add-to-group group-id="ExternalSystemView.BaseProjectMenu" anchor="after" relative-to-action="GMaven.ExternalSystem.RefreshProjectWithPlugins"/>
+            <add-to-group group-id="ExternalSystemView.BaseProjectMenu" anchor="after"
+                          relative-to-action="GMaven.ExternalSystem.RefreshProjectWithPlugins"/>
         </action>
         <action id="GMaven.ExternalSystem.ResetProfileState" icon="AllIcons.General.Reset"
                 class="ru.rzn.gmyasoedov.gmaven.project.action.ResetProfileStateToDefaultAction">
@@ -294,6 +305,14 @@
         <action id="GMaven.ExternalSystem.OpenLocalRepoAction"
                 class="ru.rzn.gmyasoedov.gmaven.project.action.OpenLocalRepoAction">
             <add-to-group group-id="ExternalSystemView.BaseProjectMenu" anchor="last"/>
+        </action>
+
+        <action id="GMaven.SelectOpenedFileInCommitView"
+                class="ru.rzn.gmyasoedov.gmaven.ui.commit.SelectOpenedFileInCommitViewAction"
+                icon="AllIcons.General.Locate"
+                text="Easy Maven: Select in Project View"
+                description="Open the Project tool window and select the file chosen in the Commit tool window">
+            <add-to-group group-id="ChangesViewToolbar" anchor="last"/>
         </action>
     </actions>
 
