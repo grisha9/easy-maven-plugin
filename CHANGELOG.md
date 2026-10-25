@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [262.3] - 2026-10-25
+
+### Added
+
+- support Android Studio Rabbit [#83](https://github.com/grisha9/easy-maven-plugin/issues/83)
+- test-jar for project module improve [#61](https://github.com/grisha9/easy-maven-plugin/issues/61)
+- action 'Add Build Cache Extension' [#80](https://github.com/grisha9/easy-maven-plugin/issues/80)
+- action 'Search in Project view from commit tab' [#82](https://github.com/grisha9/easy-maven-plugin/pull/82)
+
+
 ## [262.2] - 2026-08-07
 
 ### Added
