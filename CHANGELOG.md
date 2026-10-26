@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [253.10] - 2026-10-25
+
+### Added
+
+- test-jar for project module improve [#61](https://github.com/grisha9/easy-maven-plugin/issues/61)
+- action 'Add Build Cache Extension' [#80](https://github.com/grisha9/easy-maven-plugin/issues/80)
+- action 'Search in Project view from commit tab' [#82](https://github.com/grisha9/easy-maven-plugin/pull/82)
+
+
 ## [253.9] - 2026-08-07
 
 ### Added
