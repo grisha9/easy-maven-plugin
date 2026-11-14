@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [262.4] - 2026-11-14
+
+### Fixed
+
+- Remove usages of deprecated API [#85](https://github.com/grisha9/easy-maven-plugin/issues/85)
+- IllegalStateException on new project creation [#87](https://github.com/grisha9/easy-maven-plugin/pull/87)
+
 ## [262.3] - 2026-10-25
 
 ### Added
