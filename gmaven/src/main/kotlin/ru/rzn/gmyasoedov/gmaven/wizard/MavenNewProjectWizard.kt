@@ -4,9 +4,7 @@ import com.intellij.ide.projectWizard.generators.*
 import com.intellij.ide.starters.local.StandardAssetsProvider
 import com.intellij.ide.wizard.NewProjectWizardChainStep.Companion.nextStep
 import com.intellij.ide.wizard.NewProjectWizardStep
-import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.EDT
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
 import com.intellij.openapi.externalSystem.model.ExternalSystemDataKeys
@@ -14,17 +12,13 @@ import com.intellij.openapi.externalSystem.model.ExternalSystemException
 import com.intellij.openapi.externalSystem.service.project.manage.ExternalProjectsManagerImpl
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.observable.util.bindBooleanStorage
-import com.intellij.openapi.progress.currentThreadCoroutineScope
-import com.intellij.openapi.progress.withCurrentThreadCoroutineScope
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.projectImport.ProjectOpenProcessor
 import com.intellij.ui.UIBundle
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.bindSelected
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import ru.rzn.gmyasoedov.maven.plugin.reader.model.SimpleMavenId
@@ -107,7 +101,7 @@ class MavenNewProjectWizard : BuildSystemJavaNewProjectWizard {
                     val openProcessor = ProjectOpenProcessor.EXTENSION_POINT_NAME
                         .findExtensionOrFail(GProjectOpenProcessor::class.java)
 
-                    currentThreadCoroutineScope().launch {
+                    GMavenProjectCoroutineScope.getInstance(project).launch {
                         openProcessor.importProjectAfterwardsAsync(project, buildFile)
                     }
                 } else {
