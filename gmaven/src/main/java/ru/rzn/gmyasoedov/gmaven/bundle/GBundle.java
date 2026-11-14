@@ -14,7 +14,7 @@ public final class GBundle extends DynamicBundle {
     private static final GBundle INSTANCE = new GBundle();
 
     private GBundle() {
-        super(BUNDLE);
+        super(GBundle.class, BUNDLE);
     }
 
     @NotNull
