@@ -69,13 +69,9 @@ object MvnUtil {
     }
 
     fun getRecentMvnPath(isDaemon: Boolean = false): String? {
-        return (if (isDaemon) {
-            MavenAdvancedSettingsState.getInstance().lastMvndPath
-                ?.takeIf { it.isNotEmpty() } ?: MavenAdvancedSettingsState.getInstance().lastMvnPath
-        } else {
-            MavenAdvancedSettingsState.getInstance().lastMvnPath
-                ?.takeIf { it.isNotEmpty() } ?: MavenAdvancedSettingsState.getInstance().lastMvndPath
-        })?.takeIf { it.isNotEmpty() }
+        val state = MavenAdvancedSettingsState.getInstance()
+        val path = if (isDaemon) state.lastMvndPath else state.lastMvnPath
+        return path?.takeIf { it.isNotBlank() }
     }
 
     fun getMavenLocalReposFromIDEA(module: Module): List<String> {
