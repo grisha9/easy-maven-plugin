@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Rerun of a failed Maven run configuration from the Run tool window resumes the build from the failed module (`-rf`/`-r`)
+
 ## [262.4] - 2026-11-14
 
 ### Fixed
