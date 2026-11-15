@@ -338,14 +338,16 @@ class ProjectSettingsControl(private val project: Project, private val currentSe
     }
 
     private fun saveRecentMavenPath(distributionSettings: DistributionSettings) {
-        if (distributionSettings.path == null || distributionSettings.path.absolutePathString().isBlank()) return
+        val path = distributionSettings.path ?: return
+        if (path.toString().isBlank()) return
         try {
             if (distributionSettings.type == DistributionType.CUSTOM) {
-                MavenAdvancedSettingsState.getInstance().lastMvnPath = distributionSettings.path.absolutePathString()
+                MavenAdvancedSettingsState.getInstance().lastMvnPath = path.absolutePathString()
             } else if (distributionSettings.type == DistributionType.CUSTOM_MVND) {
-                MavenAdvancedSettingsState.getInstance().lastMvndPath = distributionSettings.path.absolutePathString()
+                MavenAdvancedSettingsState.getInstance().lastMvndPath = path.absolutePathString()
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            MavenLog.LOG.warn("Failed to save recent maven path", e)
         }
     }
 
@@ -383,9 +385,12 @@ class ProjectSettingsControl(private val project: Project, private val currentSe
             distributionTypeModel.add(each.description)
             distributionTypeMap[each.description] = each.distributionSettings
             if (isCustomPathDistribution(each.distributionSettings.type)) {
-                val customPath = mavenCustomPathBind.get().takeIf { it.isNotEmpty() }
-                    ?: MvnUtil.getRecentMvnPath(each.distributionSettings.type == DistributionType.CUSTOM_MVND)
-                    ?: currentSettings.localRepositoryPath ?: ""
+                val type = each.distributionSettings.type
+                val customPath = mavenCustomPathBind.get()
+                    .takeIf {
+                        it.isNotEmpty() && currentSettings.distributionSettings.type == type
+                    } ?: MvnUtil.getRecentMvnPath(type == DistributionType.CUSTOM_MVND) ?: ""
+
                 each.distributionSettings.path = Path.of(customPath)
             }
         }
