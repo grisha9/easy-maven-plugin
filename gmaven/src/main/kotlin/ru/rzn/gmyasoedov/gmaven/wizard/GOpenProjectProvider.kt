@@ -33,7 +33,11 @@ class GOpenProjectProvider : AbstractOpenProjectProvider() {
 
     override fun isProjectFile(file: VirtualFile) = MavenUtils.isPomFile(file)
 
-    override fun linkToExistingProject(projectFile: VirtualFile, project: Project) {
+    /**
+     * Synchronously links the Maven project to an already opened IDE project and starts import.
+     * Replacement for the deprecated [AbstractOpenProjectProvider.linkToExistingProject].
+     */
+    fun linkMavenProject(projectFile: VirtualFile, project: Project) {
         val mavenSettings = MavenSettings.getInstance(project)
         mavenSettings.storeProjectFilesExternally = true
         val mavenProjectSettings = createMavenProjectSettings(projectFile)
@@ -41,7 +45,7 @@ class GOpenProjectProvider : AbstractOpenProjectProvider() {
     }
 
     override suspend fun linkProject(projectFile: VirtualFile, project: Project) {
-        linkToExistingProject(projectFile, project)
+        linkMavenProject(projectFile, project)
     }
 
     @VisibleForTesting

@@ -30,7 +30,7 @@ internal class GProjectOpenProcessor : ProjectOpenProcessor() {
 
     override suspend fun importProjectAfterwardsAsync(project: Project, file: VirtualFile) {
         withContext(Dispatchers.EDT) {
-            importProvider.linkToExistingProject(file, project)
+            importProvider.linkMavenProject(file, project)
         }
     }
 }
