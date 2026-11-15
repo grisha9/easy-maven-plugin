@@ -11,10 +11,16 @@ import com.intellij.openapi.externalSystem.task.TaskCallback
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.module.Module
+import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.LibraryOrderEntry
+import com.intellij.openapi.roots.ModuleRootManager
+import com.intellij.openapi.roots.libraries.Library
 import com.intellij.openapi.util.ActionCallback
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.platform.backend.workspace.WorkspaceModel
+import com.intellij.platform.workspace.jps.entities.LibraryEntity
+import com.intellij.platform.workspace.jps.entities.ModuleEntity
 import com.intellij.psi.PsiFile
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants.TASK_DOWNLOAD_SOURCE
@@ -31,17 +37,62 @@ import kotlin.io.path.exists
 
 class MavenAttachSourcesProvider : AttachSourcesProvider {
 
+    @Deprecated("Use getLibrariesActions(Collection<LibraryEntity>, PsiFile)")
     override fun getActions(
         orderEntries: List<LibraryOrderEntry>,
         psiFile: PsiFile
     ): Collection<AttachSourcesAction> {
-        if (getModules(orderEntries).isEmpty()) return listOf()
-        return listOf(DownloadSourceAction(orderEntries, psiFile))
+        val libraries = orderEntries.mapNotNull { entry ->
+            entry.library?.let { LibraryWithModule(entry.libraryName, it, entry.ownerModule) }
+        }
+        return getActionsInternal(libraries, psiFile)
+    }
+
+    override fun getLibrariesActions(
+        libraryEntities: Collection<LibraryEntity>,
+        psiFile: PsiFile
+    ): Collection<AttachSourcesAction> {
+        return getActionsInternal(findLibraries(libraryEntities, psiFile.project), psiFile)
+    }
+
+    private fun getActionsInternal(
+        libraries: List<LibraryWithModule>, psiFile: PsiFile
+    ): Collection<AttachSourcesAction> {
+        val mavenLibraries = libraries.filter { isMavenModule(it.module) }
+        if (mavenLibraries.isEmpty()) return listOf()
+        return listOf(DownloadSourceAction(mavenLibraries, psiFile))
+    }
+
+    /**
+     * Resolves workspace model library entities to legacy [Library] instances using public API only:
+     * modules that reference the library -> module order entries with the same library name.
+     */
+    private fun findLibraries(libraryEntities: Collection<LibraryEntity>, project: Project): List<LibraryWithModule> {
+        val snapshot = WorkspaceModel.getInstance(project).currentSnapshot
+        val moduleManager = ModuleManager.getInstance(project)
+        val result = mutableListOf<LibraryWithModule>()
+        for (libraryEntity in libraryEntities) {
+            val libraryName = libraryEntity.name
+            for (moduleEntity in snapshot.referrers(libraryEntity.symbolicId, ModuleEntity::class.java)) {
+                val module = moduleManager.findModuleByName(moduleEntity.name) ?: continue
+                if (!isMavenModule(module)) continue
+                val library = ModuleRootManager.getInstance(module).orderEntries
+                    .filterIsInstance<LibraryOrderEntry>()
+                    .firstNotNullOfOrNull { it.takeIf { e -> e.libraryName == libraryName }?.library }
+                    ?: continue
+                result += LibraryWithModule(libraryName, library, module)
+            }
+        }
+        return result
     }
 }
 
+internal data class LibraryWithModule(val libraryName: String?, val library: Library, val module: Module)
+
+private fun isMavenModule(module: Module) = ExternalSystemApiUtil.isExternalSystemAwareModule(SYSTEM_ID, module)
+
 internal class DownloadSourceAction(
-    private val orderEntries: List<LibraryOrderEntry>, private val psiFile: PsiFile
+    private val libraries: List<LibraryWithModule>, private val psiFile: PsiFile
 ) : AttachSourcesAction {
 
     override fun getName(): String {
@@ -52,13 +103,18 @@ internal class DownloadSourceAction(
         return GBundle.message("gmaven.action.download.sources.busy.text")
     }
 
+    @Deprecated("Use perform(Collection<LibraryEntity>, Project)")
     override fun perform(orderEntriesContainingFile: List<LibraryOrderEntry>): ActionCallback {
-        val modulesMap = getModules(orderEntries)
-        if (modulesMap.isEmpty()) {
-            return ActionCallback.REJECTED
-        }
-        val (libraryOrderEntry, module) = modulesMap.entries.iterator().next()
-        val libraryName = libraryOrderEntry.libraryName ?: return ActionCallback.REJECTED
+        return performInternal()
+    }
+
+    override fun perform(libraryEntities: Collection<LibraryEntity>, project: Project): ActionCallback {
+        return performInternal()
+    }
+
+    private fun performInternal(): ActionCallback {
+        val (libraryName, _, module) = libraries.firstOrNull() ?: return ActionCallback.REJECTED
+        if (libraryName == null) return ActionCallback.REJECTED
         val artifactCoordinates = StringUtil.trimStart(libraryName, SYSTEM_ID.readableName + ": ")
         if (StringUtil.equals(libraryName, artifactCoordinates)) {
             return ActionCallback.REJECTED
@@ -79,7 +135,7 @@ internal class DownloadSourceAction(
         val artifactNioPath = MavenArtifactUtil
             .getArtifactNioPath(Path.of(localRepoPath), split[0], split[1], split[2], "jar", "sources")
         if (artifactNioPath.exists()) {
-            attachSources(artifactNioPath, orderEntries)
+            attachSources(artifactNioPath)
             return ActionCallback.DONE
         }
 
@@ -116,7 +172,7 @@ internal class DownloadSourceAction(
                         errorNotification(e.localizedMessage, project)
                         return
                     }
-                    attachSources(artifactNioPath, orderEntries)
+                    attachSources(artifactNioPath)
                     resultWrapper.setDone()
                 }
 
@@ -147,21 +203,10 @@ internal class DownloadSourceAction(
         GMavenNotification.errorExternalSystemNotification(title, message, project)
     }
 
-    private fun attachSources(sourcesJar: Path, orderEntries: List<LibraryOrderEntry>) {
+    private fun attachSources(sourcesJar: Path) {
         ApplicationManager.getApplication()
             .invokeLater {
-                InternetAttachSourceProvider.attachSourceJar(sourcesJar, orderEntries.mapNotNull { it.library })
+                InternetAttachSourceProvider.attachSourceJar(sourcesJar, libraries.map { it.library }.distinct())
             }
     }
-}
-
-private fun getModules(libraryOrderEntries: List<LibraryOrderEntry>): Map<LibraryOrderEntry, Module> {
-    val result: MutableMap<LibraryOrderEntry, Module> = HashMap()
-    for (entry in libraryOrderEntries) {
-        val module = entry.ownerModule
-        if (ExternalSystemApiUtil.isExternalSystemAwareModule(SYSTEM_ID, module)) {
-            result[entry] = module
-        }
-    }
-    return result
 }

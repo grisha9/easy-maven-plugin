@@ -1,7 +1,11 @@
 package ru.rzn.gmyasoedov.gmaven.wizard
 
+
 import com.intellij.ide.projectWizard.ProjectWizardJdkIntent
-import com.intellij.ide.projectWizard.generators.*
+import com.intellij.ide.projectWizard.generators.AssetsNewProjectWizardStep
+import com.intellij.ide.projectWizard.generators.BuildSystemJavaNewProjectWizard
+import com.intellij.ide.projectWizard.generators.JavaNewProjectWizard
+import com.intellij.ide.projectWizard.generators.withJavaSampleCodeAsset
 import com.intellij.ide.starters.local.StandardAssetsProvider
 import com.intellij.ide.wizard.NewProjectWizardChainStep.Companion.nextStep
 import com.intellij.ide.wizard.NewProjectWizardStep
@@ -13,8 +17,6 @@ import com.intellij.openapi.externalSystem.model.ExternalSystemException
 import com.intellij.openapi.externalSystem.service.project.manage.ExternalProjectsManagerImpl
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.observable.util.bindBooleanStorage
-import com.intellij.openapi.progress.currentThreadCoroutineScope
-
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
@@ -22,9 +24,7 @@ import com.intellij.projectImport.ProjectOpenProcessor
 import com.intellij.ui.UIBundle
 import com.intellij.ui.dsl.builder.Panel
 import com.intellij.ui.dsl.builder.bindSelected
-
 import kotlinx.coroutines.launch
-
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.settings.MavenSettings
 import ru.rzn.gmyasoedov.maven.plugin.reader.model.SimpleMavenId
@@ -41,7 +41,6 @@ class MavenNewProjectWizard : BuildSystemJavaNewProjectWizard {
 
     class Step(parent: JavaNewProjectWizard.Step) :
         GMavenNewProjectWizardStep<JavaNewProjectWizard.Step>(parent),
-        BuildSystemJavaNewProjectWizardData by parent,
         JavaNewProjectWizardData {
 
         override val addSampleCodeProperty = propertyGraph.property(true)

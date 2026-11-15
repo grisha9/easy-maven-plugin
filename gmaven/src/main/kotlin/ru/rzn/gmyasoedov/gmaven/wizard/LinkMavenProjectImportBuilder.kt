@@ -10,7 +10,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.packaging.artifacts.ModifiableArtifactModel
 import com.intellij.projectImport.ProjectImportBuilder
 import com.intellij.projectImport.ProjectImportProvider.getDefaultPath
-import com.intellij.projectImport.ProjectOpenProcessor
+
 import icons.GMavenIcons
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants
 import ru.rzn.gmyasoedov.gmaven.utils.MavenUtils
@@ -51,10 +51,7 @@ internal class LinkMavenProjectImportBuilder : ProjectImportBuilder<Any>() {
         artifactModel: ModifiableArtifactModel?
     ): List<Module> {
         val virtualFile = MavenUtils.getVFile(Path.of(fileToImport).toFile())
-        getProjectOpenProcessor().importProjectAfterwards(project, virtualFile)
+        GOpenProjectProvider().linkMavenProject(virtualFile, project)
         return emptyList()
     }
-
-    private fun getProjectOpenProcessor() =
-        ProjectOpenProcessor.EXTENSION_POINT_NAME.findExtensionOrFail(GProjectOpenProcessor::class.java)
 }

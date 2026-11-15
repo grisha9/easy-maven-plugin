@@ -14,6 +14,7 @@ import com.intellij.openapi.externalSystem.service.execution.ExternalSystemJdkUt
 import com.intellij.openapi.externalSystem.service.execution.ExternalSystemJdkUtil.USE_INTERNAL_JAVA
 import com.intellij.openapi.externalSystem.service.execution.ProjectJdkNotFoundException
 import com.intellij.openapi.externalSystem.service.project.ExternalSystemProjectResolver
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.pom.java.LanguageLevel
 import org.jdom.Element
@@ -167,8 +168,10 @@ class MavenProjectResolver : ExternalSystemProjectResolver<MavenExecutionSetting
         return if (projectNioPath.toFile().isDirectory) projectNioPath else projectNioPath.parent
     }
 
-    private fun getSdk(it: String) = if (ApplicationManager.getApplication().isUnitTestMode)
-        ExternalSystemJdkUtil.getJdk(null, USE_INTERNAL_JAVA) else ExternalSystemJdkUtil.getJdk(null, it)
+    private fun getSdk(it: String): Sdk? {
+        val jdkName = if (ApplicationManager.getApplication().isUnitTestMode) USE_INTERNAL_JAVA else it
+        return ExternalSystemJdkUtil.resolveJdkName(null as Project?, jdkName)
+    }
 
     class ProjectResolverContext(
         val projectNode: DataNode<ProjectData>,

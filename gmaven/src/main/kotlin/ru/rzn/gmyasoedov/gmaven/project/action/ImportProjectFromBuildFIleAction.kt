@@ -29,6 +29,6 @@ class ImportProjectFromBuildFIleAction : ExternalSystemAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
         val project = e.getData(CommonDataKeys.PROJECT) ?: return
-        GOpenProjectProvider().linkToExistingProject(virtualFile, project)
+        GOpenProjectProvider().linkMavenProject(virtualFile, project)
     }
 }

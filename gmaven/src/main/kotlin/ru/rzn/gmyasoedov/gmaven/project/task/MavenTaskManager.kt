@@ -8,6 +8,7 @@ import com.intellij.openapi.externalSystem.service.execution.ExternalSystemJdkUt
 import com.intellij.openapi.externalSystem.service.execution.ExternalSystemRunnableState
 import com.intellij.openapi.externalSystem.service.execution.ProjectJdkNotFoundException
 import com.intellij.openapi.externalSystem.task.ExternalSystemTaskManager
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.registry.Registry
 import org.jetbrains.annotations.VisibleForTesting
@@ -34,7 +35,7 @@ class MavenTaskManager : ExternalSystemTaskManager<MavenExecutionSettings> {
         listener: ExternalSystemTaskNotificationListener
     ) {
         val tasks = getTasks(settings)
-        val sdk = settings.jdkName?.let { ExternalSystemJdkUtil.getJdk(null, it) }
+        val sdk = settings.jdkName?.let { ExternalSystemJdkUtil.resolveJdkName(null as Project?, it) }
             ?: throw ProjectJdkNotFoundException() //InvalidJavaHomeException
         val mavenHome = getMavenHome(settings, id)
         try {
