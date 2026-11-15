@@ -4,11 +4,7 @@ import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.TreeStructureProvider;
 import com.intellij.ide.projectView.ViewSettings;
 import com.intellij.ide.projectView.impl.ProjectRootsUtil;
-import com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode;
-import com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode;
-import com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode;
-import com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode;
-import com.intellij.ide.projectView.impl.nodes.PsiFileSystemItemFilter;
+import com.intellij.ide.projectView.impl.nodes.*;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleGrouper;
@@ -31,11 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
 
-import static com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil.getExternalModuleType;
-import static com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil.getExternalProjectId;
-import static com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil.getExternalProjectPath;
-import static com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil.getExternalRootProjectPath;
-import static com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil.isExternalSystemAwareModule;
+import static com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil.*;
 import static com.intellij.ui.SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES;
 import static com.intellij.ui.SimpleTextAttributes.merge;
 import static ru.rzn.gmyasoedov.gmaven.GMavenConstants.SOURCE_SET_MODULE_TYPE_KEY;
@@ -44,9 +36,11 @@ import static ru.rzn.gmyasoedov.gmaven.GMavenConstants.SYSTEM_ID;
 public class GMavenTreeStructureProvider implements TreeStructureProvider, DumbAware {
     @NotNull
     @Override
-    public Collection<AbstractTreeNode<?>> modify(@NotNull AbstractTreeNode<?> parent,
-                                                  @NotNull Collection<AbstractTreeNode<?>> children,
-                                                  ViewSettings settings) {
+    public Collection<AbstractTreeNode<?>> modify(
+            @NotNull AbstractTreeNode<?> parent,
+            @NotNull Collection<AbstractTreeNode<?>> children,
+            ViewSettings settings
+    ) {
         Project project = parent.getProject();
         if (project == null) return children;
 
