@@ -31,7 +31,13 @@ class GOpenProjectProvider : AbstractOpenProjectProvider() {
 
     override val systemId: ProjectSystemId = SYSTEM_ID
 
-    override fun isProjectFile(file: VirtualFile) = MavenUtils.isPomFile(file)
+    override fun canOpenProject(file: VirtualFile): Boolean {
+        return isProjectFile(file)
+    }
+
+    override fun isProjectFile(file: VirtualFile): Boolean {
+        return MavenUtils.isProjectDirOrFile(file)
+    }
 
     /**
      * Synchronously links the Maven project to an already opened IDE project and starts import.

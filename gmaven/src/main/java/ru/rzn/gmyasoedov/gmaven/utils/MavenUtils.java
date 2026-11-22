@@ -27,9 +27,6 @@ import com.intellij.openapi.util.registry.Registry;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.SystemProperties;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
 import ru.rzn.gmyasoedov.gmaven.GMavenConstants;
 import ru.rzn.gmyasoedov.gmaven.extensionpoints.plugin.CompilerData;
 import ru.rzn.gmyasoedov.gmaven.settings.MavenExecutionSettings;
-import ru.rzn.gmyasoedov.gmaven.settings.MavenProjectSettings;
 import ru.rzn.gmyasoedov.maven.plugin.reader.model.MavenId;
 import ru.rzn.gmyasoedov.maven.plugin.reader.model.MavenProject;
 
@@ -56,6 +52,7 @@ import static com.intellij.openapi.util.io.JarUtil.getJarAttribute;
 import static com.intellij.openapi.util.io.JarUtil.loadProperties;
 import static com.intellij.openapi.util.text.StringUtil.*;
 import static ru.rzn.gmyasoedov.gmaven.GMavenConstants.M2;
+import static ru.rzn.gmyasoedov.gmaven.GMavenConstants.POM_XML;
 
 public class MavenUtils {
 
@@ -111,7 +108,7 @@ public class MavenUtils {
     }
 
     public static boolean isSimplePomFile(String fileName) {
-        return fileName.equals(GMavenConstants.POM_XML) ||
+        return fileName.equals(POM_XML) ||
                 fileName.endsWith(".pom") || fileName.startsWith("pom.") ||
                 (fileName.startsWith(GMavenConstants.SUPER_POM_PREFIX) && fileName.endsWith(".xml"));
     }
@@ -138,24 +135,14 @@ public class MavenUtils {
         return result;
     }
 
-    public static boolean isPomFile(@Nullable VirtualFile file) {
+    public static boolean isProjectDirOrFile(@Nullable VirtualFile file) {
         if (file == null) return false;
-
+        if (file.isDirectory()) {
+            return Stream.of(file.getChildren()).anyMatch(MavenUtils::isSimplePomFile);
+        }
         String name = file.getName();
         if (isSimplePomFile(name)) return true;
         return isPotentialPomFile(name);
-    }
-
-    public static boolean isProjectFile(@Nullable VirtualFile file) {
-        if (file == null) return false;
-
-        if (file.isDirectory()) {
-            return Stream.of(file.getChildren()).anyMatch(MavenUtils::isSimplePomFile);
-        } else {
-            String name = file.getName();
-            if (isSimplePomFile(name)) return true;
-            return isPotentialPomFile(name);
-        }
     }
 
     @Nullable
@@ -412,30 +399,5 @@ public class MavenUtils {
 
     public static boolean groovyPluginEnabled() {
         return pluginEnabled(INTELLIJ_GROOVY_PLUGIN_ID);
-    }
-
-    public static boolean isProjectFile(PsiFile file) {
-        if (!(file instanceof XmlFile)) return false;
-
-        XmlTag rootTag = ((XmlFile) file).getRootTag();
-        if (rootTag == null || !"project".equals(rootTag.getName())) return false;
-
-        String xmlns = rootTag.getAttributeValue("xmlns");
-        if (xmlns != null && xmlns.startsWith("http://maven.apache.org/POM/")) {
-            return true;
-        }
-
-        return MavenUtils.isSimplePomFile(file.getName());
-    }
-
-    @NotNull
-    public static Path getWorkingDirectory(MavenProjectSettings settings) {
-        if (settings.getProjectBuildFile() == null) return Path.of(settings.getExternalProjectPath());
-        Path buildFilePath = Path.of(settings.getProjectBuildFile());
-        if (buildFilePath.toFile().isDirectory()) {
-            return buildFilePath;
-        } else {
-            return buildFilePath.getParent();
-        }
     }
 }

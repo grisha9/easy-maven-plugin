@@ -16,8 +16,7 @@ class GMavenProjectImportProvider : AbstractExternalProjectImportProvider(
     override fun createSteps(context: WizardContext) = ModuleWizardStep.EMPTY_ARRAY
 
     override fun canImport(fileOrDirectory: VirtualFile, project: Project?): Boolean {
-        if (super.canImport(fileOrDirectory, project)) return true
-        return if (!fileOrDirectory.isDirectory) canImportFromFile(fileOrDirectory) else false
+        return MavenUtils.isProjectDirOrFile(fileOrDirectory)
     }
 
     override fun canImportFromFile(file: VirtualFile): Boolean {
