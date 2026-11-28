@@ -116,7 +116,7 @@ The result is original build tool behavior and a simple implementation.
 
         <toolWindow id="Easy Maven" anchor="right" icon="GMavenIcons.ToolWindowMaven"
                     factoryClass="ru.rzn.gmyasoedov.gmaven.ui.MavenToolWindowFactory"/>
-        <consoleFilterProvider implementation="ru.rzn.gmyasoedov.gmaven.project.filter.MavenConsoleFilterProvider"
+        <consoleFilterProvider implementation="ru.rzn.gmyasoedov.gmaven.project.filter.MavenConsoleFileFilterProvider"
                                order="first"/>
         <attachSourcesProvider implementation="ru.rzn.gmyasoedov.gmaven.project.externalSystem.service.MavenAttachSourcesProvider"/>
         <annotator language="XML" implementationClass="ru.rzn.gmyasoedov.gmaven.dom.PomXmlDomGutterAnnotator"/>
