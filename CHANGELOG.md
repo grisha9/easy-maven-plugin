@@ -6,6 +6,7 @@
 
 - Rerun of a failed Maven run configuration from the Run tool window resumes the build from the failed module (`-rf`/`-r`) #44 
 - Navigation to build file (`pom.xml`) errors from Maven console output (`@ /path/pom.xml, line 22, column 16`) #94
+- Maven Log navigation to parent if has errors #96
 - Project open as Maven. But is not Maven. #92
 
 ## [262.4] - 2026-11-14
