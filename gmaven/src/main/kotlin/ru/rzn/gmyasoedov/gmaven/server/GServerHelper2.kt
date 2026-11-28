@@ -105,7 +105,9 @@ fun runTasks(
     processHandler.startAndWait()
     val exitCode = processHandler.exitCode
     if (exitCode != null && exitCode != 0) {
-        throw RuntimeException("See full maven log in run tab")
+        val fixId = ShowFullLogCallback.ID
+        val message = GBundle.message("gmaven.notification.task.failed", exitCode.toString(), fixId)
+        throw ExternalSystemException(message, fixId)
     }
 }
 
